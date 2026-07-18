@@ -7,46 +7,36 @@ import "./globals.css";
 import Schema from "./schema";
 
 
-
 const inter = Inter({
-
   subsets: ["latin"],
-
   variable: "--font-inter",
-
 });
-
 
 
 const manrope = Manrope({
-
   subsets: ["latin"],
-
   variable: "--font-manrope",
-
 });
-
-
-
 
 
 export const metadata: Metadata = {
 
+  metadataBase: new URL(
+    "https://setarehsalehabadi.com"
+  ),
+
 
   title: {
-
     default:
       "Setareh Salehabadi | Digital Growth Strategist",
 
     template:
       "%s | Setareh Salehabadi",
-
   },
 
 
   description:
     "Setareh Salehabadi is a Digital Growth Strategist helping ambitious businesses grow through SEO, digital strategy, consumer psychology, AI and data-driven marketing systems.",
-
 
 
   keywords: [
@@ -69,41 +59,29 @@ export const metadata: Metadata = {
 
     "Consumer Psychology",
 
-  ],
+    "Business Growth",
 
+  ],
 
 
   authors: [
-
     {
-
       name:
         "Setareh Salehabadi",
-
     },
-
   ],
-
 
 
   creator:
     "Setareh Salehabadi",
 
 
-
-  metadataBase:
-
-    new URL(
-
-      "https://setarehsalehabadi.com"
-
-    ),
-
+  category:
+    "Digital Marketing",
 
 
 
   openGraph: {
-
 
     title:
       "Setareh Salehabadi | Digital Growth Strategist",
@@ -129,13 +107,26 @@ export const metadata: Metadata = {
       "website",
 
 
+    images: [
+      {
+        url:
+          "/og-image.png",
+
+        width:
+          1200,
+
+        height:
+          630,
+
+        alt:
+          "Setareh Salehabadi - Digital Growth Strategist",
+      },
+    ],
   },
 
 
 
-
   twitter: {
-
 
     card:
       "summary_large_image",
@@ -149,28 +140,26 @@ export const metadata: Metadata = {
       "SEO, AI and digital growth systems for ambitious businesses.",
 
 
+    images:
+      [
+        "/og-image.png"
+      ],
   },
 
 
 
   robots: {
 
-
     index:
       true,
 
-
     follow:
       true,
-
 
   },
 
 
 };
-
-
-
 
 
 export default function RootLayout({
@@ -186,9 +175,7 @@ export default function RootLayout({
 
   return (
 
-
     <html lang="en">
-
 
       <body
 
@@ -196,18 +183,14 @@ export default function RootLayout({
 
       >
 
-
         <Schema />
 
-
         {children}
-
 
       </body>
 
 
     </html>
-
 
   );
 
