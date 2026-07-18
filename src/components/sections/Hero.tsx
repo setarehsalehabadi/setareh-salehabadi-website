@@ -1,5 +1,4 @@
 import Image from "next/image";
-import StatsCard from "../StatsCard";
 
 
 export default function Hero() {
@@ -101,6 +100,7 @@ export default function Hero() {
 
 
 
+
           <p
             className="
             mt-10
@@ -116,6 +116,7 @@ export default function Hero() {
             marketing systems.
 
           </p>
+
 
 
 
@@ -150,6 +151,7 @@ export default function Hero() {
 
 
 
+
             <button
               className="
               border
@@ -179,6 +181,7 @@ export default function Hero() {
 
 
 
+
         {/* IMAGE */}
 
 
@@ -195,8 +198,10 @@ export default function Hero() {
           <div
             className="
             relative
-            w-[460px]
-            h-[650px]
+            w-[360px]
+            h-[560px]
+            md:w-[440px]
+            md:h-[650px]
             rounded-[50px]
             overflow-hidden
             border
@@ -213,7 +218,7 @@ export default function Hero() {
 
               fill
 
-              sizes="460px"
+              sizes="440px"
 
               priority
 
@@ -224,25 +229,6 @@ export default function Hero() {
 
 
           </div>
-
-
-
-
-          {/* MOVE CARD TO CORNER */}
-
-
-          <div
-            className="
-            absolute
-            right-[-90px]
-            bottom-24
-            "
-          >
-
-            <StatsCard />
-
-          </div>
-
 
 
 
