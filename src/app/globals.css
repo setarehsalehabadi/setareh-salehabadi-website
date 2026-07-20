@@ -1,37 +1,339 @@
 @import "tailwindcss";
 
+/* ==================================================
+   GLOBAL DESIGN TOKENS
+   Setareh Salehabadi Personal Brand Website
+================================================== */
 
 :root {
+  /* Primary backgrounds */
+  --color-ivory: #f4f0e8;
+  --color-cream: #ece6dc;
+  --color-warm-white: #faf8f4;
 
-  --background: #ffffff;
-  --foreground: #111111;
+  /* Primary text */
+  --color-charcoal: #191919;
+  --color-graphite: #252525;
 
+  /* Secondary text */
+  --color-muted: #6e685f;
+
+  /* Strategic brand colors */
+  --color-navy: #14243a;
+  --color-blue: #315a8a;
+
+  /* Controlled accents */
+  --color-gold: #b69355;
+  --color-orange: #c96b4b;
+  --color-green: #517b67;
+  --color-plum: #68567a;
+
+  /* Borders */
+  --color-border: rgba(110, 104, 95, 0.22);
+  --color-border-strong: rgba(20, 36, 58, 0.24);
+
+  /* States */
+  --color-focus: #315a8a;
+
+  /* Semantic colors */
+  --background: var(--color-ivory);
+  --foreground: var(--color-charcoal);
+
+  /* Layout */
+  --container-max: 1440px;
+  --container-reading: 760px;
+
+  /* Border radius */
+  --radius-small: 12px;
+  --radius-medium: 20px;
+  --radius-large: 28px;
+
+  /* Shadows */
+  --shadow-soft: 0 24px 70px rgba(40, 35, 28, 0.12);
+  --shadow-image: 0 30px 80px rgba(40, 35, 28, 0.16);
+
+  /* Motion */
+  --motion-duration: 700ms;
+  --motion-easing: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ==================================================
+   TAILWIND V4 THEME MAPPING
+================================================== */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-ivory: var(--color-ivory);
+  --color-cream: var(--color-cream);
+  --color-warm-white: var(--color-warm-white);
+
+  --color-charcoal: var(--color-charcoal);
+  --color-graphite: var(--color-graphite);
+  --color-muted: var(--color-muted);
+
+  --color-navy: var(--color-navy);
+  --color-brand-blue: var(--color-blue);
+  --color-gold: var(--color-gold);
+  --color-burnt-orange: var(--color-orange);
+  --color-muted-green: var(--color-green);
+  --color-plum: var(--color-plum);
+
+  --font-sans: var(--font-manrope), Arial, Helvetica, sans-serif;
+  --font-serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
+}
+
+/* ==================================================
+   RESET AND DOCUMENT FOUNDATION
+================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--background);
+  color-scheme: light;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 body {
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
 
   background: var(--background);
   color: var(--foreground);
 
-  font-family: var(--font-inter), sans-serif;
+  font-family:
+    var(--font-manrope),
+    Arial,
+    Helvetica,
+    sans-serif;
 
+  font-size: 16px;
+  line-height: 1.7;
 }
 
+main {
+  display: block;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==================================================
+   TYPOGRAPHY FOUNDATION
+================================================== */
 
 h1,
 h2,
-h3 {
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-charcoal);
 
-  font-family: var(--font-manrope), sans-serif;
+  font-family:
+    var(--font-cormorant),
+    Georgia,
+    "Times New Roman",
+    serif;
 
-  letter-spacing: -0.03em;
-
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
+h1 {
+  font-size: clamp(3.25rem, 7vw, 7.5rem);
+}
 
-* {
+h2 {
+  font-size: clamp(2.5rem, 5vw, 5.25rem);
+}
 
-  box-sizing: border-box;
+h3 {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  line-height: 1.05;
+}
 
+p {
+  max-width: 75ch;
+  color: var(--color-muted);
+}
+
+strong {
+  color: var(--color-charcoal);
+  font-weight: 650;
+}
+
+small {
+  line-height: 1.5;
+}
+
+/* ==================================================
+   GLOBAL LAYOUT UTILITIES
+================================================== */
+
+.site-container {
+  width: min(
+    calc(100% - 40px),
+    var(--container-max)
+  );
+  margin-inline: auto;
+}
+
+.reading-width {
+  width: min(100%, var(--container-reading));
+}
+
+.section-spacing {
+  padding-block: 72px;
+}
+
+.section-divider {
+  border-top: 1px solid var(--color-border);
+}
+
+/* ==================================================
+   ACCESSIBILITY
+================================================== */
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+::selection {
+  background: rgba(182, 147, 85, 0.28);
+  color: var(--color-charcoal);
+}
+
+.skip-link {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 9999;
+
+  padding: 12px 18px;
+  border-radius: 999px;
+
+  background: var(--color-navy);
+  color: var(--color-warm-white);
+
+  font-weight: 700;
+
+  transform: translateY(-160%);
+  transition: transform 200ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ==================================================
+   RESPONSIVE LAYOUT
+================================================== */
+
+@media (min-width: 768px) {
+  .site-container {
+    width: min(
+      calc(100% - 64px),
+      var(--container-max)
+    );
+  }
+
+  .section-spacing {
+    padding-block: 104px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-container {
+    width: min(
+      calc(100% - 96px),
+      var(--container-max)
+    );
+  }
+
+  .section-spacing {
+    padding-block: 128px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .section-spacing {
+    padding-block: 144px;
+  }
+}
+
+/* ==================================================
+   REDUCED MOTION
+================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
