@@ -6,55 +6,46 @@
 ================================================== */
 
 :root {
-  /* Primary backgrounds */
   --color-ivory: #f4f0e8;
   --color-cream: #ece6dc;
   --color-warm-white: #faf8f4;
 
-  /* Primary text */
   --color-charcoal: #191919;
   --color-graphite: #252525;
-
-  /* Secondary text */
   --color-muted: #6e685f;
 
-  /* Strategic brand colors */
   --color-navy: #14243a;
   --color-blue: #315a8a;
 
-  /* Controlled accents */
   --color-gold: #b69355;
   --color-orange: #c96b4b;
   --color-green: #517b67;
   --color-plum: #68567a;
 
-  /* Borders */
   --color-border: rgba(110, 104, 95, 0.22);
   --color-border-strong: rgba(20, 36, 58, 0.24);
 
-  /* States */
   --color-focus: #315a8a;
 
-  /* Semantic colors */
   --background: var(--color-ivory);
   --foreground: var(--color-charcoal);
 
-  /* Layout */
   --container-max: 1440px;
   --container-reading: 760px;
 
-  /* Border radius */
   --radius-small: 12px;
   --radius-medium: 20px;
   --radius-large: 28px;
 
-  /* Shadows */
-  --shadow-soft: 0 24px 70px rgba(40, 35, 28, 0.12);
-  --shadow-image: 0 30px 80px rgba(40, 35, 28, 0.16);
+  --shadow-soft:
+    0 24px 70px rgba(40, 35, 28, 0.12);
 
-  /* Motion */
+  --shadow-image:
+    0 30px 80px rgba(40, 35, 28, 0.16);
+
   --motion-duration: 700ms;
-  --motion-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-easing:
+    cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ==================================================
@@ -62,165 +53,267 @@
 ================================================== */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background:
+    var(--background);
 
-  --color-ivory: var(--color-ivory);
-  --color-cream: var(--color-cream);
-  --color-warm-white: var(--color-warm-white);
+  --color-foreground:
+    var(--foreground);
 
-  --color-charcoal: var(--color-charcoal);
-  --color-graphite: var(--color-graphite);
-  --color-muted: var(--color-muted);
+  --color-ivory:
+    var(--color-ivory);
 
-  --color-navy: var(--color-navy);
-  --color-brand-blue: var(--color-blue);
-  --color-gold: var(--color-gold);
-  --color-burnt-orange: var(--color-orange);
-  --color-muted-green: var(--color-green);
-  --color-plum: var(--color-plum);
+  --color-cream:
+    var(--color-cream);
 
-  --font-sans: var(--font-manrope), Arial, Helvetica, sans-serif;
-  --font-serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
-}
+  --color-warm-white:
+    var(--color-warm-white);
 
-/* ==================================================
-   RESET AND DOCUMENT FOUNDATION
-================================================== */
+  --color-charcoal:
+    var(--color-charcoal);
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  --color-graphite:
+    var(--color-graphite);
 
-html {
-  scroll-behavior: smooth;
-  background: var(--background);
-  color-scheme: light;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  --color-muted:
+    var(--color-muted);
 
-body {
-  min-height: 100vh;
-  margin: 0;
-  overflow-x: hidden;
+  --color-navy:
+    var(--color-navy);
 
-  background: var(--background);
-  color: var(--foreground);
+  --color-brand-blue:
+    var(--color-blue);
 
-  font-family:
+  --color-gold:
+    var(--color-gold);
+
+  --color-burnt-orange:
+    var(--color-orange);
+
+  --color-muted-green:
+    var(--color-green);
+
+  --color-plum:
+    var(--color-plum);
+
+  --font-sans:
     var(--font-manrope),
     Arial,
     Helvetica,
     sans-serif;
 
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-main {
-  display: block;
-}
-
-img,
-svg,
-video,
-canvas {
-  display: block;
-  max-width: 100%;
-}
-
-img {
-  height: auto;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button {
-  color: inherit;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin-top: 0;
-}
-
-p:last-child {
-  margin-bottom: 0;
-}
-
-/* ==================================================
-   TYPOGRAPHY FOUNDATION
-================================================== */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--color-charcoal);
-
-  font-family:
+  --font-serif:
     var(--font-cormorant),
     Georgia,
     "Times New Roman",
     serif;
-
-  font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
 }
 
-h1 {
-  font-size: clamp(3.25rem, 7vw, 7.5rem);
+/* ==================================================
+   RESET AND DOCUMENT FOUNDATION
+
+   These rules are placed inside Tailwind's base layer.
+   Component utility classes can therefore override them.
+================================================== */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--background);
+    color-scheme: light;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+
+    background: var(--background);
+    color: var(--foreground);
+
+    font-family:
+      var(--font-manrope),
+      Arial,
+      Helvetica,
+      sans-serif;
+
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  main {
+    display: block;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  img {
+    height: auto;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button {
+    color: inherit;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 0;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-charcoal);
+
+    font-family:
+      var(--font-cormorant),
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  p {
+    max-width: 75ch;
+    color: var(--color-muted);
+  }
+
+  strong {
+    color: var(--color-charcoal);
+    font-weight: 650;
+  }
+
+  small {
+    line-height: 1.5;
+  }
 }
 
-h2 {
-  font-size: clamp(2.5rem, 5vw, 5.25rem);
+/* ==================================================
+   PERSIAN TYPOGRAPHY FOUNDATION
+
+   Only font-family and language-specific normalization
+   are controlled globally.
+
+   Font sizes and line heights are controlled locally
+   inside each section component.
+================================================== */
+
+html[lang="fa"] {
+  font-synthesis: none;
 }
 
-h3 {
-  font-size: clamp(1.75rem, 3vw, 2.75rem);
-  line-height: 1.05;
+html[lang="fa"] body {
+  font-family:
+    var(--font-vazirmatn),
+    Tahoma,
+    Arial,
+    sans-serif;
+
+  font-size: 16px;
+  line-height: 1.9;
 }
 
-p {
-  max-width: 75ch;
-  color: var(--color-muted);
+html[lang="fa"] .font-sans,
+html[lang="fa"] .font-serif,
+html[lang="fa"] button,
+html[lang="fa"] input,
+html[lang="fa"] textarea,
+html[lang="fa"] select {
+  font-family:
+    var(--font-vazirmatn),
+    Tahoma,
+    Arial,
+    sans-serif;
 }
 
-strong {
-  color: var(--color-charcoal);
-  font-weight: 650;
+html[lang="fa"] h1,
+html[lang="fa"] h2,
+html[lang="fa"] h3,
+html[lang="fa"] h4,
+html[lang="fa"] h5,
+html[lang="fa"] h6 {
+  font-family:
+    var(--font-vazirmatn),
+    Tahoma,
+    Arial,
+    sans-serif;
+
+  font-style: normal;
+  letter-spacing: 0;
+  text-wrap: pretty;
 }
 
-small {
-  line-height: 1.5;
+html[lang="fa"] p {
+  text-wrap: pretty;
+}
+
+html[lang="fa"] .italic {
+  font-style: normal;
+}
+
+html[lang="fa"] .uppercase {
+  text-transform: none;
+}
+
+html[lang="fa"] [class*="tracking-"] {
+  letter-spacing: 0;
+}
+
+html[lang="fa"] a,
+html[lang="fa"] button {
+  line-height: 1.6;
+}
+
+html[lang="fa"] input[type="email"] {
+  direction: ltr;
+  text-align: left;
 }
 
 /* ==================================================
@@ -228,15 +321,21 @@ small {
 ================================================== */
 
 .site-container {
-  width: min(
-    calc(100% - 40px),
-    var(--container-max)
-  );
+  width:
+    min(
+      calc(100% - 40px),
+      var(--container-max)
+    );
+
   margin-inline: auto;
 }
 
 .reading-width {
-  width: min(100%, var(--container-reading));
+  width:
+    min(
+      100%,
+      var(--container-reading)
+    );
 }
 
 .section-spacing {
@@ -244,7 +343,13 @@ small {
 }
 
 .section-divider {
-  border-top: 1px solid var(--color-border);
+  border-top:
+    1px solid var(--color-border);
+}
+
+section[id],
+main[id] {
+  scroll-margin-top: 96px;
 }
 
 /* ==================================================
@@ -252,35 +357,47 @@ small {
 ================================================== */
 
 :focus-visible {
-  outline: 3px solid var(--color-focus);
+  outline:
+    3px solid var(--color-focus);
+
   outline-offset: 4px;
 }
 
 ::selection {
-  background: rgba(182, 147, 85, 0.28);
-  color: var(--color-charcoal);
+  background:
+    rgba(182, 147, 85, 0.28);
+
+  color:
+    var(--color-charcoal);
 }
 
 .skip-link {
   position: fixed;
   top: 16px;
-  left: 16px;
+  inset-inline-start: 16px;
   z-index: 9999;
 
   padding: 12px 18px;
   border-radius: 999px;
 
-  background: var(--color-navy);
-  color: var(--color-warm-white);
+  background:
+    var(--color-navy);
+
+  color:
+    var(--color-warm-white);
 
   font-weight: 700;
 
-  transform: translateY(-160%);
-  transition: transform 200ms ease;
+  transform:
+    translateY(-160%);
+
+  transition:
+    transform 200ms ease;
 }
 
 .skip-link:focus {
-  transform: translateY(0);
+  transform:
+    translateY(0);
 }
 
 /* ==================================================
@@ -289,27 +406,39 @@ small {
 
 @media (min-width: 768px) {
   .site-container {
-    width: min(
-      calc(100% - 64px),
-      var(--container-max)
-    );
+    width:
+      min(
+        calc(100% - 64px),
+        var(--container-max)
+      );
   }
 
   .section-spacing {
     padding-block: 104px;
   }
+
+  section[id],
+  main[id] {
+    scroll-margin-top: 104px;
+  }
 }
 
 @media (min-width: 1024px) {
   .site-container {
-    width: min(
-      calc(100% - 96px),
-      var(--container-max)
-    );
+    width:
+      min(
+        calc(100% - 96px),
+        var(--container-max)
+      );
   }
 
   .section-spacing {
     padding-block: 128px;
+  }
+
+  section[id],
+  main[id] {
+    scroll-margin-top: 112px;
   }
 }
 
@@ -332,8 +461,11 @@ small {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation-duration:
+      0.01ms !important;
+    animation-iteration-count:
+      1 !important;
+    transition-duration:
+      0.01ms !important;
   }
 }

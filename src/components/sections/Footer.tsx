@@ -1,26 +1,193 @@
-const navigation = [
-  { label: "Expertise", href: "#expertise" },
-  { label: "Growth System", href: "#growth-system" },
-  { label: "Case Studies", href: "#case-studies" },
-  { label: "Research", href: "#research" },
-  { label: "About", href: "#about" },
-  { label: "Newsletter", href: "#newsletter" },
-];
+import Link from "next/link";
 
-const focusAreas = [
-  "SEO & Organic Growth",
-  "Digital Strategy",
-  "Consumer Psychology",
-  "Data & Analytics",
-  "AI & Automation",
-];
+import {
+  defaultLocale,
+  type Locale,
+} from "@/i18n/config";
 
-export default function Footer() {
-  const currentYear = new Date().getFullYear();
+import en from "@/i18n/dictionaries/en";
+import type { Dictionary } from "@/i18n/get-dictionary";
+
+type FooterProps = {
+  locale?: Locale;
+  dictionary?: Dictionary["footer"];
+  common?: Dictionary["common"];
+};
+
+type ArrowIconProps = {
+  external: boolean;
+};
+
+type LegalLabels = {
+  navigationLabel: string;
+  privacy: string;
+  terms: string;
+};
+
+const legalLabels: Record<
+  Locale,
+  LegalLabels
+> = {
+  en: {
+    navigationLabel:
+      "Legal information",
+
+    privacy:
+      "Privacy Policy",
+
+    terms:
+      "Terms of Use",
+  },
+
+  de: {
+    navigationLabel:
+      "Rechtliche Informationen",
+
+    privacy:
+      "Datenschutzerklärung",
+
+    terms:
+      "Nutzungsbedingungen",
+  },
+
+  fa: {
+    navigationLabel:
+      "اطلاعات حقوقی",
+
+    privacy:
+      "حریم خصوصی",
+
+    terms:
+      "شرایط استفاده",
+  },
+};
+
+function isExternalAction(
+  href: string
+) {
+  return (
+    href.startsWith("mailto:") ||
+    href.startsWith("http://") ||
+    href.startsWith("https://")
+  );
+}
+
+function formatYear(
+  year: number,
+  locale: Locale
+) {
+  return new Intl.NumberFormat(
+    locale === "fa"
+      ? "fa-IR"
+      : locale,
+    {
+      useGrouping: false,
+    }
+  ).format(year);
+}
+
+function ArrowIcon({
+  external,
+}: ArrowIconProps) {
+  if (external) {
+    return (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        className="
+          h-[17px]
+          w-[17px]
+          shrink-0
+          fill-none
+          stroke-current
+        "
+      >
+        <path
+          d="M6 14 14 6M8 6h6v6"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="
+        h-[17px]
+        w-[17px]
+        shrink-0
+        fill-none
+        stroke-current
+      "
+    >
+      <path
+        d="M10 15V5M6.5 8.5 10 5l3.5 3.5"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export default function Footer({
+  locale = defaultLocale,
+  dictionary = en.footer,
+  common = en.common,
+}: FooterProps) {
+  const isPersian =
+    locale === "fa";
+
+  const currentYear =
+    formatYear(
+      new Date().getFullYear(),
+      locale
+    );
+
+  const hasAvailability =
+    dictionary.availability
+      .trim()
+      .length > 0;
+
+  const primaryIsExternal =
+    isExternalAction(
+      dictionary.primaryCta.href
+    );
+
+  const secondaryIsExternal =
+    isExternalAction(
+      dictionary.secondaryCta.href
+    );
+
+  const currentLegalLabels =
+    legalLabels[locale];
+
+  const legalLinks = [
+    {
+      label:
+        currentLegalLabels.privacy,
+
+      href:
+        `/${locale}/privacy`,
+    },
+
+    {
+      label:
+        currentLegalLabels.terms,
+
+      href:
+        `/${locale}/terms`,
+    },
+  ];
 
   return (
     <footer
-      id="contact"
+      id="footer"
+      aria-labelledby="footer-heading"
       className="
         relative
         overflow-hidden
@@ -83,56 +250,80 @@ export default function Footer() {
             border-[#302d29]/15
             pb-12
             lg:grid-cols-[minmax(0,1.25fr)_minmax(180px,0.46fr)_minmax(220px,0.58fr)]
-            lg:gap-16
+            lg:gap-14
+            xl:gap-16
           "
         >
-          <div>
+          <div className="min-w-0">
             <p
-              className="
+              className={`
                 font-sans
-                text-[10px]
                 font-semibold
-                uppercase
-                tracking-[0.3em]
                 text-[#8a672f]
-              "
+                ${
+                  isPersian
+                    ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                    : "text-[10px] uppercase tracking-[0.3em]"
+                }
+              `}
             >
-              Setareh Salehabadi
+              {dictionary.eyebrow}
             </p>
 
             <h2
-              className="
+              id="footer-heading"
+              className={`
                 mt-5
-                max-w-[760px]
-                font-serif
-                text-[clamp(2.25rem,4.1vw,3.9rem)]
-                font-medium
-                leading-[1.02]
-                tracking-[-0.043em]
+                max-w-[880px]
                 text-[#211f1c]
-              "
+                ${
+                  isPersian
+                    ? "font-sans text-[clamp(1.8rem,2.7vw,2.75rem)] font-[650] leading-[1.62] tracking-normal"
+                    : "font-serif text-[clamp(2.25rem,4.1vw,3.9rem)] font-medium leading-[1.02] tracking-[-0.043em]"
+                }
+              `}
             >
-              Building clearer systems
-              <span className="block italic text-[#2e5d91]">
-                for sustainable digital growth.
+              <span>
+                {
+                  dictionary
+                    .title
+                    .first
+                }
+              </span>
+
+              <span
+                className={`
+                  block
+                  text-[#2e5d91]
+                  ${
+                    isPersian
+                      ? "mt-0.5"
+                      : "italic"
+                  }
+                `}
+              >
+                {
+                  dictionary
+                    .title
+                    .highlighted
+                }
               </span>
             </h2>
 
             <p
-              className="
+              className={`
                 mt-7
-                max-w-[700px]
+                max-w-[720px]
                 font-sans
-                text-[18px]
-                leading-[2.05rem]
                 text-[#625d56]
-                lg:text-[19px]
-                lg:leading-[2.15rem]
-              "
+                ${
+                  isPersian
+                    ? "text-[16px] leading-[2.05] sm:text-[17px]"
+                    : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
+                }
+              `}
             >
-              Digital Growth Strategist working across SEO, strategy, consumer
-              psychology, analytics, customer experience and practical AI
-              systems.
+              {dictionary.description}
             </p>
 
             <div
@@ -140,17 +331,22 @@ export default function Footer() {
                 mt-8
                 flex
                 flex-col
-                gap-4
+                gap-3
                 sm:flex-row
                 sm:flex-wrap
+                sm:gap-4
               "
             >
               <a
-                href="mailto:hello@setarehsalehabadi.com"
-                className="
+                href={
+                  dictionary
+                    .primaryCta
+                    .href
+                }
+                className={`
                   group
                   inline-flex
-                  min-h-[58px]
+                  min-h-[56px]
                   items-center
                   justify-center
                   gap-3
@@ -158,11 +354,11 @@ export default function Footer() {
                   border
                   border-[#183655]
                   bg-[#183655]
-                  px-9
+                  px-8
                   font-sans
-                  text-[15px]
                   font-semibold
                   leading-none
+                  text-white
                   shadow-[0_14px_30px_rgba(24,54,85,0.18)]
                   transition-all
                   duration-300
@@ -173,35 +369,46 @@ export default function Footer() {
                   focus-visible:outline-none
                   focus-visible:ring-4
                   focus-visible:ring-[#2e5d91]/20
-                  sm:text-[16px]
-                "
-                style={{ color: "#ffffff" }}
+                  ${
+                    isPersian
+                      ? "text-[14px] sm:text-[15px]"
+                      : "text-[15px] sm:text-[16px]"
+                  }
+                `}
               >
-                <span style={{ color: "#ffffff" }}>
-                  Start a conversation
+                <span>
+                  {
+                    dictionary
+                      .primaryCta
+                      .label
+                  }
                 </span>
 
                 <span
-                  aria-hidden="true"
                   className="
-                    text-[18px]
                     transition-transform
                     duration-300
-                    group-hover:translate-x-0.5
                     group-hover:-translate-y-0.5
                   "
-                  style={{ color: "#ffffff" }}
                 >
-                  ↗
+                  <ArrowIcon
+                    external={
+                      primaryIsExternal
+                    }
+                  />
                 </span>
               </a>
 
               <a
-                href="#case-studies"
-                className="
+                href={
+                  dictionary
+                    .secondaryCta
+                    .href
+                }
+                className={`
                   group
                   inline-flex
-                  min-h-[58px]
+                  min-h-[56px]
                   items-center
                   justify-center
                   gap-3
@@ -209,11 +416,11 @@ export default function Footer() {
                   border
                   border-[#302d29]
                   bg-[#302d29]
-                  px-9
+                  px-8
                   font-sans
-                  text-[15px]
                   font-semibold
                   leading-none
+                  text-white
                   shadow-[0_14px_30px_rgba(48,45,41,0.14)]
                   transition-all
                   duration-300
@@ -224,195 +431,228 @@ export default function Footer() {
                   focus-visible:outline-none
                   focus-visible:ring-4
                   focus-visible:ring-[#2e5d91]/20
-                  sm:text-[16px]
-                "
-                style={{ color: "#ffffff" }}
+                  ${
+                    isPersian
+                      ? "text-[14px] sm:text-[15px]"
+                      : "text-[15px] sm:text-[16px]"
+                  }
+                `}
               >
-                <span style={{ color: "#ffffff" }}>
-                  View selected work
+                <span>
+                  {
+                    dictionary
+                      .secondaryCta
+                      .label
+                  }
                 </span>
 
                 <span
-                  aria-hidden="true"
                   className="
-                    text-[18px]
                     transition-transform
                     duration-300
-                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
                   "
-                  style={{ color: "#ffffff" }}
                 >
-                  →
+                  <ArrowIcon
+                    external={
+                      secondaryIsExternal
+                    }
+                  />
                 </span>
               </a>
             </div>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <p
-              className="
+              className={`
                 font-sans
-                text-[10px]
                 font-semibold
-                uppercase
-                tracking-[0.27em]
                 text-[#8a672f]
-              "
+                ${
+                  isPersian
+                    ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                    : "text-[10px] uppercase tracking-[0.27em]"
+                }
+              `}
             >
-              Navigation
+              {
+                dictionary
+                  .navigationLabel
+              }
             </p>
 
             <nav
-              aria-label="Footer navigation"
+              aria-label={
+                dictionary
+                  .navigationLabel
+              }
               className="mt-6"
             >
               <ul className="space-y-4">
-                {navigation.map((item) => (
-                  <li key={item.label}>
-                    <a
-                      href={item.href}
-                      className="
-                        group
-                        inline-flex
-                        items-center
-                        gap-3
-                        font-sans
-                        text-[15px]
-                        font-medium
-                        text-[#4f4942]
-                        transition-colors
-                        duration-300
-                        hover:text-[#2e5d91]
-                      "
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="
-                          h-px
-                          w-3
-                          bg-[#b48a52]
-                          transition-all
-                          duration-300
-                          group-hover:w-6
-                          group-hover:bg-[#2e5d91]
-                        "
-                      />
+                {
+                  dictionary
+                    .navigation
+                    .map(
+                      (item) => (
+                        <li
+                          key={
+                            item.label
+                          }
+                        >
+                          <a
+                            href={
+                              item.href
+                            }
+                            className={`
+                              group
+                              inline-flex
+                              items-center
+                              gap-3
+                              font-sans
+                              font-medium
+                              text-[#4f4942]
+                              transition-colors
+                              duration-300
+                              hover:text-[#2e5d91]
+                              ${
+                                isPersian
+                                  ? "text-[14px] leading-7 sm:text-[15px]"
+                                  : "text-[15px]"
+                              }
+                            `}
+                          >
+                            <span
+                              aria-hidden="true"
+                              className="
+                                h-px
+                                w-3
+                                shrink-0
+                                bg-[#b48a52]
+                                transition-all
+                                duration-300
+                                group-hover:w-6
+                                group-hover:bg-[#2e5d91]
+                              "
+                            />
 
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
+                            <span>
+                              {
+                                item.label
+                              }
+                            </span>
+                          </a>
+                        </li>
+                      )
+                    )
+                }
               </ul>
             </nav>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <p
-              className="
+              className={`
                 font-sans
-                text-[10px]
                 font-semibold
-                uppercase
-                tracking-[0.27em]
                 text-[#8a672f]
-              "
+                ${
+                  isPersian
+                    ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                    : "text-[10px] uppercase tracking-[0.27em]"
+                }
+              `}
             >
-              Focus
+              {dictionary.focusLabel}
             </p>
 
             <ul className="mt-6 space-y-4">
-              {focusAreas.map((area) => (
-                <li
-                  key={area}
-                  className="
-                    font-sans
-                    text-[15px]
-                    leading-7
-                    text-[#625d56]
-                  "
-                >
-                  {area}
-                </li>
-              ))}
+              {
+                dictionary
+                  .focusAreas
+                  .map(
+                    (area) => (
+                      <li
+                        key={area}
+                        dir="auto"
+                        className={`
+                          font-sans
+                          text-[#625d56]
+                          ${
+                            isPersian
+                              ? "text-[14px] leading-7 sm:text-[15px]"
+                              : "text-[15px] leading-7"
+                          }
+                        `}
+                      >
+                        {area}
+                      </li>
+                    )
+                  )
+              }
             </ul>
 
-            <div
-              className="
-                mt-8
-                border-t
-                border-[#302d29]/15
-                pt-7
-              "
-            >
-              <p
+            {!isPersian && (
+              <div
                 className="
-                  font-sans
-                  text-[10px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.27em]
-                  text-[#8a672f]
+                  mt-8
+                  border-t
+                  border-[#302d29]/15
+                  pt-7
                 "
               >
-                Connect
-              </p>
-
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a
-                  href="https://www.linkedin.com/"
-                  target="_blank"
-                  rel="noreferrer"
+                <p
                   className="
-                    inline-flex
-                    min-h-[42px]
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-[#302d29]/18
-                    bg-[#f7f3ed]/50
-                    px-5
                     font-sans
-                    text-[12px]
+                    text-[10px]
                     font-semibold
-                    text-[#4f4942]
-                    transition-all
-                    duration-300
-                    hover:border-[#2e5d91]
-                    hover:bg-[#2e5d91]
-                    hover:text-white
+                    uppercase
+                    tracking-[0.27em]
+                    text-[#8a672f]
                   "
                 >
-                  LinkedIn
-                </a>
+                  {
+                    dictionary
+                      .connectLabel
+                  }
+                </p>
 
-                <a
-                  href="mailto:hello@setarehsalehabadi.com"
+                <div
                   className="
-                    inline-flex
-                    min-h-[42px]
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-[#302d29]/18
-                    bg-[#f7f3ed]/50
-                    px-5
-                    font-sans
-                    text-[12px]
-                    font-semibold
-                    text-[#4f4942]
-                    transition-all
-                    duration-300
-                    hover:border-[#2e5d91]
-                    hover:bg-[#2e5d91]
-                    hover:text-white
+                    mt-5
+                    flex
+                    flex-wrap
+                    gap-3
                   "
                 >
-                  Email
-                </a>
+                  <a
+                    href={`mailto:${common.email}`}
+                    className="
+                      inline-flex
+                      min-h-[42px]
+                      items-center
+                      justify-center
+                      rounded-full
+                      border
+                      border-[#302d29]/18
+                      bg-[#f7f3ed]/50
+                      px-5
+                      font-sans
+                      text-[12px]
+                      font-semibold
+                      text-[#4f4942]
+                      transition-all
+                      duration-300
+                      hover:border-[#2e5d91]
+                      hover:bg-[#2e5d91]
+                      hover:text-white
+                    "
+                  >
+                    {common.emailLabel}
+                  </a>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -427,43 +667,50 @@ export default function Footer() {
             md:items-center
           "
         >
-          <div>
+          <div className="min-w-0">
             <p
-              className="
-                max-w-[820px]
-                font-serif
-                text-[clamp(1.55rem,2.4vw,2.2rem)]
-                font-medium
-                leading-[1.2]
-                tracking-[-0.03em]
+              className={`
+                max-w-[840px]
                 text-[#302b26]
-              "
+                ${
+                  isPersian
+                    ? "font-sans text-[clamp(1.2rem,1.9vw,1.6rem)] font-[650] leading-[1.9] tracking-normal"
+                    : "font-serif text-[clamp(1.55rem,2.4vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.03em]"
+                }
+              `}
             >
-              Research, strategy and practical systems for better digital
-              decisions.
+              {dictionary.statement}
             </p>
 
-            <p
-              className="
-                mt-4
-                max-w-[760px]
-                font-sans
-                text-[17px]
-                leading-8
-                text-[#6d665e]
-                sm:text-[18px]
-                sm:leading-[2rem]
-              "
-            >
-              Available for selected remote collaborations, strategic
-              consulting and international digital growth projects.
-            </p>
+            {hasAvailability && (
+              <p
+                className={`
+                  mt-4
+                  max-w-[780px]
+                  font-sans
+                  text-[#6d665e]
+                  ${
+                    isPersian
+                      ? "text-[15px] leading-[2] sm:text-[16px]"
+                      : "text-[17px] leading-8 sm:text-[18px] sm:leading-[2rem]"
+                  }
+                `}
+              >
+                {
+                  dictionary
+                    .availability
+                }
+              </p>
+            )}
           </div>
 
           <a
             href="#top"
-            aria-label="Back to the top of the page"
+            aria-label={
+              common.backToTop
+            }
             className="
+              group
               flex
               h-14
               w-14
@@ -474,9 +721,7 @@ export default function Footer() {
               border
               border-[#183655]
               bg-[#183655]
-              font-sans
-              text-[20px]
-              font-semibold
+              text-white
               shadow-[0_12px_28px_rgba(24,54,85,0.16)]
               transition-all
               duration-300
@@ -486,58 +731,108 @@ export default function Footer() {
               hover:shadow-[0_18px_36px_rgba(46,93,145,0.22)]
               md:justify-self-end
             "
-            style={{ color: "#ffffff" }}
           >
-            <span style={{ color: "#ffffff" }}>↑</span>
+            <span
+              className="
+                transition-transform
+                duration-300
+                group-hover:-translate-y-0.5
+              "
+            >
+              <ArrowIcon
+                external={false}
+              />
+            </span>
           </a>
         </div>
 
         <div
-          className="
-            flex
-            flex-col
-            gap-4
+          className={`
+            grid
+            gap-5
             pt-7
             font-sans
-            text-[12px]
-            leading-6
             text-[#756e65]
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
+            lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
+            lg:items-center
+            ${
+              isPersian
+                ? "text-[11px] leading-7 sm:text-[12px]"
+                : "text-[12px] leading-6"
+            }
+          `}
         >
-          <p>
-            © {currentYear} Setareh Salehabadi. All rights reserved.
+          <p
+            className="
+              min-w-0
+              lg:justify-self-start
+            "
+          >
+            © {currentYear}{" "}
+            {common.brandName}.{" "}
+            {dictionary.rights}
           </p>
 
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <a
-              href="/privacy"
-              className="
-                transition-colors
-                duration-300
-                hover:text-[#2e5d91]
-              "
-            >
-              Privacy
-            </a>
+          <nav
+            aria-label={
+              currentLegalLabels
+                .navigationLabel
+            }
+            className="
+              flex
+              flex-wrap
+              items-center
+              gap-x-5
+              gap-y-2
+              lg:justify-self-center
+            "
+          >
+            {legalLinks.map(
+              (item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="
+                    relative
+                    font-sans
+                    font-medium
+                    text-[#625d56]
+                    transition-colors
+                    duration-300
+                    after:absolute
+                    after:inset-x-0
+                    after:-bottom-1
+                    after:h-px
+                    after:origin-center
+                    after:scale-x-0
+                    after:bg-[#2e5d91]
+                    after:transition-transform
+                    after:duration-300
+                    hover:text-[#2e5d91]
+                    hover:after:scale-x-100
+                    focus-visible:outline-none
+                    focus-visible:ring-2
+                    focus-visible:ring-[#2e5d91]/25
+                  "
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
+          </nav>
 
-            <a
-              href="/terms"
-              className="
-                transition-colors
-                duration-300
-                hover:text-[#2e5d91]
-              "
-            >
-              Terms
-            </a>
-
-            <span>
-              Designed for clarity, trust and long-term growth.
-            </span>
-          </div>
+          <p
+            className="
+              min-w-0
+              lg:justify-self-end
+              lg:text-end
+            "
+          >
+            {
+              dictionary
+                .designStatement
+            }
+          </p>
         </div>
       </div>
     </footer>

@@ -1,48 +1,58 @@
 import Image from "next/image";
 
-const expertiseAreas = [
-  {
-    title: "SEO & Organic Growth",
-    description:
-      "Technical SEO, search intent, content architecture and organic acquisition systems designed for sustainable visibility.",
-    label: "Search",
-  },
-  {
-    title: "Digital Growth Strategy",
-    description:
-      "Clear priorities, connected channels and measurable growth plans shaped around business objectives.",
-    label: "Strategy",
-  },
-  {
-    title: "Consumer Psychology",
-    description:
-      "Understanding how people search, evaluate options, build trust and make decisions across digital journeys.",
-    label: "Behavior",
-  },
-  {
-    title: "Data & Analytics",
-    description:
-      "Turning performance data into practical insight through measurement frameworks, dashboards and interpretation.",
-    label: "Insight",
-  },
-  {
-    title: "AI & Automation",
-    description:
-      "Practical workflows that reduce repetitive work, improve consistency and support faster strategic decisions.",
-    label: "Systems",
-  },
-];
+import {
+  defaultLocale,
+  type Locale,
+} from "@/i18n/config";
+import en from "@/i18n/dictionaries/en";
+import type { Dictionary } from "@/i18n/get-dictionary";
 
-export default function Expertise() {
+type ExpertiseProps = {
+  locale?: Locale;
+  dictionary?: Dictionary["expertise"];
+};
+
+function containsPersian(text: string) {
+  return /[\u0600-\u06ff]/.test(text);
+}
+
+function formatItemNumber(
+  index: number,
+  locale: Locale,
+  isPersian: boolean
+) {
+  return new Intl.NumberFormat(
+    isPersian ? "fa-IR" : locale,
+    {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    }
+  ).format(index + 1);
+}
+
+export default function Expertise({
+  locale = defaultLocale,
+  dictionary = en.expertise,
+}: ExpertiseProps) {
+  const isPersian =
+    locale === "fa" ||
+    containsPersian(
+      [
+        dictionary.eyebrow,
+        dictionary.title.first,
+        dictionary.title.highlighted,
+        dictionary.introduction,
+      ].join(" ")
+    );
+
   return (
     <section
       id="expertise"
       aria-labelledby="expertise-heading"
       className="
-        scroll-mt-[84px]
         border-b
         border-[#302d29]/15
-        bg-[#f7f3ed]
+        bg-[#f4efe8]
         text-[#211f1c]
       "
     >
@@ -62,82 +72,96 @@ export default function Expertise() {
         <div
           className="
             grid
-            gap-10
+            gap-8
             border-b
             border-[#302d29]/15
-            pb-12
-            lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.72fr)]
+            pb-10
+            lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.72fr)]
             lg:items-end
             lg:gap-16
+            lg:pb-12
           "
         >
           <div>
             <p
-              className="
+              className={`
                 mb-5
                 font-sans
-                text-[11px]
                 font-semibold
-                uppercase
-                tracking-[0.3em]
                 text-[#8a672f]
-              "
+                ${
+                  isPersian
+                    ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                    : "text-[11px] uppercase tracking-[0.3em]"
+                }
+              `}
             >
-              Expertise
+              {dictionary.eyebrow}
             </p>
 
             <h2
               id="expertise-heading"
-              className="
-                max-w-[760px]
-                font-serif
-                text-[clamp(2.55rem,4.5vw,4.25rem)]
-                font-medium
-                leading-[1.02]
-                tracking-[-0.043em]
+              className={`
+                max-w-[800px]
                 text-[#211f1c]
-              "
+                ${
+                  isPersian
+                    ? "font-sans text-[clamp(2.15rem,3.7vw,3.55rem)] font-[650] leading-[1.48] tracking-normal"
+                    : "font-serif text-[clamp(2.55rem,4.5vw,4.25rem)] font-medium leading-[1.02] tracking-[-0.043em]"
+                }
+              `}
             >
-              Growth shaped by
-              <span className="block italic text-[#2e5d91]">
-                insight and evidence.
+              <span>
+                {dictionary.title.first}
+              </span>
+
+              <span
+                className={`
+                  block
+                  text-[#2e5d91]
+                  ${
+                    isPersian
+                      ? "mt-1"
+                      : "italic"
+                  }
+                `}
+              >
+                {dictionary.title.highlighted}
               </span>
             </h2>
           </div>
 
           <p
-            className="
+            className={`
               max-w-[620px]
               font-sans
-              text-[18px]
-              leading-[2.05rem]
               text-[#5f5a53]
               lg:justify-self-end
-              lg:text-[19px]
-              lg:leading-[2.15rem]
-            "
+              ${
+                isPersian
+                  ? "text-[16px] leading-[2.05] sm:text-[17px]"
+                  : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
+              }
+            `}
           >
-            My work combines search, strategy, behavioral insight, data and
-            technology to create practical systems for sustainable digital
-            growth.
+            {dictionary.introduction}
           </p>
         </div>
 
         <div
           className="
-            mt-12
+            mt-10
             grid
-            gap-12
-            lg:grid-cols-[minmax(360px,0.84fr)_minmax(0,1.16fr)]
+            gap-10
+            lg:mt-12
+            lg:grid-cols-[minmax(340px,0.84fr)_minmax(0,1.16fr)]
             lg:items-start
             lg:gap-14
           "
         >
-          <div className="relative">
+          <div className="relative min-w-0">
             <div
               className="
-                sticky
-                top-[112px]
                 overflow-hidden
                 rounded-[28px]
                 border
@@ -145,22 +169,29 @@ export default function Expertise() {
                 bg-[#ded5ca]
                 shadow-[0_28px_70px_rgba(61,51,41,0.13)]
                 sm:rounded-[34px]
+                lg:sticky
+                lg:top-[112px]
               "
             >
               <div
                 className="
                   relative
                   aspect-[4/5]
-                  min-h-[560px]
                   w-full
-                  lg:min-h-[720px]
+                  sm:aspect-[4/4.7]
+                  lg:aspect-auto
+                  lg:h-[clamp(520px,calc(100vh-140px),680px)]
                 "
               >
                 <Image
                   src="/images/expertise/expertise.png"
-                  alt="Editorial representation of digital growth strategy, search, data and consumer insight"
+                  alt={dictionary.imageAlt}
                   fill
-                  sizes="(max-width: 1024px) 100vw, 42vw"
+                  sizes="
+                    (max-width: 1023px) calc(100vw - 40px),
+                    (max-width: 1535px) 40vw,
+                    570px
+                  "
                   className="
                     object-cover
                     object-center
@@ -174,155 +205,187 @@ export default function Expertise() {
             </div>
           </div>
 
-          <div className="border-t border-[#302d29]/15">
-            {expertiseAreas.map((item, index) => (
-              <article
-                key={item.title}
-                className="
-                  group
-                  grid
-                  gap-5
-                  border-b
-                  border-[#302d29]/15
-                  py-8
-                  sm:grid-cols-[48px_minmax(0,1fr)_auto]
-                  sm:gap-7
-                  lg:py-10
-                "
-              >
-                <span
+          <div
+            className="
+              min-w-0
+              border-t
+              border-[#302d29]/15
+            "
+          >
+            {dictionary.areas.map(
+              (item, index) => (
+                <article
+                  key={item.title}
                   className="
-                    pt-1
-                    font-sans
-                    text-[10px]
-                    font-semibold
-                    tracking-[0.19em]
-                    text-[#978f85]
-                    transition-colors
-                    duration-300
-                    group-hover:text-[#8a672f]
+                    group
+                    grid
+                    gap-4
+                    border-b
+                    border-[#302d29]/15
+                    py-7
+                    sm:grid-cols-[48px_minmax(0,1fr)_44px]
+                    sm:gap-6
+                    sm:py-8
+                    lg:py-9
                   "
                 >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+                  <span
+                    aria-hidden="true"
+                    className={`
+                      pt-1
+                      font-sans
+                      font-semibold
+                      text-[#978f85]
+                      transition-colors
+                      duration-300
+                      group-hover:text-[#8a672f]
+                      ${
+                        isPersian
+                          ? "text-[11px] tracking-normal"
+                          : "text-[10px] tracking-[0.19em]"
+                      }
+                    `}
+                  >
+                    {formatItemNumber(
+                      index,
+                      locale,
+                      isPersian
+                    )}
+                  </span>
 
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h3
+                  <div className="min-w-0">
+                    <div
                       className="
-                        font-serif
-                        text-[clamp(1.75rem,2.7vw,2.6rem)]
-                        font-medium
-                        leading-[1.08]
-                        tracking-[-0.034em]
-                        text-[#24211e]
-                        transition-colors
-                        duration-300
-                        group-hover:text-[#2e5d91]
+                        flex
+                        flex-wrap
+                        items-center
+                        gap-3
                       "
                     >
-                      {item.title}
-                    </h3>
+                      <h3
+                        className={`
+                          text-[#24211e]
+                          transition-colors
+                          duration-300
+                          group-hover:text-[#2e5d91]
+                          ${
+                            isPersian
+                              ? "font-sans text-[clamp(1.45rem,2.25vw,1.9rem)] font-[650] leading-[1.65] tracking-normal"
+                              : "font-serif text-[clamp(1.75rem,2.7vw,2.6rem)] font-medium leading-[1.08] tracking-[-0.034em]"
+                          }
+                        `}
+                      >
+                        {item.title}
+                      </h3>
 
+                      <span
+                        className={`
+                          rounded-full
+                          border
+                          border-[#302d29]/15
+                          bg-[#ebe4da]/55
+                          px-3
+                          py-1.5
+                          font-sans
+                          font-semibold
+                          text-[#756e65]
+                          ${
+                            isPersian
+                              ? "text-[11px] leading-5 tracking-normal"
+                              : "text-[9px] uppercase tracking-[0.16em]"
+                          }
+                        `}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
+
+                    <p
+                      className={`
+                        mt-4
+                        max-w-[760px]
+                        font-sans
+                        text-[#625d56]
+                        sm:mt-5
+                        ${
+                          isPersian
+                            ? "text-[15.5px] leading-[2.05] sm:text-[16.5px]"
+                            : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
+                        }
+                      `}
+                    >
+                      {item.description}
+                    </p>
+                  </div>
+
+                  {!isPersian && (
                     <span
+                      aria-hidden="true"
                       className="
+                        hidden
+                        h-11
+                        w-11
+                        items-center
+                        justify-center
+                        self-start
                         rounded-full
                         border
                         border-[#302d29]/15
-                        bg-[#ebe4da]/55
-                        px-3
-                        py-1.5
                         font-sans
-                        text-[9px]
-                        font-semibold
-                        uppercase
-                        tracking-[0.16em]
-                        text-[#756e65]
+                        text-[15px]
+                        text-[#2e5d91]
+                        transition-all
+                        duration-300
+                        group-hover:border-[#2e5d91]
+                        group-hover:bg-[#2e5d91]
+                        group-hover:text-white
+                        sm:flex
                       "
                     >
-                      {item.label}
+                      ↗
                     </span>
-                  </div>
-
-                  <p
-                    className="
-                      mt-5
-                      max-w-[760px]
-                      font-sans
-                      text-[18px]
-                      leading-[2.05rem]
-                      text-[#625d56]
-                      lg:text-[19px]
-                      lg:leading-[2.15rem]
-                    "
-                  >
-                    {item.description}
-                  </p>
-                </div>
-
-                <span
-                  aria-hidden="true"
-                  className="
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    self-start
-                    rounded-full
-                    border
-                    border-[#302d29]/15
-                    font-sans
-                    text-[15px]
-                    text-[#2e5d91]
-                    transition-all
-                    duration-300
-                    group-hover:border-[#2e5d91]
-                    group-hover:bg-[#2e5d91]
-                    group-hover:text-white
-                  "
-                >
-                  ↗
-                </span>
-              </article>
-            ))}
+                  )}
+                </article>
+              )
+            )}
           </div>
         </div>
 
         <div
           className="
-            mt-12
+            mt-10
             grid
-            gap-8
+            gap-7
             border-t
             border-[#302d29]/15
-            pt-9
+            pt-8
             md:grid-cols-[minmax(0,1fr)_auto]
             md:items-center
+            lg:mt-12
+            lg:pt-9
           "
         >
           <p
-            className="
-              max-w-[800px]
+            className={`
+              max-w-[820px]
               font-sans
-              text-[18px]
-              leading-[2.05rem]
               text-[#625d56]
-              lg:text-[19px]
-              lg:leading-[2.15rem]
-            "
+              ${
+                isPersian
+                  ? "text-[16px] leading-[2.05] sm:text-[17px]"
+                  : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
+              }
+            `}
           >
-            Each discipline supports the others: research improves strategy,
-            strategy guides execution and measurement creates continuous
-            learning.
+            {dictionary.closing}
           </p>
 
           <a
-            href="#growth-system"
-            className="
+            href={dictionary.cta.href}
+            className={`
               group
               inline-flex
-              min-h-[58px]
+              min-h-[56px]
               items-center
               justify-center
               gap-3
@@ -331,11 +394,11 @@ export default function Expertise() {
               border
               border-[#183655]
               bg-[#183655]
-              px-9
+              px-8
               font-sans
-              text-[15px]
               font-semibold
               leading-none
+              text-white
               shadow-[0_14px_30px_rgba(24,54,85,0.18)]
               transition-all
               duration-300
@@ -347,26 +410,31 @@ export default function Expertise() {
               focus-visible:ring-4
               focus-visible:ring-[#2e5d91]/20
               md:justify-self-end
-              sm:text-[16px]
-            "
-            style={{ color: "#ffffff" }}
+              ${
+                isPersian
+                  ? "text-[14px] sm:text-[15px]"
+                  : "text-[15px] sm:text-[16px]"
+              }
+            `}
           >
-            <span style={{ color: "#ffffff" }}>
-              Explore the growth system
+            <span>
+              {dictionary.cta.label}
             </span>
 
             <span
               aria-hidden="true"
-              className="
+              className={`
                 text-[18px]
                 transition-transform
                 duration-300
-                group-hover:translate-x-0.5
-                group-hover:-translate-y-0.5
-              "
-              style={{ color: "#ffffff" }}
+                ${
+                  isPersian
+                    ? "group-hover:translate-y-0.5"
+                    : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                }
+              `}
             >
-              ↗
+              {isPersian ? "↓" : "↗"}
             </span>
           </a>
         </div>

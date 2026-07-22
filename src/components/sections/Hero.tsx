@@ -1,381 +1,408 @@
 import Image from "next/image";
 
-const focusAreas = [
-  "SEO & Organic Growth",
-  "Consumer Psychology",
-  "Data & Analytics",
-  "AI & Automation",
-];
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/get-dictionary";
 
-const brandPrinciples = [
-  "Data-driven",
-  "Human-centred",
-  "Evidence-based",
-  "Sustainable growth",
-];
+type HeroProps = {
+  locale: Locale;
+  dictionary: Dictionary["hero"];
+};
 
-export default function Hero() {
+export default function Hero({
+  locale,
+  dictionary,
+}: HeroProps) {
+  const isPersian = locale === "fa";
+
+  const internalArrow = isPersian
+    ? "↓"
+    : "↗";
+
   return (
     <section
-      id="top"
+      id="hero"
       aria-labelledby="hero-heading"
       className="
-        relative
-        scroll-mt-[84px]
-        overflow-hidden
         border-b
-        border-[#302d29]/15
-        bg-[#f7f3ed]
+        border-[#302d29]/12
+        bg-[#f4efe8]
         text-[#211f1c]
       "
     >
       <div
-        aria-hidden="true"
         className="
-          pointer-events-none
-          absolute
-          -left-36
-          top-24
-          h-[420px]
-          w-[420px]
-          rounded-full
-          bg-[#b48a52]/10
-          blur-[130px]
-        "
-      />
-
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none
-          absolute
-          -right-32
-          top-12
-          h-[460px]
-          w-[460px]
-          rounded-full
-          bg-[#2e5d91]/10
-          blur-[140px]
-        "
-      />
-
-      <div
-        className="
-          relative
           mx-auto
           max-w-[1480px]
           px-5
-          pb-14
-          pt-14
+          py-10
           sm:px-8
-          sm:pb-16
-          sm:pt-16
+          sm:py-12
           lg:px-12
-          lg:pb-20
-          lg:pt-20
+          lg:py-14
           xl:px-16
         "
       >
         <div
           className="
             grid
-            gap-12
-            lg:grid-cols-[minmax(0,0.92fr)_minmax(500px,1.08fr)]
-            lg:items-start
+            gap-10
+            lg:grid-cols-[minmax(360px,1.04fr)_minmax(0,0.96fr)]
+            lg:items-center
             lg:gap-14
-            xl:gap-20
           "
         >
-          <div className="relative z-10 flex min-w-0 flex-col">
+          <div
+            className={
+              isPersian
+                ? "min-w-0 lg:order-2"
+                : "min-w-0 lg:order-1"
+            }
+          >
             <p
-              className="
-                mb-7
+              className={`
+                mb-5
                 font-sans
-                text-[11px]
                 font-semibold
-                uppercase
-                tracking-[0.3em]
                 text-[#8a672f]
-              "
+                ${
+                  isPersian
+                    ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                    : "text-[10px] uppercase tracking-[0.28em] sm:text-[11px]"
+                }
+              `}
             >
-              Digital Growth Strategist
+              {dictionary.eyebrow}
             </p>
 
             <h1
               id="hero-heading"
-              className="
-                max-w-[650px]
-                font-serif
-                text-[clamp(3.15rem,5.45vw,5.35rem)]
-                font-medium
-                leading-[1.02]
-                tracking-[-0.048em]
-                text-[#211f1c]
-              "
+              className={`
+                text-[#171512]
+                ${
+                  isPersian
+                    ? "max-w-[690px] font-sans text-[clamp(2.2rem,3.7vw,3.7rem)] font-[650] leading-[1.32] tracking-normal"
+                    : "max-w-[700px] font-serif text-[clamp(3.4rem,7vw,6.2rem)] font-medium leading-[0.94] tracking-[-0.045em]"
+                }
+              `}
             >
-              <span className="block">Strategic,</span>
-
-              <span className="block italic text-[#2e5d91]">
-                measurable
+              <span className="block">
+                {dictionary.title.first}
               </span>
 
-              <span className="block">digital growth.</span>
+              <span
+                className={`
+                  block
+                  text-[#2e5d91]
+                  ${
+                    isPersian
+                      ? "mt-1"
+                      : ""
+                  }
+                `}
+              >
+                {dictionary.title.highlighted}
+              </span>
+
+              <span
+                className={`
+                  block
+                  ${
+                    isPersian
+                      ? "mt-1"
+                      : ""
+                  }
+                `}
+              >
+                {dictionary.title.last}
+              </span>
             </h1>
 
             <p
-              className="
-                mt-12
-                max-w-[640px]
+              className={`
+                mt-7
+                max-w-[660px]
                 font-sans
-                text-[18px]
-                leading-[2.05rem]
-                text-[#514c46]
-                sm:mt-14
-                sm:text-[19px]
-                sm:leading-[2.15rem]
-                lg:text-[20px]
-                lg:leading-[2.3rem]
-              "
+                text-[#5d5852]
+                ${
+                  isPersian
+                    ? "text-[16px] leading-[2.05] sm:text-[17px] lg:text-[17.5px]"
+                    : "text-[17px] leading-[2.05rem] lg:text-[18px] lg:leading-[2.15rem]"
+                }
+              `}
             >
-              I help businesses make clearer growth decisions by connecting
-              SEO, digital strategy, consumer psychology, data and practical AI
-              automation.
+              {dictionary.description}
             </p>
 
             <div
               className="
-                mt-9
+                mt-7
                 grid
+                max-w-[660px]
+                grid-cols-1
                 border-y
-                border-[#302d29]/20
+                border-[#302d29]/12
                 sm:grid-cols-2
               "
             >
-              {focusAreas.map((area, index) => (
-                <div
-                  key={area}
-                  className={`
-                    flex
-                    min-h-[64px]
-                    items-center
-                    gap-3
-                    border-[#302d29]/15
-                    py-4
-                    font-sans
-                    text-[14px]
-                    font-medium
-                    leading-6
-                    text-[#423e39]
-                    ${index < 2 ? "border-b" : ""}
-                    ${
-                      index % 2 === 0
-                        ? "sm:border-r sm:pr-6"
-                        : "sm:pl-6"
-                    }
-                  `}
-                >
-                  <span
-                    aria-hidden="true"
-                    className="
-                      h-1.5
-                      w-1.5
-                      shrink-0
-                      rounded-full
-                      bg-[#b48a52]
-                    "
-                  />
+              {dictionary.focusAreas.map(
+                (item, index) => {
+                  const isLastItem =
+                    index ===
+                    dictionary.focusAreas.length - 1;
 
-                  {area}
-                </div>
-              ))}
+                  const isTopRow =
+                    index < 2;
+
+                  const isSecondColumn =
+                    index % 2 === 1;
+
+                  return (
+                    <div
+                      key={item}
+                      className={`
+                        flex
+                        min-h-[54px]
+                        items-center
+                        gap-3
+                        border-[#302d29]/12
+                        px-4
+                        py-3.5
+                        ${
+                          !isLastItem
+                            ? "border-b"
+                            : ""
+                        }
+                        ${
+                          isTopRow
+                            ? "sm:border-b"
+                            : "sm:border-b-0"
+                        }
+                        ${
+                          isSecondColumn
+                            ? "sm:border-s"
+                            : ""
+                        }
+                      `}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="
+                          h-1.5
+                          w-1.5
+                          shrink-0
+                          rounded-full
+                          bg-[#b4853b]
+                        "
+                      />
+
+                      <span
+                        className={`
+                          font-sans
+                          font-medium
+                          text-[#2d2a26]
+                          ${
+                            isPersian
+                              ? "text-[14px] leading-7 sm:text-[15px]"
+                              : "text-[14px] leading-7 sm:text-[15px]"
+                          }
+                        `}
+                      >
+                        {item}
+                      </span>
+                    </div>
+                  );
+                }
+              )}
             </div>
 
             <div
               className="
-                mt-9
+                mt-7
                 flex
-                flex-col
-                gap-4
-                sm:flex-row
-                sm:flex-wrap
-                sm:items-center
+                flex-wrap
+                items-center
+                gap-3
               "
             >
               <a
-                href="#case-studies"
-                className="
+                href={dictionary.primaryCta.href}
+                className={`
                   group
                   inline-flex
-                  min-h-[58px]
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  bg-[#183655]
-                  px-9
-                  font-sans
-                  text-[15px]
-                  font-semibold
-                  leading-none
-                  !text-white
-                  shadow-[0_12px_28px_rgba(24,54,85,0.16)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:bg-[#2e5d91]
-                  hover:!text-white
-                  hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
-                  focus-visible:outline-none
-                  focus-visible:ring-4
-                  focus-visible:ring-[#2e5d91]/20
-                  sm:text-[16px]
-                "
-              >
-                <span className="!text-white">
-                  Explore selected work
-                </span>
-
-                <span
-                  aria-hidden="true"
-                  className="
-                    text-[18px]
-                    !text-white
-                    transition-transform
-                    duration-300
-                    group-hover:translate-x-0.5
-                    group-hover:-translate-y-0.5
-                  "
-                >
-                  ↗
-                </span>
-              </a>
-
-              <a
-                href="#research"
-                className="
-                  group
-                  inline-flex
-                  min-h-[58px]
+                  min-h-[54px]
                   items-center
                   justify-center
                   gap-3
                   rounded-full
                   border
-                  border-[#35312c]
-                  bg-[#35312c]
-                  px-9
+                  border-[#183655]
+                  bg-[#183655]
+                  px-7
                   font-sans
-                  text-[15px]
                   font-semibold
                   leading-none
-                  !text-white
-                  shadow-[0_12px_28px_rgba(53,49,44,0.12)]
+                  text-white
+                  shadow-[0_14px_30px_rgba(24,54,85,0.18)]
                   transition-all
                   duration-300
                   hover:-translate-y-0.5
                   hover:border-[#2e5d91]
                   hover:bg-[#2e5d91]
-                  hover:!text-white
-                  hover:shadow-[0_18px_38px_rgba(46,93,145,0.2)]
+                  hover:shadow-[0_18px_36px_rgba(46,93,145,0.22)]
                   focus-visible:outline-none
                   focus-visible:ring-4
                   focus-visible:ring-[#2e5d91]/20
-                  sm:text-[16px]
-                "
+                  sm:px-8
+                  ${
+                    isPersian
+                      ? "text-[14px] sm:text-[15px]"
+                      : "text-[14px] sm:text-[15px]"
+                  }
+                `}
               >
-                <span className="!text-white">
-                  Visit the Research Lab
+                <span>
+                  {dictionary.primaryCta.label}
                 </span>
 
                 <span
                   aria-hidden="true"
-                  className="
-                    text-[18px]
-                    !text-white
+                  className={`
+                    text-[17px]
                     transition-transform
                     duration-300
-                    group-hover:translate-x-0.5
-                    group-hover:-translate-y-0.5
-                  "
+                    ${
+                      isPersian
+                        ? "group-hover:translate-y-0.5"
+                        : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    }
+                  `}
                 >
-                  ↗
+                  {internalArrow}
+                </span>
+              </a>
+
+              <a
+                href={dictionary.secondaryCta.href}
+                className={`
+                  group
+                  inline-flex
+                  min-h-[54px]
+                  items-center
+                  justify-center
+                  gap-3
+                  rounded-full
+                  border
+                  border-[#302d29]/18
+                  bg-[#fbf8f4]
+                  px-7
+                  font-sans
+                  font-semibold
+                  leading-none
+                  text-[#211f1c]
+                  transition-all
+                  duration-300
+                  hover:-translate-y-0.5
+                  hover:border-[#2e5d91]/30
+                  hover:text-[#2e5d91]
+                  focus-visible:outline-none
+                  focus-visible:ring-4
+                  focus-visible:ring-[#2e5d91]/10
+                  sm:px-8
+                  ${
+                    isPersian
+                      ? "text-[14px] sm:text-[15px]"
+                      : "text-[14px] sm:text-[15px]"
+                  }
+                `}
+              >
+                <span>
+                  {dictionary.secondaryCta.label}
+                </span>
+
+                <span
+                  aria-hidden="true"
+                  className={`
+                    text-[17px]
+                    transition-transform
+                    duration-300
+                    ${
+                      isPersian
+                        ? "group-hover:translate-y-0.5"
+                        : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    }
+                  `}
+                >
+                  {internalArrow}
                 </span>
               </a>
             </div>
 
             <div
               className="
-                mt-8
-                border-l
-                border-[#b48a52]
-                pl-5
+                mt-7
+                max-w-[680px]
+                border-s-2
+                border-[#b4853b]
+                ps-4
               "
             >
               <p
-                className="
-                  max-w-[640px]
+                className={`
                   font-sans
-                  text-[14px]
-                  leading-7
-                  text-[#6c655d]
-                "
+                  text-[#706961]
+                  ${
+                    isPersian
+                      ? "text-[14px] leading-8 sm:text-[15px] sm:leading-8"
+                      : "text-[14px] leading-7 sm:text-[15px] sm:leading-8"
+                  }
+                `}
               >
-                Evidence before assumption. Strategy before execution.
-                Sustainable growth before short-term noise.
+                {dictionary.principle}
               </p>
             </div>
           </div>
 
-          <div className="relative min-w-0">
+          <div
+            className={
+              isPersian
+                ? "min-w-0 lg:order-1"
+                : "min-w-0 lg:order-2"
+            }
+          >
             <div
               className="
-                relative
                 overflow-hidden
                 rounded-[30px]
                 border
                 border-[#302d29]/10
-                bg-[#e5ddd1]
-                shadow-[0_28px_70px_rgba(61,51,41,0.14)]
-                sm:rounded-[36px]
+                bg-[#ddd4c8]
+                shadow-[0_26px_65px_rgba(61,51,41,0.12)]
               "
             >
               <div
-                className="
+                className={`
                   relative
-                  aspect-[1.12/1]
-                  min-h-[420px]
                   w-full
-                  sm:min-h-[500px]
-                  lg:min-h-[560px]
-                  xl:min-h-[590px]
-                "
+                  ${
+                    isPersian
+                      ? "aspect-[4/4.05]"
+                      : "aspect-[4/4.2]"
+                  }
+                `}
               >
                 <Image
                   src="/images/hero/hero.png"
-                  alt="Setareh Salehabadi presenting a strategic digital growth framework"
+                  alt={dictionary.imageAlt}
                   fill
                   priority
-                  sizes="(max-width: 1024px) 100vw, 54vw"
+                  sizes="
+                    (max-width: 1023px) calc(100vw - 40px),
+                    (max-width: 1535px) 46vw,
+                    680px
+                  "
                   className="
                     object-cover
                     object-center
-                    transition-transform
-                    duration-[1400ms]
-                    ease-out
-                    hover:scale-[1.015]
-                  "
-                />
-
-                <div
-                  aria-hidden="true"
-                  className="
-                    pointer-events-none
-                    absolute
-                    inset-0
-                    bg-gradient-to-t
-                    from-[#15120e]/14
-                    via-transparent
-                    to-white/5
                   "
                 />
               </div>
@@ -383,97 +410,45 @@ export default function Hero() {
 
             <div
               className="
-                mt-5
-                grid
-                grid-cols-2
+                mt-3
+                flex
+                items-center
+                justify-between
                 gap-4
                 px-1
-                font-sans
-                text-[10px]
-                font-semibold
-                uppercase
-                tracking-[0.22em]
-                text-[#71685f]
               "
             >
-              <span>Observe · Decide · Execute</span>
+              <span
+                className={`
+                  font-sans
+                  font-medium
+                  text-[#7f776e]
+                  ${
+                    isPersian
+                      ? "text-[11px] leading-6 tracking-normal"
+                      : "text-[10px]"
+                  }
+                `}
+              >
+                {dictionary.imageCaptionLeft}
+              </span>
 
-              <span className="text-right">
-                Strategy before tactics
+              <span
+                className={`
+                  font-sans
+                  font-medium
+                  text-[#7f776e]
+                  ${
+                    isPersian
+                      ? "text-[11px] leading-6 tracking-normal"
+                      : "text-[10px]"
+                  }
+                `}
+              >
+                {dictionary.imageCaptionRight}
               </span>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div
-        className="
-          relative
-          border-t
-          border-[#302d29]/15
-          bg-[#f4efe8]
-        "
-      >
-        <div
-          className="
-            mx-auto
-            grid
-            max-w-[1480px]
-            grid-cols-2
-            px-5
-            sm:px-8
-            lg:grid-cols-4
-            lg:px-12
-            xl:px-16
-          "
-        >
-          {brandPrinciples.map((principle, index) => (
-            <div
-              key={principle}
-              className={`
-                flex
-                min-h-[76px]
-                items-center
-                gap-4
-                py-5
-                ${index % 2 === 0 ? "pr-4" : "pl-4"}
-                ${
-                  index < 2
-                    ? "border-b border-[#302d29]/10 lg:border-b-0"
-                    : ""
-                }
-                ${
-                  index > 0
-                    ? "lg:border-l lg:border-[#302d29]/10 lg:pl-7"
-                    : ""
-                }
-              `}
-            >
-              <span
-                aria-hidden="true"
-                className="
-                  h-px
-                  w-5
-                  shrink-0
-                  bg-[#b48a52]
-                "
-              />
-
-              <span
-                className="
-                  font-sans
-                  text-[10px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.21em]
-                  text-[#665f57]
-                  sm:text-[11px]
-                "
-              >
-                {principle}
-              </span>
-            </div>
-          ))}
         </div>
       </div>
     </section>

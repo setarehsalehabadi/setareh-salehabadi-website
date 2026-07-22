@@ -1,66 +1,74 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
+import {
+  locales,
+  type Locale,
+} from "@/i18n/config";
+
+const siteUrl =
+  "https://setarehsalehabadi.com";
+
+const localizedRoutes = [
+  "",
+  "/about",
+  "/case-studies",
+  "/research",
+  "/courses",
+  "/privacy",
+  "/terms",
+] as const;
+
+type LocalizedRoute =
+  (typeof localizedRoutes)[number];
+
+function createLocalizedUrl(
+  locale: Locale,
+  route: LocalizedRoute
+) {
+  return `${siteUrl}/${locale}${route}`;
+}
+
+function createLanguageAlternates(
+  route: LocalizedRoute
+) {
+  return {
+    en: createLocalizedUrl(
+      "en",
+      route
+    ),
+
+    de: createLocalizedUrl(
+      "de",
+      route
+    ),
+
+    fa: createLocalizedUrl(
+      "fa",
+      route
+    ),
+
+    "x-default": createLocalizedUrl(
+      "en",
+      route
+    ),
+  };
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  return localizedRoutes.flatMap(
+    (route) =>
+      locales.map((locale) => ({
+        url: createLocalizedUrl(
+          locale,
+          route
+        ),
 
-
-  return [
-
-    {
-
-      url:
-        "https://setarehsalehabadi.com",
-
-      lastModified:
-        new Date(),
-
-    },
-
-
-    {
-
-      url:
-        "https://setarehsalehabadi.com/about",
-
-      lastModified:
-        new Date(),
-
-    },
-
-
-    {
-
-      url:
-        "https://setarehsalehabadi.com/case-studies",
-
-      lastModified:
-        new Date(),
-
-    },
-
-
-    {
-
-      url:
-        "https://setarehsalehabadi.com/research",
-
-      lastModified:
-        new Date(),
-
-    },
-
-
-    {
-
-      url:
-        "https://setarehsalehabadi.com/courses",
-
-      lastModified:
-        new Date(),
-
-    },
-
-
-  ];
-
+        alternates: {
+          languages:
+            createLanguageAlternates(
+              route
+            ),
+        },
+      }))
+  );
 }

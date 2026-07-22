@@ -1,47 +1,41 @@
 import Image from "next/image";
 
-const growthSteps = [
-  {
-    number: "01",
-    title: "Diagnose",
-    subtitle: "Understand the real growth problem",
-    description:
-      "Review the business context, audience, search demand, customer journey and existing performance before choosing a direction.",
-    details: ["Business context", "Audience insight", "Performance review"],
-  },
-  {
-    number: "02",
-    title: "Prioritize",
-    subtitle: "Decide what deserves attention",
-    description:
-      "Identify the opportunities with the strongest strategic value instead of distributing resources across disconnected activities.",
-    details: ["Growth opportunities", "Strategic priorities", "Resource focus"],
-  },
-  {
-    number: "03",
-    title: "Build",
-    subtitle: "Create a connected growth system",
-    description:
-      "Translate the strategy into practical SEO, content, analytics, customer experience and automation workflows.",
-    details: ["SEO systems", "Content structure", "AI workflows"],
-  },
-  {
-    number: "04",
-    title: "Learn",
-    subtitle: "Measure, interpret and improve",
-    description:
-      "Use evidence from performance data and customer behavior to refine decisions and improve the system over time.",
-    details: ["Measurement", "Interpretation", "Continuous learning"],
-  },
-];
+import {
+  defaultLocale,
+  type Locale,
+} from "@/i18n/config";
+import en from "@/i18n/dictionaries/en";
+import type { Dictionary } from "@/i18n/get-dictionary";
 
-export default function GrowthSystem() {
+type GrowthSystemProps = {
+  locale?: Locale;
+  dictionary?: Dictionary["growthSystem"];
+};
+
+function containsPersian(text: string) {
+  return /[\u0600-\u06ff]/.test(text);
+}
+
+export default function GrowthSystem({
+  locale = defaultLocale,
+  dictionary = en.growthSystem,
+}: GrowthSystemProps) {
+  const isPersian =
+    locale === "fa" ||
+    containsPersian(
+      [
+        dictionary.eyebrow,
+        dictionary.title.first,
+        dictionary.title.highlighted,
+        dictionary.introduction,
+      ].join(" ")
+    );
+
   return (
     <section
       id="growth-system"
       aria-labelledby="growth-system-heading"
       className="
-        scroll-mt-[84px]
         overflow-hidden
         border-b
         border-[#302d29]/15
@@ -65,71 +59,85 @@ export default function GrowthSystem() {
         <div
           className="
             grid
-            gap-10
+            gap-8
             border-b
             border-[#302d29]/15
-            pb-12
-            lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.72fr)]
+            pb-10
+            lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.72fr)]
             lg:items-end
             lg:gap-16
+            lg:pb-12
           "
         >
           <div>
             <p
-              className="
+              className={`
                 mb-5
                 font-sans
-                text-[11px]
                 font-semibold
-                uppercase
-                tracking-[0.3em]
                 text-[#8a672f]
-              "
+                ${
+                  isPersian
+                    ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                    : "text-[11px] uppercase tracking-[0.3em]"
+                }
+              `}
             >
-              Growth System
+              {dictionary.eyebrow}
             </p>
 
             <h2
               id="growth-system-heading"
-              className="
-                max-w-[790px]
-                font-serif
-                text-[clamp(2.5rem,4.5vw,4.2rem)]
-                font-medium
-                leading-[1.02]
-                tracking-[-0.043em]
+              className={`
+                max-w-[820px]
                 text-[#211f1c]
-              "
+                ${
+                  isPersian
+                    ? "font-sans text-[clamp(2.15rem,3.7vw,3.55rem)] font-[650] leading-[1.48] tracking-normal"
+                    : "font-serif text-[clamp(2.5rem,4.5vw,4.2rem)] font-medium leading-[1.02] tracking-[-0.043em]"
+                }
+              `}
             >
-              A clearer path from
-              <span className="block italic text-[#2e5d91]">
-                complexity to focused growth.
+              <span>
+                {dictionary.title.first}
+              </span>
+
+              <span
+                className={`
+                  block
+                  text-[#2e5d91]
+                  ${
+                    isPersian
+                      ? "mt-1"
+                      : "italic"
+                  }
+                `}
+              >
+                {dictionary.title.highlighted}
               </span>
             </h2>
           </div>
 
           <p
-            className="
+            className={`
               max-w-[620px]
               font-sans
-              text-[18px]
-              leading-[2.05rem]
               text-[#5f5a53]
               lg:justify-self-end
-              lg:text-[19px]
-              lg:leading-[2.15rem]
-            "
+              ${
+                isPersian
+                  ? "text-[16px] leading-[2.05] sm:text-[17px]"
+                  : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
+              }
+            `}
           >
-            A practical framework for turning research, strategic priorities
-            and execution into a connected system that can be measured,
-            improved and sustained.
+            {dictionary.introduction}
           </p>
         </div>
 
-        <div className="mt-12">
+        <div className="mt-10 lg:mt-12">
           <div
             className="
-              relative
               overflow-hidden
               rounded-[28px]
               border
@@ -142,18 +150,25 @@ export default function GrowthSystem() {
             <div
               className="
                 relative
-                aspect-[16/8.2]
-                min-h-[420px]
+                aspect-[16/10]
+                min-h-[310px]
                 w-full
-                sm:min-h-[500px]
-                lg:min-h-[590px]
+                sm:aspect-[16/8.8]
+                sm:min-h-[470px]
+                lg:aspect-[16/8.2]
+                lg:min-h-[550px]
               "
             >
               <Image
                 src="/images/growth-system/growth-system.png"
-                alt="Editorial visualization of a structured digital growth system"
+                alt={dictionary.imageAlt}
                 fill
-                sizes="100vw"
+                sizes="
+                  (max-width: 767px) calc(100vw - 40px),
+                  (max-width: 1023px) calc(100vw - 64px),
+                  (max-width: 1535px) calc(100vw - 96px),
+                  1352px
+                "
                 className="
                   object-cover
                   object-center
@@ -171,311 +186,349 @@ export default function GrowthSystem() {
                   absolute
                   inset-0
                   bg-gradient-to-t
-                  from-[#171410]/22
+                  from-[#171410]/10
                   via-transparent
                   to-white/5
                 "
               />
             </div>
+          </div>
+
+          <div
+            className="
+              mt-5
+              grid
+              gap-6
+              rounded-[22px]
+              border
+              border-[#302d29]/12
+              bg-[#f7f3ed]
+              p-6
+              shadow-[0_18px_44px_rgba(35,29,23,0.08)]
+              sm:mt-6
+              sm:rounded-[26px]
+              sm:p-8
+              lg:grid-cols-[minmax(0,1fr)_auto]
+              lg:items-end
+              lg:gap-10
+              lg:p-9
+            "
+          >
+            <div className="min-w-0">
+              <p
+                className={`
+                  font-sans
+                  font-semibold
+                  text-[#8a672f]
+                  ${
+                    isPersian
+                      ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                      : "text-[10px] uppercase tracking-[0.27em]"
+                  }
+                `}
+              >
+                {dictionary.strategicPrinciple}
+              </p>
+
+              <p
+                className={`
+                  mt-3
+                  max-w-[900px]
+                  text-[#24211e]
+                  ${
+                    isPersian
+                      ? "font-sans text-[clamp(1.35rem,2.3vw,1.9rem)] font-[650] leading-[1.75] tracking-normal"
+                      : "font-serif text-[clamp(1.55rem,2.7vw,2.4rem)] font-medium leading-[1.18] tracking-[-0.03em]"
+                  }
+                `}
+              >
+                {dictionary.strategicStatement}
+              </p>
+            </div>
 
             <div
-              className="
-                absolute
-                bottom-5
-                left-5
-                right-5
-                grid
-                gap-5
-                rounded-[22px]
-                border
-                border-white/25
-                bg-[#f7f3ed]/92
-                p-6
-                shadow-[0_20px_50px_rgba(35,29,23,0.16)]
-                backdrop-blur-md
-                sm:bottom-7
-                sm:left-7
-                sm:right-7
-                sm:p-7
-                lg:grid-cols-[minmax(0,1fr)_auto]
-                lg:items-end
-              "
+              className={`
+                flex
+                flex-wrap
+                gap-2
+                lg:max-w-[330px]
+                ${
+                  isPersian
+                    ? "lg:justify-start"
+                    : "lg:justify-end"
+                }
+              `}
             >
-              <div>
-                <p
-                  className="
-                    font-sans
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.27em]
-                    text-[#8a672f]
-                  "
-                >
-                  Strategic principle
-                </p>
-
-                <p
-                  className="
-                    mt-3
-                    max-w-[820px]
-                    font-serif
-                    text-[clamp(1.55rem,2.7vw,2.4rem)]
-                    font-medium
-                    leading-[1.15]
-                    tracking-[-0.03em]
-                    text-[#24211e]
-                  "
-                >
-                  Growth improves when diagnosis, strategy, execution and
-                  learning operate as one connected system.
-                </p>
-              </div>
-
-              <div
-                className="
-                  flex
-                  flex-wrap
-                  gap-2
-                  lg:max-w-[290px]
-                  lg:justify-end
-                "
-              >
-                {["Research", "Strategy", "Execution", "Learning"].map(
-                  (label) => (
-                    <span
-                      key={label}
-                      className="
-                        rounded-full
-                        border
-                        border-[#302d29]/15
-                        bg-white/45
-                        px-3
-                        py-2
-                        font-sans
-                        text-[11px]
-                        font-semibold
-                        text-[#625d56]
-                      "
-                    >
-                      {label}
-                    </span>
-                  )
-                )}
-              </div>
+              {dictionary.systemLabels.map(
+                (label) => (
+                  <span
+                    key={label}
+                    className={`
+                      rounded-full
+                      border
+                      border-[#302d29]/15
+                      bg-[#ebe4da]/45
+                      px-3.5
+                      py-2
+                      font-sans
+                      font-semibold
+                      text-[#625d56]
+                      ${
+                        isPersian
+                          ? "text-[11px] leading-5 tracking-normal sm:text-[12px]"
+                          : "text-[11px]"
+                      }
+                    `}
+                  >
+                    {label}
+                  </span>
+                )
+              )}
             </div>
           </div>
         </div>
 
         <div
           className="
-            mt-14
+            mt-12
             grid
+            border-s
             border-t
-            border-l
             border-[#302d29]/15
             md:grid-cols-2
+            xl:mt-14
             xl:grid-cols-4
           "
         >
-          {growthSteps.map((step) => (
-            <article
-              key={step.number}
-              className="
-                group
-                relative
-                flex
-                min-h-[400px]
-                flex-col
-                border-b
-                border-r
-                border-[#302d29]/15
-                bg-[#f7f3ed]/42
-                p-7
-                transition-all
-                duration-500
-                hover:bg-[#f7f3ed]
-                sm:p-8
-                lg:min-h-[430px]
-              "
-            >
-              <div
-                aria-hidden="true"
+          {dictionary.steps.map(
+            (step) => (
+              <article
+                key={step.number}
                 className="
-                  absolute
-                  inset-x-0
-                  top-0
-                  h-[3px]
-                  origin-left
-                  scale-x-0
-                  bg-[#2e5d91]
-                  transition-transform
-                  duration-500
-                  group-hover:scale-x-100
-                "
-              />
-
-              <div className="flex items-center justify-between gap-5">
-                <span
-                  className="
-                    font-sans
-                    text-[11px]
-                    font-semibold
-                    tracking-[0.2em]
-                    text-[#9a8170]
-                  "
-                >
-                  {step.number}
-                </span>
-
-                <span
-                  aria-hidden="true"
-                  className="
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-[#302d29]/15
-                    font-sans
-                    text-[15px]
-                    text-[#2e5d91]
-                    transition-all
-                    duration-300
-                    group-hover:border-[#2e5d91]
-                    group-hover:bg-[#2e5d91]
-                    group-hover:text-white
-                  "
-                >
-                  ↗
-                </span>
-              </div>
-
-              <div className="mt-12">
-                <h3
-                  className="
-                    font-serif
-                    text-[clamp(2rem,3vw,2.8rem)]
-                    font-medium
-                    leading-none
-                    tracking-[-0.04em]
-                    text-[#24211e]
-                    transition-colors
-                    duration-300
-                    group-hover:text-[#2e5d91]
-                  "
-                >
-                  {step.title}
-                </h3>
-
-                <p
-                  className="
-                    mt-4
-                    font-sans
-                    text-[11px]
-                    font-semibold
-                    uppercase
-                    leading-5
-                    tracking-[0.16em]
-                    text-[#8a672f]
-                  "
-                >
-                  {step.subtitle}
-                </p>
-
-                <p
-                  className="
-                    mt-6
-                    font-sans
-                    text-[17px]
-                    leading-8
-                    text-[#625d56]
-                    sm:text-[18px]
-                    sm:leading-[2rem]
-                  "
-                >
-                  {step.description}
-                </p>
-              </div>
-
-              <div
-                className="
-                  mt-auto
-                  border-t
+                  group
+                  relative
+                  flex
+                  min-h-[360px]
+                  flex-col
+                  border-b
+                  border-e
                   border-[#302d29]/15
-                  pt-6
+                  bg-[#f7f3ed]/42
+                  p-6
+                  transition-colors
+                  duration-500
+                  hover:bg-[#f7f3ed]
+                  sm:p-7
+                  md:min-h-[390px]
+                  xl:min-h-[420px]
+                  xl:p-8
                 "
               >
-                <ul className="space-y-3">
-                  {step.details.map((detail) => (
-                    <li
-                      key={detail}
+                <div
+                  aria-hidden="true"
+                  className={`
+                    absolute
+                    inset-x-0
+                    top-0
+                    h-[3px]
+                    scale-x-0
+                    bg-[#2e5d91]
+                    transition-transform
+                    duration-500
+                    group-hover:scale-x-100
+                    ${
+                      isPersian
+                        ? "origin-right"
+                        : "origin-left"
+                    }
+                  `}
+                />
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    gap-5
+                  "
+                >
+                  <span
+                    className={`
+                      font-sans
+                      font-semibold
+                      text-[#9a8170]
+                      ${
+                        isPersian
+                          ? "text-[11px] tracking-normal"
+                          : "text-[11px] tracking-[0.2em]"
+                      }
+                    `}
+                  >
+                    {step.number}
+                  </span>
+
+                  {!isPersian && (
+                    <span
+                      aria-hidden="true"
                       className="
                         flex
+                        h-10
+                        w-10
                         items-center
-                        gap-3
+                        justify-center
+                        rounded-full
+                        border
+                        border-[#302d29]/15
                         font-sans
-                        text-[13px]
-                        font-medium
-                        text-[#625d56]
+                        text-[15px]
+                        text-[#2e5d91]
+                        transition-all
+                        duration-300
+                        group-hover:border-[#2e5d91]
+                        group-hover:bg-[#2e5d91]
+                        group-hover:text-white
                       "
                     >
-                      <span
-                        aria-hidden="true"
-                        className="
-                          h-1.5
-                          w-1.5
-                          shrink-0
-                          rounded-full
-                          bg-[#b48a52]
-                        "
-                      />
+                      ↗
+                    </span>
+                  )}
+                </div>
 
-                      {detail}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))}
+                <div className="mt-9 xl:mt-11">
+                  <h3
+                    className={`
+                      text-[#24211e]
+                      transition-colors
+                      duration-300
+                      group-hover:text-[#2e5d91]
+                      ${
+                        isPersian
+                          ? "font-sans text-[clamp(1.5rem,2.15vw,1.95rem)] font-[650] leading-[1.6] tracking-normal"
+                          : "font-serif text-[clamp(2rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.04em]"
+                      }
+                    `}
+                  >
+                    {step.title}
+                  </h3>
+
+                  <p
+                    className={`
+                      mt-3
+                      font-sans
+                      font-semibold
+                      text-[#8a672f]
+                      ${
+                        isPersian
+                          ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
+                          : "text-[11px] uppercase leading-5 tracking-[0.16em]"
+                      }
+                    `}
+                  >
+                    {step.subtitle}
+                  </p>
+
+                  <p
+                    className={`
+                      mt-5
+                      font-sans
+                      text-[#625d56]
+                      ${
+                        isPersian
+                          ? "text-[15.5px] leading-[2.05] sm:text-[16px]"
+                          : "text-[17px] leading-8 sm:text-[18px] sm:leading-[2rem]"
+                      }
+                    `}
+                  >
+                    {step.description}
+                  </p>
+                </div>
+
+                <div
+                  className="
+                    mt-auto
+                    border-t
+                    border-[#302d29]/15
+                    pt-6
+                  "
+                >
+                  <ul className="space-y-3">
+                    {step.details.map(
+                      (detail) => (
+                        <li
+                          key={detail}
+                          className={`
+                            flex
+                            items-center
+                            gap-3
+                            font-sans
+                            font-medium
+                            text-[#625d56]
+                            ${
+                              isPersian
+                                ? "text-[12px] leading-6 sm:text-[13px]"
+                                : "text-[13px]"
+                            }
+                          `}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="
+                              h-1.5
+                              w-1.5
+                              shrink-0
+                              rounded-full
+                              bg-[#b48a52]
+                            "
+                          />
+
+                          <span>
+                            {detail}
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              </article>
+            )
+          )}
         </div>
 
         <div
           className="
-            mt-12
+            mt-10
             grid
-            gap-8
+            gap-7
             border-t
             border-[#302d29]/15
-            pt-9
+            pt-8
             md:grid-cols-[minmax(0,1fr)_auto]
             md:items-center
+            lg:mt-12
+            lg:pt-9
           "
         >
           <p
-            className="
+            className={`
               max-w-[820px]
               font-sans
-              text-[18px]
-              leading-[2.05rem]
               text-[#625d56]
-              lg:text-[19px]
-              lg:leading-[2.15rem]
-            "
+              ${
+                isPersian
+                  ? "text-[16px] leading-[2.05] sm:text-[17px]"
+                  : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
+              }
+            `}
           >
-            The system is intentionally flexible. The priorities and
-            execution methods change according to the business, audience and
-            available evidence.
+            {dictionary.closing}
           </p>
 
           <a
-            href="#case-studies"
-            className="
+            href={dictionary.cta.href}
+            className={`
               group
               inline-flex
-              min-h-[58px]
+              min-h-[56px]
               items-center
               justify-center
               gap-3
@@ -484,11 +537,11 @@ export default function GrowthSystem() {
               border
               border-[#183655]
               bg-[#183655]
-              px-9
+              px-8
               font-sans
-              text-[15px]
               font-semibold
               leading-none
+              text-white
               shadow-[0_14px_30px_rgba(24,54,85,0.18)]
               transition-all
               duration-300
@@ -500,26 +553,31 @@ export default function GrowthSystem() {
               focus-visible:ring-4
               focus-visible:ring-[#2e5d91]/20
               md:justify-self-end
-              sm:text-[16px]
-            "
-            style={{ color: "#ffffff" }}
+              ${
+                isPersian
+                  ? "text-[14px] sm:text-[15px]"
+                  : "text-[15px] sm:text-[16px]"
+              }
+            `}
           >
-            <span style={{ color: "#ffffff" }}>
-              View selected projects
+            <span>
+              {dictionary.cta.label}
             </span>
 
             <span
               aria-hidden="true"
-              className="
+              className={`
                 text-[18px]
                 transition-transform
                 duration-300
-                group-hover:translate-x-0.5
-                group-hover:-translate-y-0.5
-              "
-              style={{ color: "#ffffff" }}
+                ${
+                  isPersian
+                    ? "group-hover:translate-y-0.5"
+                    : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                }
+              `}
             >
-              ↗
+              {isPersian ? "↓" : "↗"}
             </span>
           </a>
         </div>
