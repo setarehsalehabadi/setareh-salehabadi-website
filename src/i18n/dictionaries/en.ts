@@ -5,7 +5,7 @@ const en = {
   common: {
     brandName: "Setareh Salehabadi",
     role: "Digital Growth Strategist",
-    email: "hello@setarehsalehabadi.com",
+    email: "salehabadi.setareh@gmail.com",
     linkedinLabel: "LinkedIn",
     emailLabel: "Email",
     backToTop: "Back to top",
@@ -232,7 +232,11 @@ const en = {
         subtitle: "Create a connected growth system",
         description:
           "Translate the strategy into practical SEO, content, analytics, customer experience and automation workflows.",
-        details: ["SEO systems", "Content structure", "AI workflows"],
+        details: [
+          "SEO systems",
+          "Content structure",
+          "AI workflows",
+        ],
       },
       {
         number: "04",
@@ -277,7 +281,8 @@ const en = {
         brand: "HighDent",
         description:
           "A technical SEO and content growth system designed to improve search visibility, content quality and long-term organic acquisition.",
-        outcome: "Organic visibility and sustainable search growth",
+        outcome:
+          "Organic visibility and sustainable search growth",
         metric: "+45%",
         metricLabel: "Organic traffic",
         chart: "donut",
@@ -288,7 +293,8 @@ const en = {
         brand: "Delta",
         description:
           "A connected digital strategy focused on audience development, campaign structure, channel alignment and scalable acquisition.",
-        outcome: "Audience growth and stronger digital acquisition",
+        outcome:
+          "Audience growth and stronger digital acquisition",
         metric: "+30%",
         metricLabel: "Sales uplift",
         chart: "line",
@@ -299,7 +305,8 @@ const en = {
         brand: "Omran Niroo",
         description:
           "A search-led growth framework for industrial products, combining technical SEO, product architecture and educational content.",
-        outcome: "Stronger product discovery and search coverage",
+        outcome:
+          "Stronger product discovery and search coverage",
         metric: "4×",
         metricLabel: "Search coverage",
         chart: "bars",
@@ -310,7 +317,8 @@ const en = {
         brand: "Morshed Gohar",
         description:
           "A focused acquisition system connecting landing pages, campaign channels, lead generation and measurable conversion paths.",
-        outcome: "More efficient demand generation and lead acquisition",
+        outcome:
+          "More efficient demand generation and lead acquisition",
         metric: "250",
         metricLabel: "Qualified leads",
         chart: "radial",
@@ -370,28 +378,44 @@ const en = {
         title: "How AI is changing digital discovery",
         description:
           "Exploring how generative search, large language models and changing user expectations are reshaping the way information is discovered.",
-        tags: ["LLM Search", "Search Behavior", "AI"],
+        tags: [
+          "LLM Search",
+          "Search Behavior",
+          "AI",
+        ],
       },
       {
         category: "Consumer Psychology",
         title: "Why trust matters more than attention",
         description:
           "Examining how credibility, cognitive ease and perceived risk influence engagement, evaluation and decision-making.",
-        tags: ["Trust", "Decision-Making", "Behavior"],
+        tags: [
+          "Trust",
+          "Decision-Making",
+          "Behavior",
+        ],
       },
       {
         category: "Marketing Science",
         title: "From marketing activity to evidence",
         description:
           "Studying how measurement, experimentation and research can improve strategic clarity and reduce unsupported assumptions.",
-        tags: ["Evidence", "Analytics", "Strategy"],
+        tags: [
+          "Evidence",
+          "Analytics",
+          "Strategy",
+        ],
       },
       {
         category: "Customer Experience",
         title: "The hidden friction shaping satisfaction",
         description:
           "Investigating how confusion, effort and uncertainty affect customer experience across digital journeys.",
-        tags: ["Customer Experience", "Friction", "Satisfaction"],
+        tags: [
+          "Customer Experience",
+          "Friction",
+          "Satisfaction",
+        ],
       },
     ],
 
@@ -525,7 +549,8 @@ const en = {
 
     title: {
       first: "Building clearer systems",
-      highlighted: "for sustainable digital growth.",
+      highlighted:
+        "for sustainable digital growth.",
     },
 
     description:
@@ -533,7 +558,8 @@ const en = {
 
     primaryCta: {
       label: "Start a conversation",
-      href: "mailto:hello@setarehsalehabadi.com",
+      href:
+        "mailto:salehabadi.setareh@gmail.com",
     },
 
     secondaryCta: {

@@ -1,57 +1,24 @@
 import Image from "next/image";
 
-import {
-  defaultLocale,
-  type Locale,
-} from "@/i18n/config";
 import en from "@/i18n/dictionaries/en";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 type TrustedBrandsProps = {
-  locale?: Locale;
+  locale?: "en" | "de" | "fa";
   dictionary?: Dictionary["trustedBrands"];
 };
 
-function containsPersian(text: string) {
-  return /[\u0600-\u06ff]/.test(text);
-}
-
-function formatBrandNumber(
-  index: number,
-  locale: Locale,
-  isPersian: boolean
-) {
-  return new Intl.NumberFormat(
-    isPersian ? "fa-IR" : locale,
-    {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    }
-  ).format(index + 1);
-}
-
 export default function TrustedBrands({
-  locale = defaultLocale,
   dictionary = en.trustedBrands,
 }: TrustedBrandsProps) {
-  const isPersian =
-    locale === "fa" ||
-    containsPersian(
-      [
-        dictionary.eyebrow,
-        dictionary.title.first,
-        dictionary.title.highlighted,
-      ].join(" ")
-    );
-
   return (
     <section
-      id="trusted-brands"
       aria-labelledby="trusted-brands-heading"
       className="
+        overflow-hidden
         border-b
         border-[#302d29]/15
-        bg-[#ebe4da]
+        bg-[#f4efe8]
         text-[#211f1c]
       "
     >
@@ -60,213 +27,170 @@ export default function TrustedBrands({
           mx-auto
           max-w-[1480px]
           px-5
-          py-14
+          py-16
           sm:px-8
-          sm:py-16
+          sm:py-20
           lg:px-12
-          lg:py-20
+          lg:py-24
           xl:px-16
         "
       >
-        <div
+        <header
           className="
             grid
             gap-6
             border-b
             border-[#302d29]/15
-            pb-8
-            sm:pb-9
-            lg:grid-cols-[minmax(260px,0.72fr)_minmax(0,1.28fr)]
+            pb-10
+            lg:grid-cols-[minmax(0,1fr)_auto]
             lg:items-end
-            lg:gap-14
           "
         >
           <div>
             <p
-              className={`
+              className="
+                mb-4
                 font-sans
+                text-[10px]
                 font-semibold
+                uppercase
+                tracking-[0.28em]
                 text-[#8a672f]
-                ${
-                  isPersian
-                    ? "text-[11px] leading-6 tracking-normal sm:text-[12px]"
-                    : "text-[10px] uppercase tracking-[0.28em] sm:text-[11px]"
-                }
-              `}
+                sm:text-[11px]
+              "
             >
               {dictionary.eyebrow}
             </p>
 
             <h2
               id="trusted-brands-heading"
-              className={`
-                mt-4
-                max-w-[620px]
+              className="
+                max-w-[760px]
+                font-serif
+                text-[clamp(2.35rem,4.5vw,4.2rem)]
+                font-medium
+                leading-[1.03]
+                tracking-[-0.043em]
                 text-[#211f1c]
-                ${
-                  isPersian
-                    ? "font-sans text-[clamp(1.7rem,2.7vw,2.55rem)] font-[650] leading-[1.55] tracking-normal"
-                    : "font-serif text-[clamp(2rem,3.2vw,3.2rem)] font-medium leading-[1.02] tracking-[-0.04em]"
-                }
-              `}
+              "
             >
-              <span>
-                {dictionary.title.first}
-              </span>
+              {dictionary.title.first}
 
-              <span
-                className={`
-                  block
-                  text-[#2e5d91]
-                  ${
-                    isPersian
-                      ? ""
-                      : "italic"
-                  }
-                `}
-              >
+              <span className="block italic text-[#2e5d91]">
                 {dictionary.title.highlighted}
               </span>
             </h2>
           </div>
+        </header>
 
-          <p
-            aria-hidden="true"
-            dir="ltr"
-            className="
-              hidden
-              max-w-[520px]
-              justify-self-end
-              font-sans
-              text-[11px]
-              font-medium
-              uppercase
-              tracking-[0.18em]
-              text-[#81786f]
-              lg:block
-            "
-          >
-            01 — 04
-          </p>
-        </div>
-
-       <div
-  className="
-    mt-8
-    grid
-    grid-cols-2
-    border-s
-    border-t
-    border-[#302d29]/14
-    lg:mt-10
-    lg:grid-cols-4
-  "
->
-          {dictionary.brands.map(
-            (brand, index) => (
-              <article
-                key={brand.name}
+        <div
+          className="
+            grid
+            grid-cols-2
+            border-s
+            border-t
+            border-[#302d29]/15
+            sm:grid-cols-2
+            lg:grid-cols-4
+          "
+        >
+          {dictionary.brands.map((brand) => (
+            <article
+              key={brand.name}
+              className="
+                group
+                flex
+                min-h-[220px]
+                flex-col
+                items-center
+                justify-center
+                border-b
+                border-e
+                border-[#302d29]/15
+                bg-transparent
+                px-5
+                py-8
+                text-center
+                transition-colors
+                duration-300
+                hover:bg-[#ebe4da]/45
+                sm:min-h-[250px]
+                sm:px-7
+                sm:py-10
+              "
+            >
+              <div
                 className="
                   flex
-                  min-h-[164px]
-                  min-w-0
-                  flex-col
-                  justify-between
-                  border-b
-                  border-e
-                  border-[#302d29]/14
-                  bg-[#f4efe8]/35
-                  p-5
-                  sm:min-h-[176px]
-                  sm:p-6
-                  lg:min-h-[190px]
-                  lg:p-7
+                  h-[108px]
+                  w-full
+                  max-w-[190px]
+                  items-center
+                  justify-center
+                  sm:h-[122px]
                 "
               >
-                <div
+                <Image
+                  src={brand.logo}
+                  alt={`${brand.name} logo`}
+                  width={240}
+                  height={140}
+                  sizes="
+                    (max-width: 640px) 140px,
+                    (max-width: 1024px) 170px,
+                    190px
+                  "
                   className="
-                    flex
-                    min-h-[54px]
-                    items-center
+                    block
+                    h-auto
+                    max-h-[100px]
+                    w-auto
+                    max-w-full
+                    object-contain
+                    mix-blend-multiply
+                    transition-transform
+                    duration-300
+                    group-hover:scale-[1.025]
+                    sm:max-h-[112px]
+                  "
+                />
+              </div>
+
+              <div
+                className="
+                  mt-6
+                  border-t
+                  border-[#302d29]/10
+                  pt-5
+                "
+              >
+                <h3
+                  className="
+                    font-serif
+                    text-[1.35rem]
+                    font-medium
+                    leading-tight
+                    text-[#282521]
                   "
                 >
-                  <Image
-                    src={brand.logo}
-                    alt=""
-                    aria-hidden="true"
-                    width={72}
-                    height={48}
-                    sizes="72px"
-                    className="
-                      h-11
-                      w-16
-                      object-contain
-                      object-start
-                    "
-                  />
-                </div>
+                  {brand.name}
+                </h3>
 
-                <div className="mt-7 min-w-0">
-                  <span
-                    dir="ltr"
-                    className={`
-                      block
-                      font-sans
-                      font-semibold
-                      text-[#968d83]
-                      ${
-                        isPersian
-                          ? "text-[10px] tracking-normal"
-                          : "text-[9px] tracking-[0.14em]"
-                      }
-                    `}
-                  >
-                    {formatBrandNumber(
-                      index,
-                      locale,
-                      isPersian
-                    )}
-                  </span>
-
-                  <h3
-                    dir="ltr"
-                    lang="en"
-                    className="
-                      mt-2
-                      max-w-full
-                      break-words
-                      font-sans
-                      text-[15px]
-                      font-semibold
-                      leading-[1.45]
-                      tracking-normal
-                      text-[#26231f]
-                      sm:text-[16px]
-                      lg:text-[17px]
-                    "
-                  >
-                    {brand.name}
-                  </h3>
-
-                  <p
-                    className={`
-                      mt-1.5
-                      max-w-full
-                      font-sans
-                      text-[#6f685f]
-                      ${
-                        isPersian
-                          ? "text-[11px] leading-6 sm:text-[12px]"
-                          : "text-[10px] leading-5 sm:text-[11px]"
-                      }
-                    `}
-                  >
-                    {brand.category}
-                  </p>
-                </div>
-              </article>
-            )
-          )}
+                <p
+                  className="
+                    mt-2
+                    font-sans
+                    text-[11px]
+                    font-medium
+                    leading-5
+                    text-[#7b746b]
+                  "
+                >
+                  {brand.category}
+                </p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

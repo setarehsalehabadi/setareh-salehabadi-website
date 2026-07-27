@@ -1,23 +1,33 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
+const SITE_URL =
+  "https://setarehsalehabadi.com";
 
 export default function robots(): MetadataRoute.Robots {
-
   return {
+    rules: [
+      {
+        userAgent: "*",
 
-    rules: {
+        allow: [
+          "/",
+          "/en/",
+          "/de/",
+          "/fa/",
+          "/images/",
+        ],
 
-      userAgent: "*",
-
-      allow: "/",
-
-    },
-
+        disallow: [
+          "/api/",
+          "/automation/",
+        ],
+      },
+    ],
 
     sitemap:
+      `${SITE_URL}/sitemap.xml`,
 
-      "https://setarehsalehabadi.com/sitemap.xml",
-
+    host:
+      SITE_URL,
   };
-
 }

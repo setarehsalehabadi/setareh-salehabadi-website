@@ -1,46 +1,25 @@
-import type { Metadata } from "next";
+import type {
+  CSSProperties,
+} from "react";
+
+import type {
+  Metadata,
+} from "next";
+
 import Link from "next/link";
-import {
-  Cormorant_Garamond,
-  Manrope,
-  Vazirmatn,
-} from "next/font/google";
 
 import "./globals.css";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
+const fontVariables = {
+  "--font-manrope":
+    '"Manrope", "Helvetica Neue", Arial, sans-serif',
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: [
-    "400",
-    "500",
-    "600",
-    "700",
-  ],
-  style: [
-    "normal",
-    "italic",
-  ],
-  variable: "--font-cormorant",
-  display: "swap",
-});
+  "--font-cormorant":
+    '"Cormorant Garamond", Georgia, "Times New Roman", serif',
 
-const vazirmatn = Vazirmatn({
-  subsets: ["arabic"],
-  weight: [
-    "400",
-    "500",
-    "600",
-    "700",
-  ],
-  variable: "--font-vazirmatn",
-  display: "swap",
-});
+  "--font-vazirmatn":
+    '"Vazirmatn", Tahoma, Arial, sans-serif',
+} as CSSProperties;
 
 export const metadata: Metadata = {
   title:
@@ -48,29 +27,46 @@ export const metadata: Metadata = {
 
   description:
     "The requested page could not be found. Return to the Persian, English or German version of the website.",
+
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 const languageLinks = [
   {
     locale: "fa",
-    label: "بازگشت به نسخه فارسی",
-    languageName: "فارسی",
-    href: "/fa",
-    direction: "rtl",
+    label:
+      "بازگشت به نسخه فارسی",
+    languageName:
+      "فارسی",
+    href:
+      "/fa",
+    direction:
+      "rtl",
   },
   {
     locale: "en",
-    label: "Return to English",
-    languageName: "English",
-    href: "/en",
-    direction: "ltr",
+    label:
+      "Return to English",
+    languageName:
+      "English",
+    href:
+      "/en",
+    direction:
+      "ltr",
   },
   {
     locale: "de",
-    label: "Zur deutschen Version",
-    languageName: "Deutsch",
-    href: "/de",
-    direction: "ltr",
+    label:
+      "Zur deutschen Version",
+    languageName:
+      "Deutsch",
+    href:
+      "/de",
+    direction:
+      "ltr",
   },
 ] as const;
 
@@ -81,15 +77,13 @@ export default function GlobalNotFound() {
       dir="ltr"
     >
       <body
-        className={`
-          ${manrope.variable}
-          ${cormorant.variable}
-          ${vazirmatn.variable}
+        style={fontVariables}
+        className="
           min-h-screen
           bg-[#f4efe8]
           text-[#211f1c]
           antialiased
-        `}
+        "
       >
         <main
           className="
@@ -356,11 +350,12 @@ export default function GlobalNotFound() {
                   "
                 >
                   This path could not be
+
                   <span
                     className="
                       block
-                      text-[#2e5d91]
                       italic
+                      text-[#2e5d91]
                     "
                   >
                     found or may have moved.
@@ -449,7 +444,7 @@ export default function GlobalNotFound() {
                           {item.languageName}
                         </span>
                       </Link>
-                    )
+                    ),
                   )}
                 </div>
 

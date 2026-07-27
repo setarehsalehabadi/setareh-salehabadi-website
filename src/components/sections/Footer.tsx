@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import {
   defaultLocale,
+  isLocale,
   type Locale,
 } from "@/i18n/config";
 
@@ -24,57 +25,136 @@ type LegalLabels = {
   terms: string;
 };
 
-const legalLabels: Record<
-  Locale,
-  LegalLabels
-> = {
+const legalLabels: Record<Locale, LegalLabels> = {
   en: {
-    navigationLabel:
-      "Legal information",
-
-    privacy:
-      "Privacy Policy",
-
-    terms:
-      "Terms of Use",
+    navigationLabel: "Legal information",
+    privacy: "Privacy Policy",
+    terms: "Terms of Use",
   },
 
   de: {
-    navigationLabel:
-      "Rechtliche Informationen",
-
-    privacy:
-      "Datenschutzerklärung",
-
-    terms:
-      "Nutzungsbedingungen",
+    navigationLabel: "Rechtliche Informationen",
+    privacy: "Datenschutzerklärung",
+    terms: "Nutzungsbedingungen",
   },
 
   fa: {
-    navigationLabel:
-      "اطلاعات حقوقی",
-
-    privacy:
-      "حریم خصوصی",
-
-    terms:
-      "شرایط استفاده",
+    navigationLabel: "اطلاعات حقوقی",
+    privacy: "حریم خصوصی",
+    terms: "شرایط استفاده",
   },
 };
 
-function isExternalAction(
-  href: string
-) {
-  return (
-    href.startsWith("mailto:") ||
-    href.startsWith("http://") ||
-    href.startsWith("https://")
-  );
+const confirmedInternalRoutes: Record<string, string> = {
+  "#about": "/about",
+  "/about": "/about",
+
+  "#expertise": "/expertise",
+  "/expertise": "/expertise",
+
+  "#growth-system": "/growth-system",
+  "/growth-system": "/growth-system",
+
+  "#projects": "/case-studies",
+  "#case-studies": "/case-studies",
+  "#selected-projects": "/case-studies",
+  "#work": "/case-studies",
+  "/projects": "/case-studies",
+  "/case-studies": "/case-studies",
+  "/selected-projects": "/case-studies",
+
+  "#research": "/research",
+  "#insights": "/research",
+  "#research-lab": "/research",
+  "/research": "/research",
+  "/insights": "/research",
+  "/research-lab": "/research",
+};
+
+function isExternalAction(href: string) {
+  return /^(?:https?:\/\/|mailto:|tel:)/i.test(href);
+}
+
+function getLocalizedHref(
+  href: string,
+  locale: Locale,
+): string {
+  const trimmedHref = href.trim();
+
+  if (!trimmedHref) {
+    return `/${locale}`;
+  }
+
+  if (isExternalAction(trimmedHref)) {
+    return trimmedHref;
+  }
+
+  if (trimmedHref === "#top") {
+    return "#top";
+  }
+
+  const hashIndex = trimmedHref.indexOf("#");
+
+  const pathPart =
+    hashIndex >= 0
+      ? trimmedHref.slice(0, hashIndex)
+      : trimmedHref;
+
+  const hashPart =
+    hashIndex >= 0
+      ? trimmedHref.slice(hashIndex)
+      : "";
+
+  const pathSegments = pathPart
+    .split("/")
+    .filter(Boolean);
+
+  if (
+    pathSegments[0] &&
+    isLocale(pathSegments[0])
+  ) {
+    pathSegments.shift();
+  }
+
+  const normalizedPath =
+    pathSegments.length > 0
+      ? `/${pathSegments.join("/")}`
+      : "";
+
+  const normalizedHref =
+    `${normalizedPath}${hashPart}`.toLowerCase();
+
+  const confirmedRoute =
+    confirmedInternalRoutes[normalizedHref];
+
+  if (confirmedRoute) {
+    return `/${locale}${confirmedRoute}`;
+  }
+
+  if (
+    normalizedHref === "#newsletter" ||
+    normalizedHref === "/newsletter"
+  ) {
+    return `/${locale}#newsletter`;
+  }
+
+  if (
+    hashPart &&
+    pathSegments.length === 0
+  ) {
+    return `/${locale}${hashPart}`;
+  }
+
+  if (pathSegments.length > 0) {
+    return `/${locale}/${pathSegments.join("/")}${hashPart}`;
+  }
+
+  return `/${locale}`;
 }
 
 function formatYear(
   year: number,
-  locale: Locale
+  locale: Locale,
 ) {
   return new Intl.NumberFormat(
     locale === "fa"
@@ -82,7 +162,7 @@ function formatYear(
       : locale,
     {
       useGrouping: false,
-    }
+    },
   ).format(year);
 }
 
@@ -145,7 +225,7 @@ export default function Footer({
   const currentYear =
     formatYear(
       new Date().getFullYear(),
-      locale
+      locale,
     );
 
   const hasAvailability =
@@ -153,15 +233,23 @@ export default function Footer({
       .trim()
       .length > 0;
 
-  const primaryIsExternal =
-    isExternalAction(
-      dictionary.primaryCta.href
+  const primaryCtaHref =
+    getLocalizedHref(
+      dictionary.primaryCta.href,
+      locale,
     );
 
-  const secondaryIsExternal =
-    isExternalAction(
-      dictionary.secondaryCta.href
+  const secondaryCtaHref =
+    getLocalizedHref(
+      dictionary.secondaryCta.href,
+      locale,
     );
+
+  const primaryIsExternal =
+    isExternalAction(primaryCtaHref);
+
+  const secondaryIsExternal =
+    isExternalAction(secondaryCtaHref);
 
   const currentLegalLabels =
     legalLabels[locale];
@@ -183,6 +271,112 @@ export default function Footer({
         `/${locale}/terms`,
     },
   ];
+
+  const primaryCtaClassName = `
+    group
+    inline-flex
+    min-h-[56px]
+    items-center
+    justify-center
+    gap-3
+    rounded-full
+    border
+    border-[#183655]
+    bg-[#183655]
+    px-8
+    font-sans
+    font-semibold
+    leading-none
+    text-white
+    shadow-[0_14px_30px_rgba(24,54,85,0.18)]
+    transition-all
+    duration-300
+    hover:-translate-y-0.5
+    hover:border-[#2e5d91]
+    hover:bg-[#2e5d91]
+    hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
+    focus-visible:outline-none
+    focus-visible:ring-4
+    focus-visible:ring-[#2e5d91]/20
+    ${
+      isPersian
+        ? "text-[14px] sm:text-[15px]"
+        : "text-[15px] sm:text-[16px]"
+    }
+  `;
+
+  const secondaryCtaClassName = `
+    group
+    inline-flex
+    min-h-[56px]
+    items-center
+    justify-center
+    gap-3
+    rounded-full
+    border
+    border-[#302d29]
+    bg-[#302d29]
+    px-8
+    font-sans
+    font-semibold
+    leading-none
+    text-white
+    shadow-[0_14px_30px_rgba(48,45,41,0.14)]
+    transition-all
+    duration-300
+    hover:-translate-y-0.5
+    hover:border-[#2e5d91]
+    hover:bg-[#2e5d91]
+    hover:shadow-[0_18px_38px_rgba(46,93,145,0.2)]
+    focus-visible:outline-none
+    focus-visible:ring-4
+    focus-visible:ring-[#2e5d91]/20
+    ${
+      isPersian
+        ? "text-[14px] sm:text-[15px]"
+        : "text-[15px] sm:text-[16px]"
+    }
+  `;
+
+  const primaryCtaContent = (
+    <>
+      <span>
+        {dictionary.primaryCta.label}
+      </span>
+
+      <span
+        className="
+          transition-transform
+          duration-300
+          group-hover:-translate-y-0.5
+        "
+      >
+        <ArrowIcon
+          external={primaryIsExternal}
+        />
+      </span>
+    </>
+  );
+
+  const secondaryCtaContent = (
+    <>
+      <span>
+        {dictionary.secondaryCta.label}
+      </span>
+
+      <span
+        className="
+          transition-transform
+          duration-300
+          group-hover:-translate-y-0.5
+        "
+      >
+        <ArrowIcon
+          external={secondaryIsExternal}
+        />
+      </span>
+    </>
+  );
 
   return (
     <footer
@@ -284,11 +478,7 @@ export default function Footer({
               `}
             >
               <span>
-                {
-                  dictionary
-                    .title
-                    .first
-                }
+                {dictionary.title.first}
               </span>
 
               <span
@@ -337,129 +527,37 @@ export default function Footer({
                 sm:gap-4
               "
             >
-              <a
-                href={
-                  dictionary
-                    .primaryCta
-                    .href
-                }
-                className={`
-                  group
-                  inline-flex
-                  min-h-[56px]
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  border
-                  border-[#183655]
-                  bg-[#183655]
-                  px-8
-                  font-sans
-                  font-semibold
-                  leading-none
-                  text-white
-                  shadow-[0_14px_30px_rgba(24,54,85,0.18)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:border-[#2e5d91]
-                  hover:bg-[#2e5d91]
-                  hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
-                  focus-visible:outline-none
-                  focus-visible:ring-4
-                  focus-visible:ring-[#2e5d91]/20
-                  ${
-                    isPersian
-                      ? "text-[14px] sm:text-[15px]"
-                      : "text-[15px] sm:text-[16px]"
-                  }
-                `}
-              >
-                <span>
-                  {
-                    dictionary
-                      .primaryCta
-                      .label
-                  }
-                </span>
-
-                <span
-                  className="
-                    transition-transform
-                    duration-300
-                    group-hover:-translate-y-0.5
-                  "
+              {primaryIsExternal ? (
+                <a
+                  href={primaryCtaHref}
+                  className={primaryCtaClassName}
                 >
-                  <ArrowIcon
-                    external={
-                      primaryIsExternal
-                    }
-                  />
-                </span>
-              </a>
-
-              <a
-                href={
-                  dictionary
-                    .secondaryCta
-                    .href
-                }
-                className={`
-                  group
-                  inline-flex
-                  min-h-[56px]
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  border
-                  border-[#302d29]
-                  bg-[#302d29]
-                  px-8
-                  font-sans
-                  font-semibold
-                  leading-none
-                  text-white
-                  shadow-[0_14px_30px_rgba(48,45,41,0.14)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:border-[#2e5d91]
-                  hover:bg-[#2e5d91]
-                  hover:shadow-[0_18px_38px_rgba(46,93,145,0.2)]
-                  focus-visible:outline-none
-                  focus-visible:ring-4
-                  focus-visible:ring-[#2e5d91]/20
-                  ${
-                    isPersian
-                      ? "text-[14px] sm:text-[15px]"
-                      : "text-[15px] sm:text-[16px]"
-                  }
-                `}
-              >
-                <span>
-                  {
-                    dictionary
-                      .secondaryCta
-                      .label
-                  }
-                </span>
-
-                <span
-                  className="
-                    transition-transform
-                    duration-300
-                    group-hover:-translate-y-0.5
-                  "
+                  {primaryCtaContent}
+                </a>
+              ) : (
+                <Link
+                  href={primaryCtaHref}
+                  className={primaryCtaClassName}
                 >
-                  <ArrowIcon
-                    external={
-                      secondaryIsExternal
-                    }
-                  />
-                </span>
-              </a>
+                  {primaryCtaContent}
+                </Link>
+              )}
+
+              {secondaryIsExternal ? (
+                <a
+                  href={secondaryCtaHref}
+                  className={secondaryCtaClassName}
+                >
+                  {secondaryCtaContent}
+                </a>
+              ) : (
+                <Link
+                  href={secondaryCtaHref}
+                  className={secondaryCtaClassName}
+                >
+                  {secondaryCtaContent}
+                </Link>
+              )}
             </div>
           </div>
 
@@ -490,62 +588,82 @@ export default function Footer({
               className="mt-6"
             >
               <ul className="space-y-4">
-                {
-                  dictionary
-                    .navigation
-                    .map(
-                      (item) => (
-                        <li
-                          key={
-                            item.label
-                          }
-                        >
-                          <a
-                            href={
-                              item.href
-                            }
-                            className={`
-                              group
-                              inline-flex
-                              items-center
-                              gap-3
-                              font-sans
-                              font-medium
-                              text-[#4f4942]
-                              transition-colors
-                              duration-300
-                              hover:text-[#2e5d91]
-                              ${
-                                isPersian
-                                  ? "text-[14px] leading-7 sm:text-[15px]"
-                                  : "text-[15px]"
-                              }
-                            `}
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="
-                                h-px
-                                w-3
-                                shrink-0
-                                bg-[#b48a52]
-                                transition-all
-                                duration-300
-                                group-hover:w-6
-                                group-hover:bg-[#2e5d91]
-                              "
-                            />
+                {dictionary.navigation.map(
+                  (item) => {
+                    const href =
+                      getLocalizedHref(
+                        item.href,
+                        locale,
+                      );
 
-                            <span>
-                              {
-                                item.label
-                              }
-                            </span>
+                    const isExternal =
+                      isExternalAction(href);
+
+                    const linkClassName = `
+                      group
+                      inline-flex
+                      min-h-11
+                      items-center
+                      gap-3
+                      font-sans
+                      font-medium
+                      text-[#4f4942]
+                      transition-colors
+                      duration-300
+                      hover:text-[#2e5d91]
+                      focus-visible:outline-none
+                      focus-visible:ring-4
+                      focus-visible:ring-[#2e5d91]/15
+                      ${
+                        isPersian
+                          ? "text-[14px] leading-7 sm:text-[15px]"
+                          : "text-[15px]"
+                      }
+                    `;
+
+                    const linkContent = (
+                      <>
+                        <span
+                          aria-hidden="true"
+                          className="
+                            h-px
+                            w-3
+                            shrink-0
+                            bg-[#b48a52]
+                            transition-all
+                            duration-300
+                            group-hover:w-6
+                            group-hover:bg-[#2e5d91]
+                          "
+                        />
+
+                        <span>
+                          {item.label}
+                        </span>
+                      </>
+                    );
+
+                    return (
+                      <li key={item.label}>
+                        {isExternal ? (
+                          <a
+                            href={href}
+                            className={linkClassName}
+                          >
+                            {linkContent}
                           </a>
-                        </li>
-                      )
-                    )
-                }
+                        ) : (
+                          <Link
+                            href={href}
+                            className={linkClassName}
+                          >
+                            {linkContent}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  },
+                )}
               </ul>
             </nav>
           </div>
@@ -567,29 +685,25 @@ export default function Footer({
             </p>
 
             <ul className="mt-6 space-y-4">
-              {
-                dictionary
-                  .focusAreas
-                  .map(
-                    (area) => (
-                      <li
-                        key={area}
-                        dir="auto"
-                        className={`
-                          font-sans
-                          text-[#625d56]
-                          ${
-                            isPersian
-                              ? "text-[14px] leading-7 sm:text-[15px]"
-                              : "text-[15px] leading-7"
-                          }
-                        `}
-                      >
-                        {area}
-                      </li>
-                    )
-                  )
-              }
+              {dictionary.focusAreas.map(
+                (area) => (
+                  <li
+                    key={area}
+                    dir="auto"
+                    className={`
+                      font-sans
+                      text-[#625d56]
+                      ${
+                        isPersian
+                          ? "text-[14px] leading-7 sm:text-[15px]"
+                          : "text-[15px] leading-7"
+                      }
+                    `}
+                  >
+                    {area}
+                  </li>
+                ),
+              )}
             </ul>
 
             {!isPersian && (
@@ -646,6 +760,9 @@ export default function Footer({
                       hover:border-[#2e5d91]
                       hover:bg-[#2e5d91]
                       hover:text-white
+                      focus-visible:outline-none
+                      focus-visible:ring-4
+                      focus-visible:ring-[#2e5d91]/15
                     "
                   >
                     {common.emailLabel}
@@ -696,19 +813,14 @@ export default function Footer({
                   }
                 `}
               >
-                {
-                  dictionary
-                    .availability
-                }
+                {dictionary.availability}
               </p>
             )}
           </div>
 
           <a
             href="#top"
-            aria-label={
-              common.backToTop
-            }
+            aria-label={common.backToTop}
             className="
               group
               flex
@@ -729,6 +841,9 @@ export default function Footer({
               hover:border-[#2e5d91]
               hover:bg-[#2e5d91]
               hover:shadow-[0_18px_36px_rgba(46,93,145,0.22)]
+              focus-visible:outline-none
+              focus-visible:ring-4
+              focus-visible:ring-[#2e5d91]/20
               md:justify-self-end
             "
           >
@@ -753,8 +868,8 @@ export default function Footer({
             pt-7
             font-sans
             text-[#756e65]
-            lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
-            lg:items-center
+            md:grid-cols-[minmax(0,1fr)_auto]
+            md:items-center
             ${
               isPersian
                 ? "text-[11px] leading-7 sm:text-[12px]"
@@ -765,7 +880,7 @@ export default function Footer({
           <p
             className="
               min-w-0
-              lg:justify-self-start
+              md:justify-self-start
             "
           >
             © {currentYear}{" "}
@@ -784,7 +899,7 @@ export default function Footer({
               items-center
               gap-x-5
               gap-y-2
-              lg:justify-self-center
+              md:justify-self-end
             "
           >
             {legalLinks.map(
@@ -794,6 +909,7 @@ export default function Footer({
                   href={item.href}
                   className="
                     relative
+                    min-h-11
                     font-sans
                     font-medium
                     text-[#625d56]
@@ -801,7 +917,7 @@ export default function Footer({
                     duration-300
                     after:absolute
                     after:inset-x-0
-                    after:-bottom-1
+                    after:bottom-1
                     after:h-px
                     after:origin-center
                     after:scale-x-0
@@ -817,22 +933,9 @@ export default function Footer({
                 >
                   {item.label}
                 </Link>
-              )
+              ),
             )}
           </nav>
-
-          <p
-            className="
-              min-w-0
-              lg:justify-self-end
-              lg:text-end
-            "
-          >
-            {
-              dictionary
-                .designStatement
-            }
-          </p>
         </div>
       </div>
     </footer>

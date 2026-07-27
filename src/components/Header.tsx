@@ -16,19 +16,39 @@ import {
 } from "@/i18n/config";
 
 import en from "@/i18n/dictionaries/en";
-import type { Dictionary } from "@/i18n/get-dictionary";
+
+import type {
+  Dictionary,
+} from "@/i18n/get-dictionary";
 
 type HeaderProps = {
   locale?: Locale;
-  dictionary?: Dictionary["header"];
-  common?: Dictionary["common"];
+
+  dictionary?:
+    Dictionary["header"];
+
+  common?:
+    Dictionary["common"];
 };
 
 type AccessibilityLabels = {
-  primaryNavigation: string;
-  mobileNavigation: string;
-  languageSwitcher: string;
-  mobileDialog: string;
+  primaryNavigation:
+    string;
+
+  mobileNavigation:
+    string;
+
+  languageSwitcher:
+    string;
+
+  disabledNavigation:
+    string;
+};
+
+type SelfPacedLearningLabel = {
+  title: string;
+
+  status: string;
 };
 
 const accessibilityLabels: Record<
@@ -45,8 +65,8 @@ const accessibilityLabels: Record<
     languageSwitcher:
       "Select language",
 
-    mobileDialog:
-      "Navigation menu",
+    disabledNavigation:
+      "Currently unavailable",
   },
 
   de: {
@@ -59,8 +79,8 @@ const accessibilityLabels: Record<
     languageSwitcher:
       "Sprache auswählen",
 
-    mobileDialog:
-      "Navigationsmenü",
+    disabledNavigation:
+      "Derzeit nicht verfügbar",
   },
 
   fa: {
@@ -73,18 +93,104 @@ const accessibilityLabels: Record<
     languageSwitcher:
       "انتخاب زبان",
 
-    mobileDialog:
-      "منوی ناوبری",
+    disabledNavigation:
+      "در حال حاضر غیرفعال",
   },
 };
 
-const persianMobileFooterLabel =
-  "آموزش‌های خودآموز";
+const selfPacedLearningLabels: Record<
+  Locale,
+  SelfPacedLearningLabel
+> = {
+  en: {
+    title:
+      "Self-Paced Learning",
+
+    status:
+      "Coming soon",
+  },
+
+  de: {
+    title:
+      "Selbstlernkurse",
+
+    status:
+      "Demnächst",
+  },
+
+  fa: {
+    title:
+      "آموزش‌های خودآموز",
+
+    status:
+      "به‌زودی",
+  },
+};
+
+const confirmedNavigationRoutes:
+  Record<string, string> = {
+  "#about":
+    "/about",
+
+  "/about":
+    "/about",
+
+  "#expertise":
+    "/expertise",
+
+  "/expertise":
+    "/expertise",
+
+  "#growth-system":
+    "/growth-system",
+
+  "/growth-system":
+    "/growth-system",
+
+  "#projects":
+    "/case-studies",
+
+  "#case-studies":
+    "/case-studies",
+
+  "#selected-projects":
+    "/case-studies",
+
+  "#work":
+    "/case-studies",
+
+  "/projects":
+    "/case-studies",
+
+  "/case-studies":
+    "/case-studies",
+
+  "/selected-projects":
+    "/case-studies",
+
+  "#research":
+    "/research",
+
+  "#insights":
+    "/research",
+
+  "#research-lab":
+    "/research",
+
+  "/research":
+    "/research",
+
+  "/insights":
+    "/research",
+
+  "/research-lab":
+    "/research",
+};
 
 function getLocalizedPath(
   pathname: string,
-  targetLocale: Locale
-) {
+  targetLocale: Locale,
+): string {
   const segments =
     pathname.split("/");
 
@@ -93,7 +199,9 @@ function getLocalizedPath(
 
   if (
     currentLocale &&
-    isLocale(currentLocale)
+    isLocale(
+      currentLocale,
+    )
   ) {
     segments[1] =
       targetLocale;
@@ -101,7 +209,7 @@ function getLocalizedPath(
     segments.splice(
       1,
       0,
-      targetLocale
+      targetLocale,
     );
   }
 
@@ -114,112 +222,125 @@ function getLocalizedPath(
   );
 }
 
-function getHashFromHref(
-  href: string
-) {
-  const hashIndex =
-    href.indexOf("#");
+function getNavigationHref(
+  href: string,
+  locale: Locale,
+): string {
+  const trimmedHref =
+    href.trim();
 
-  if (hashIndex === -1) {
-    return "";
+  if (!trimmedHref) {
+    return `/${locale}`;
   }
 
-  return href.slice(hashIndex);
-}
+  if (
+    /^(?:https?:\/\/|mailto:|tel:)/i.test(
+      trimmedHref,
+    )
+  ) {
+    return trimmedHref;
+  }
 
-function getNavigationHref(
-  originalHref: string,
-  locale: Locale
-) {
-  const hash =
-    getHashFromHref(
-      originalHref
+  const hashIndex =
+    trimmedHref.indexOf(
+      "#",
     );
 
-  switch (hash) {
-    case "#about":
-      return `/${locale}/about`;
+  const pathPart =
+    hashIndex >= 0
+      ? trimmedHref.slice(
+          0,
+          hashIndex,
+        )
+      : trimmedHref;
 
-    case "#research":
-      return `/${locale}/research`;
+  const hashPart =
+    hashIndex >= 0
+      ? trimmedHref.slice(
+          hashIndex,
+        )
+      : "";
 
-    case "#case-studies":
-      return `/${locale}/case-studies`;
+  const pathSegments =
+    pathPart
+      .split("/")
+      .filter(Boolean);
 
-    case "#expertise":
-      return `/${locale}#expertise`;
+  if (
+    pathSegments[0] &&
+    isLocale(
+      pathSegments[0],
+    )
+  ) {
+    pathSegments.shift();
+  }
 
-    case "#growth-system":
-      return `/${locale}#growth-system`;
+  const normalizedPath =
+    pathSegments.length > 0
+      ? `/${pathSegments.join(
+          "/",
+        )}`
+      : "";
 
-    case "#newsletter":
-      return `/${locale}#newsletter`;
+  const normalizedHref =
+    `${normalizedPath}${hashPart}`.toLowerCase();
 
-    default:
-      break;
+  const confirmedRoute =
+    confirmedNavigationRoutes[
+      normalizedHref
+    ];
+
+  if (confirmedRoute) {
+    return `/${locale}${confirmedRoute}`;
   }
 
   if (
-    originalHref === "#about"
+    hashPart &&
+    pathSegments.length === 0
   ) {
-    return `/${locale}/about`;
+    return `/${locale}${hashPart}`;
   }
 
   if (
-    originalHref === "#research"
+    pathSegments.length > 0
   ) {
-    return `/${locale}/research`;
+    return `/${locale}/${pathSegments.join(
+      "/",
+    )}${hashPart}`;
   }
 
-  if (
-    originalHref ===
-    "#case-studies"
-  ) {
-    return `/${locale}/case-studies`;
-  }
-
-  if (
-    originalHref.startsWith("#")
-  ) {
-    return `/${locale}${originalHref}`;
-  }
-
-  return originalHref;
-}
-
-function isPageLinkActive(
-  pathname: string,
-  href: string
-) {
-  if (
-    href.includes("#") ||
-    href.startsWith("mailto:")
-  ) {
-    return false;
-  }
-
-  return pathname === href;
+  return `/${locale}`;
 }
 
 function formatNavigationIndex(
   index: number,
-  locale: Locale
-) {
+  locale: Locale,
+): string {
   return new Intl.NumberFormat(
     locale === "fa"
       ? "fa-IR"
       : locale,
     {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    }
-  ).format(index + 1);
+      minimumIntegerDigits:
+        2,
+
+      useGrouping:
+        false,
+    },
+  ).format(
+    index + 1,
+  );
 }
 
 export default function Header({
-  locale = defaultLocale,
-  dictionary = en.header,
-  common = en.common,
+  locale =
+    defaultLocale,
+
+  dictionary =
+    en.header,
+
+  common =
+    en.common,
 }: HeaderProps) {
   const pathname =
     usePathname();
@@ -234,137 +355,104 @@ export default function Header({
     setIsMenuOpen,
   ] = useState(false);
 
-  const isPersian =
-    locale === "fa";
-
   const accessibility =
-    accessibilityLabels[locale];
+    accessibilityLabels[
+      locale
+    ];
 
-  const homeHref =
-    pathname === `/${locale}`
-      ? "#top"
-      : `/${locale}`;
+  const selfPacedLearning =
+    selfPacedLearningLabels[
+      locale
+    ];
 
-  const navigation =
-    dictionary.navigation.map(
-      (item) => ({
-        ...item,
-
-        href:
-          getNavigationHref(
-            item.href,
-            locale
-          ),
-      })
-    );
-
-  const desktopCtaHref =
-    isPersian
-      ? `/${locale}/case-studies`
-      : `mailto:${common.email}`;
-
-  const mobileCtaHref =
-    isPersian
-      ? `/${locale}/research`
-      : `mailto:${common.email}`;
+  const workInquiryHref =
+    `mailto:${common.email}?subject=${encodeURIComponent(
+      "Work inquiry — Setareh Salehabadi",
+    )}`;
 
   const mobileFooterHref =
-    isPersian
-      ? `/${locale}/courses`
+    locale === "fa"
+      ? `/${locale}#newsletter`
       : `mailto:${common.email}`;
 
   const mobileFooterLabel =
-    isPersian
-      ? persianMobileFooterLabel
+    locale === "fa"
+      ? "خبرنامه"
       : common.emailLabel;
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(
-        window.scrollY > 20
-      );
-    };
+    const handleScroll =
+      () => {
+        setIsScrolled(
+          window.scrollY >
+            20,
+        );
+      };
+
+    handleScroll();
 
     window.addEventListener(
       "scroll",
       handleScroll,
       {
-        passive: true,
-      }
+        passive:
+          true,
+      },
     );
 
     return () => {
       window.removeEventListener(
         "scroll",
-        handleScroll
+        handleScroll,
       );
     };
   }, []);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (
-        window.innerWidth >= 1024
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
+    const handleResize =
+      () => {
+        if (
+          window.innerWidth >=
+          1024
+        ) {
+          setIsMenuOpen(
+            false,
+          );
+        }
+      };
 
     window.addEventListener(
       "resize",
-      handleResize
+      handleResize,
     );
 
     return () => {
       window.removeEventListener(
         "resize",
-        handleResize
+        handleResize,
       );
     };
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = (
-      event: KeyboardEvent
-    ) => {
-      if (
-        event.key === "Escape"
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
-    return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-    };
-  }, []);
-
-  useEffect(() => {
-    const previousOverflow =
-      document.body.style.overflow;
-
-    document.body.style.overflow =
+    document.body.style
+      .overflow =
       isMenuOpen
         ? "hidden"
         : "";
 
     return () => {
-      document.body.style.overflow =
-        previousOverflow;
+      document.body.style
+        .overflow = "";
     };
   }, [isMenuOpen]);
 
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const closeMenu =
+    () => {
+      setIsMenuOpen(
+        false,
+      );
+    };
 
   return (
     <>
@@ -401,83 +489,111 @@ export default function Header({
           "
         >
           <Link
-            href={homeHref}
+            href={`/${locale}`}
             aria-label={`${common.brandName} — ${common.backToTop}`}
-            onClick={closeMenu}
+            onClick={
+              closeMenu
+            }
+            dir="ltr"
             className="
               group
               relative
               z-50
               inline-flex
               min-w-0
+              shrink-0
               items-center
               gap-3
+              rounded-[18px]
+              py-1
+              pe-2
+              transition-all
+              duration-300
+              hover:-translate-y-px
+              focus-visible:outline-none
+              focus-visible:ring-4
+              focus-visible:ring-[#2e5d91]/15
+              sm:gap-4
             "
           >
             <span
               aria-hidden="true"
               className="
+                relative
                 flex
-                h-9
-                w-9
+                h-10
+                w-10
                 shrink-0
                 items-center
                 justify-center
                 rounded-full
                 border
-                border-[#302d29]/14
-                bg-[#ebe4da]
+                border-[#183655]/28
+                bg-[#f7f3ed]
                 font-serif
-                text-[14px]
-                font-medium
+                text-[15px]
+                font-semibold
                 italic
-                text-[#2e5d91]
+                tracking-[-0.06em]
+                text-[#183655]
+                shadow-[0_8px_22px_rgba(24,54,85,0.07)]
                 transition-all
                 duration-300
-                group-hover:border-[#2e5d91]
-                group-hover:bg-[#2e5d91]
-                group-hover:text-white
+                group-hover:border-[#2e5d91]/55
+                group-hover:bg-[#ebe4da]
+                group-hover:text-[#2e5d91]
+                sm:h-11
+                sm:w-11
+                sm:text-[16px]
               "
             >
               SS
             </span>
 
-            <span className="min-w-0">
+            <span
+              className="
+                hidden
+                min-w-0
+                flex-col
+                justify-center
+                sm:flex
+              "
+            >
               <span
-                className={`
-                  block
-                  truncate
-                  text-[#282521]
+                className="
+                  whitespace-nowrap
+                  font-serif
+                  text-[15px]
+                  font-semibold
+                  uppercase
+                  leading-none
+                  tracking-[0.13em]
+                  text-[#183655]
                   transition-colors
                   duration-300
                   group-hover:text-[#2e5d91]
-                  ${
-                    isPersian
-                      ? "font-sans text-[13px] font-[650] leading-none sm:text-[14px]"
-                      : "font-serif text-[16px] font-medium uppercase leading-none tracking-[0.09em] sm:text-[17px]"
-                  }
-                `}
+                  lg:text-[16px]
+                "
               >
-                {common.brandName}
+                Setareh Salehabadi
               </span>
 
               <span
-                className={`
+                className="
                   mt-1.5
-                  hidden
+                  whitespace-nowrap
                   font-sans
+                  text-[7px]
                   font-semibold
+                  uppercase
                   leading-none
-                  text-[#8a8178]
-                  sm:block
-                  ${
-                    isPersian
-                      ? "text-[9px] tracking-normal"
-                      : "text-[9px] uppercase tracking-[0.18em]"
-                  }
-                `}
+                  tracking-[0.29em]
+                  text-[#9a723c]
+                  sm:text-[7.5px]
+                "
               >
-                {common.role}
+                Digital Growth
+                Strategist
               </span>
             </span>
           </Link>
@@ -494,77 +610,63 @@ export default function Header({
               lg:flex
             "
           >
-            {navigation.map(
-              (item) => {
-                const isActive =
-                  isPageLinkActive(
-                    pathname,
-                    item.href
-                  );
-
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    aria-current={
-                      isActive
-                        ? "page"
-                        : undefined
+            {dictionary.navigation.map(
+              (item) => (
+                <Link
+                  key={
+                    item.label
+                  }
+                  href={getNavigationHref(
+                    item.href,
+                    locale,
+                  )}
+                  className="
+                    group
+                    relative
+                    inline-flex
+                    min-h-[44px]
+                    items-center
+                    justify-center
+                    rounded-full
+                    px-4
+                    font-sans
+                    text-[11px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.09em]
+                    text-[#49443f]
+                    transition-all
+                    duration-300
+                    hover:bg-[#ebe4da]
+                    hover:text-[#2e5d91]
+                    focus-visible:outline-none
+                    focus-visible:ring-4
+                    focus-visible:ring-[#2e5d91]/15
+                  "
+                >
+                  <span>
+                    {
+                      item.label
                     }
-                    className={`
-                      group
-                      relative
-                      inline-flex
-                      min-h-[44px]
-                      items-center
-                      justify-center
-                      rounded-full
-                      px-4
-                      font-sans
-                      font-semibold
-                      text-[#49443f]
+                  </span>
+
+                  <span
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      bottom-[5px]
+                      left-1/2
+                      h-px
+                      w-0
+                      -translate-x-1/2
+                      bg-[#2e5d91]
                       transition-all
                       duration-300
-                      hover:bg-[#ebe4da]
-                      hover:text-[#2e5d91]
-                      ${
-                        isPersian
-                          ? "text-[12px] tracking-normal"
-                          : "text-[11px] uppercase tracking-[0.09em]"
-                      }
-                      ${
-                        isActive
-                          ? "bg-[#ebe4da] text-[#2e5d91]"
-                          : ""
-                      }
-                    `}
-                  >
-                    <span>
-                      {item.label}
-                    </span>
-
-                    <span
-                      aria-hidden="true"
-                      className={`
-                        absolute
-                        bottom-[5px]
-                        left-1/2
-                        h-px
-                        -translate-x-1/2
-                        bg-[#2e5d91]
-                        transition-all
-                        duration-300
-                        group-hover:w-[calc(100%-2rem)]
-                        ${
-                          isActive
-                            ? "w-[calc(100%-2rem)]"
-                            : "w-0"
-                        }
-                      `}
-                    />
-                  </Link>
-                );
-              }
+                      group-hover:w-[calc(100%-2rem)]
+                    "
+                  />
+                </Link>
+              ),
             )}
           </nav>
 
@@ -597,7 +699,9 @@ export default function Header({
               "
             >
               {locales.map(
-                (targetLocale) => {
+                (
+                  targetLocale,
+                ) => {
                   const isActive =
                     targetLocale ===
                     locale;
@@ -609,12 +713,9 @@ export default function Header({
                       }
                       href={getLocalizedPath(
                         pathname,
-                        targetLocale
+                        targetLocale,
                       )}
                       hrefLang={
-                        targetLocale
-                      }
-                      lang={
                         targetLocale
                       }
                       aria-current={
@@ -639,6 +740,9 @@ export default function Header({
                         tracking-[0.12em]
                         transition-all
                         duration-300
+                        focus-visible:outline-none
+                        focus-visible:ring-4
+                        focus-visible:ring-[#2e5d91]/15
                         ${
                           isActive
                             ? "bg-[#183655] text-white shadow-[0_6px_14px_rgba(24,54,85,0.15)]"
@@ -646,134 +750,107 @@ export default function Header({
                         }
                       `}
                     >
-                      {
-                        localeShortLabels[
-                          targetLocale
-                        ]
-                      }
+                      <span
+                        style={{
+                          color:
+                            isActive
+                              ? "#ffffff"
+                              : undefined,
+                        }}
+                      >
+                        {
+                          localeShortLabels[
+                            targetLocale
+                          ]
+                        }
+                      </span>
                     </Link>
                   );
-                }
+                },
               )}
             </div>
 
-            {isPersian ? (
-              <Link
-                href={
-                  desktopCtaHref
-                }
+            <a
+              href={
+                workInquiryHref
+              }
+              aria-label={`${dictionary.workWithMe} — ${common.email}`}
+              className="
+                group
+                hidden
+                h-12
+                w-[192px]
+                shrink-0
+                items-center
+                justify-center
+                gap-3
+                rounded-full
+                border
+                border-[#183655]
+                bg-[#183655]
+                px-6
+                font-sans
+                text-[13px]
+                font-semibold
+                leading-none
+                shadow-[0_12px_28px_rgba(24,54,85,0.15)]
+                transition-all
+                duration-300
+                hover:-translate-y-0.5
+                hover:border-[#2e5d91]
+                hover:bg-[#2e5d91]
+                hover:shadow-[0_17px_34px_rgba(46,93,145,0.22)]
+                focus-visible:outline-none
+                focus-visible:ring-4
+                focus-visible:ring-[#2e5d91]/20
+                lg:inline-flex
+              "
+              style={{
+                color:
+                  "#ffffff",
+              }}
+            >
+              <span
                 className="
-                  group
-                  hidden
-                  min-h-[48px]
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  border
-                  border-[#183655]
-                  bg-[#183655]
-                  px-7
-                  font-sans
-                  text-[13px]
-                  font-semibold
-                  leading-none
-                  text-white
-                  shadow-[0_12px_28px_rgba(24,54,85,0.15)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:border-[#2e5d91]
-                  hover:bg-[#2e5d91]
-                  hover:shadow-[0_17px_34px_rgba(46,93,145,0.22)]
-                  focus-visible:outline-none
-                  focus-visible:ring-4
-                  focus-visible:ring-[#2e5d91]/20
-                  lg:inline-flex
+                  whitespace-nowrap
                 "
+                style={{
+                  color:
+                    "#ffffff",
+                }}
               >
-                <span>
-                  {
-                    dictionary
-                      .workWithMe
-                  }
-                </span>
-
-                <span
-                  aria-hidden="true"
-                  className="
-                    text-[16px]
-                    transition-transform
-                    duration-300
-                    group-hover:-translate-y-0.5
-                  "
-                >
-                  ↓
-                </span>
-              </Link>
-            ) : (
-              <a
-                href={
-                  desktopCtaHref
+                {
+                  dictionary
+                    .workWithMe
                 }
-                className="
-                  group
-                  hidden
-                  min-h-[48px]
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  border
-                  border-[#183655]
-                  bg-[#183655]
-                  px-7
-                  font-sans
-                  text-[13px]
-                  font-semibold
-                  leading-none
-                  text-white
-                  shadow-[0_12px_28px_rgba(24,54,85,0.15)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:border-[#2e5d91]
-                  hover:bg-[#2e5d91]
-                  hover:shadow-[0_17px_34px_rgba(46,93,145,0.22)]
-                  focus-visible:outline-none
-                  focus-visible:ring-4
-                  focus-visible:ring-[#2e5d91]/20
-                  lg:inline-flex
-                "
-              >
-                <span>
-                  {
-                    dictionary
-                      .workWithMe
-                  }
-                </span>
+              </span>
 
-                <span
-                  aria-hidden="true"
-                  className="
-                    text-[16px]
-                    transition-transform
-                    duration-300
-                    group-hover:translate-x-0.5
-                    group-hover:-translate-y-0.5
-                  "
-                >
-                  ↗
-                </span>
-              </a>
-            )}
+              <span
+                aria-hidden="true"
+                className="
+                  text-[16px]
+                  transition-transform
+                  duration-300
+                  group-hover:translate-x-0.5
+                  group-hover:-translate-y-0.5
+                "
+                style={{
+                  color:
+                    "#ffffff",
+                }}
+              >
+                ↗
+              </span>
+            </a>
 
             <button
               type="button"
               aria-label={
                 isMenuOpen
-                  ? dictionary.closeMenu
-                  : dictionary.openMenu
+                  ? dictionary
+                      .closeMenu
+                  : dictionary
+                      .openMenu
               }
               aria-expanded={
                 isMenuOpen
@@ -781,8 +858,10 @@ export default function Header({
               aria-controls="mobile-navigation"
               onClick={() =>
                 setIsMenuOpen(
-                  (current) =>
-                    !current
+                  (
+                    current,
+                  ) =>
+                    !current,
                 )
               }
               className="
@@ -875,14 +954,6 @@ export default function Header({
 
       <div
         id="mobile-navigation"
-        role="dialog"
-        aria-modal="true"
-        aria-label={
-          accessibility.mobileDialog
-        }
-        aria-hidden={
-          !isMenuOpen
-        }
         className={`
           fixed
           inset-0
@@ -899,7 +970,7 @@ export default function Header({
           ${
             isMenuOpen
               ? "visible translate-y-0 opacity-100"
-              : "pointer-events-none invisible -translate-y-4 opacity-0"
+              : "invisible -translate-y-4 opacity-0"
           }
         `}
       >
@@ -921,142 +992,184 @@ export default function Header({
             }
           >
             <ul>
-              {navigation.map(
+              {dictionary.navigation.map(
                 (
                   item,
-                  index
-                ) => {
-                  const isActive =
-                    isPageLinkActive(
-                      pathname,
-                      item.href
-                    );
-
-                  return (
-                    <li
-                      key={
-                        item.label
+                  index,
+                ) => (
+                  <li
+                    key={
+                      item.label
+                    }
+                    className="
+                      border-b
+                      border-[#302d29]/15
+                    "
+                  >
+                    <Link
+                      href={getNavigationHref(
+                        item.href,
+                        locale,
+                      )}
+                      onClick={
+                        closeMenu
                       }
                       className="
-                        border-b
-                        border-[#302d29]/15
+                        group
+                        grid
+                        min-h-[78px]
+                        grid-cols-[44px_minmax(0,1fr)_40px]
+                        items-center
+                        gap-3
+                        focus-visible:outline-none
+                        focus-visible:ring-4
+                        focus-visible:ring-[#2e5d91]/15
                       "
                     >
-                      <Link
-                        href={
-                          item.href
-                        }
-                        aria-current={
-                          isActive
-                            ? "page"
-                            : undefined
-                        }
-                        onClick={
-                          closeMenu
-                        }
+                      <span
                         className="
-                          group
-                          grid
-                          min-h-[78px]
-                          grid-cols-[44px_minmax(0,1fr)_40px]
-                          items-center
-                          gap-3
+                          font-sans
+                          text-[10px]
+                          font-semibold
+                          tracking-[0.18em]
+                          text-[#9a9187]
                         "
                       >
-                        <span
-                          className="
-                            font-sans
-                            text-[10px]
-                            font-semibold
-                            tracking-[0.18em]
-                            text-[#9a9187]
-                          "
-                        >
-                          {formatNavigationIndex(
-                            index,
-                            locale
-                          )}
-                        </span>
+                        {formatNavigationIndex(
+                          index,
+                          locale,
+                        )}
+                      </span>
 
-                        <span
-                          className={`
-                            text-[#282521]
-                            transition-colors
-                            duration-300
-                            group-hover:text-[#2e5d91]
-                            ${
-                              isPersian
-                                ? "font-sans text-[clamp(1.4rem,6vw,1.9rem)] font-[650] leading-[1.6] tracking-normal"
-                                : "font-serif text-[clamp(1.7rem,7vw,2.35rem)] font-medium tracking-[-0.035em]"
-                            }
-                            ${
-                              isActive
-                                ? "text-[#2e5d91]"
-                                : ""
-                            }
-                          `}
-                        >
-                          {
-                            item.label
-                          }
-                        </span>
+                      <span
+                        className="
+                          font-serif
+                          text-[clamp(1.7rem,7vw,2.35rem)]
+                          font-medium
+                          tracking-[-0.035em]
+                          text-[#282521]
+                          transition-colors
+                          duration-300
+                          group-hover:text-[#2e5d91]
+                        "
+                      >
+                        {
+                          item.label
+                        }
+                      </span>
 
-                        <span
-                          aria-hidden="true"
-                          className={`
-                            flex
-                            h-9
-                            w-9
-                            items-center
-                            justify-center
-                            rounded-full
-                            border
-                            text-sm
-                            transition-all
-                            duration-300
-                            group-hover:border-[#2e5d91]
-                            group-hover:bg-[#2e5d91]
-                            group-hover:text-white
-                            ${
-                              isActive
-                                ? "border-[#2e5d91] bg-[#2e5d91] text-white"
-                                : "border-[#302d29]/15 text-[#2e5d91]"
-                            }
-                          `}
-                        >
-                          ↓
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                }
+                      <span
+                        aria-hidden="true"
+                        className="
+                          flex
+                          h-9
+                          w-9
+                          items-center
+                          justify-center
+                          rounded-full
+                          border
+                          border-[#302d29]/15
+                          text-sm
+                          text-[#2e5d91]
+                          transition-all
+                          duration-300
+                          group-hover:border-[#2e5d91]
+                          group-hover:bg-[#2e5d91]
+                          group-hover:text-white
+                        "
+                      >
+                        ↗
+                      </span>
+                    </Link>
+                  </li>
+                ),
               )}
+
+              <li
+                className="
+                  border-b
+                  border-[#302d29]/15
+                "
+              >
+                <span
+                  role="link"
+                  aria-disabled="true"
+                  aria-label={`${selfPacedLearning.title} — ${accessibility.disabledNavigation}`}
+                  className="
+                    grid
+                    min-h-[78px]
+                    cursor-default
+                    select-none
+                    grid-cols-[44px_minmax(0,1fr)_auto]
+                    items-center
+                    gap-3
+                    opacity-65
+                  "
+                >
+                  <span
+                    className="
+                      font-sans
+                      text-[10px]
+                      font-semibold
+                      tracking-[0.18em]
+                      text-[#9a9187]
+                    "
+                  >
+                    {formatNavigationIndex(
+                      dictionary
+                        .navigation
+                        .length,
+                      locale,
+                    )}
+                  </span>
+
+                  <span
+                    className="
+                      font-serif
+                      text-[clamp(1.55rem,6.5vw,2.15rem)]
+                      font-medium
+                      tracking-[-0.035em]
+                      text-[#514c46]
+                    "
+                  >
+                    {
+                      selfPacedLearning
+                        .title
+                    }
+                  </span>
+
+                  <span
+                    className="
+                      rounded-full
+                      border
+                      border-[#8a672f]/20
+                      bg-[#f7f3ed]/50
+                      px-3
+                      py-2
+                      font-sans
+                      text-[9px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.12em]
+                      text-[#8a672f]
+                    "
+                  >
+                    {
+                      selfPacedLearning
+                        .status
+                    }
+                  </span>
+                </span>
+              </li>
             </ul>
           </nav>
 
           <div
             className="
               mt-auto
-              pt-10
+              pt-8
             "
           >
-            <p
-              className={`
-                max-w-[580px]
-                text-[#292621]
-                ${
-                  isPersian
-                    ? "font-sans text-[clamp(1.25rem,5.5vw,1.75rem)] font-[650] leading-[1.9]"
-                    : "font-serif text-[clamp(1.65rem,6.5vw,2.35rem)] font-medium leading-[1.15] tracking-[-0.035em]"
-                }
-              `}
-            >
-              {
-                dictionary
-                  .mobileStatement
-              }
-            </p>
-
             <div
               dir="ltr"
               role="group"
@@ -1065,19 +1178,21 @@ export default function Header({
                   .languageSwitcher
               }
               className="
-                mt-7
                 flex
                 w-fit
                 items-center
                 rounded-full
                 border
-                border-[#302d29]/12
-                bg-[#f7f3ed]/65
-                p-1
+                border-[#302d29]/15
+                bg-[#f7f3ed]/70
+                p-1.5
+                sm:hidden
               "
             >
               {locales.map(
-                (targetLocale) => {
+                (
+                  targetLocale,
+                ) => {
                   const isActive =
                     targetLocale ===
                     locale;
@@ -1089,12 +1204,9 @@ export default function Header({
                       }
                       href={getLocalizedPath(
                         pathname,
-                        targetLocale
+                        targetLocale,
                       )}
                       hrefLang={
-                        targetLocale
-                      }
-                      lang={
                         targetLocale
                       }
                       aria-current={
@@ -1107,18 +1219,21 @@ export default function Header({
                       }
                       className={`
                         flex
-                        h-9
-                        min-w-10
+                        h-10
+                        min-w-12
                         items-center
                         justify-center
                         rounded-full
                         px-3
                         font-sans
-                        text-[9px]
+                        text-[11px]
                         font-bold
                         tracking-[0.12em]
                         transition-all
                         duration-300
+                        focus-visible:outline-none
+                        focus-visible:ring-4
+                        focus-visible:ring-[#2e5d91]/15
                         ${
                           isActive
                             ? "bg-[#183655] text-white shadow-[0_8px_18px_rgba(24,54,85,0.16)]"
@@ -1126,137 +1241,98 @@ export default function Header({
                         }
                       `}
                     >
-                      {
-                        localeShortLabels[
-                          targetLocale
-                        ]
-                      }
+                      <span
+                        style={{
+                          color:
+                            isActive
+                              ? "#ffffff"
+                              : undefined,
+                        }}
+                      >
+                        {
+                          localeShortLabels[
+                            targetLocale
+                          ]
+                        }
+                      </span>
                     </Link>
                   );
-                }
+                },
               )}
             </div>
 
-            {isPersian ? (
-              <Link
-                href={
-                  mobileCtaHref
-                }
-                onClick={
-                  closeMenu
-                }
-                className="
-                  group
-                  mt-7
-                  inline-flex
-                  min-h-[58px]
-                  w-full
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  border
-                  border-[#183655]
-                  bg-[#183655]
-                  px-8
-                  font-sans
-                  text-[15px]
-                  font-semibold
-                  leading-none
-                  text-white
-                  shadow-[0_14px_30px_rgba(24,54,85,0.18)]
-                  transition-all
-                  duration-300
-                  hover:border-[#2e5d91]
-                  hover:bg-[#2e5d91]
-                  hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
-                  focus-visible:outline-none
-                  focus-visible:ring-4
-                  focus-visible:ring-[#2e5d91]/20
-                  sm:w-auto
-                  sm:text-[16px]
-                "
+            <a
+              href={
+                workInquiryHref
+              }
+              aria-label={`${dictionary.mobileCta} — ${common.email}`}
+              onClick={
+                closeMenu
+              }
+              className="
+                group
+                mt-7
+                inline-flex
+                min-h-[58px]
+                w-full
+                items-center
+                justify-center
+                gap-3
+                rounded-full
+                border
+                border-[#183655]
+                bg-[#183655]
+                px-8
+                font-sans
+                text-[15px]
+                font-semibold
+                leading-none
+                shadow-[0_14px_30px_rgba(24,54,85,0.18)]
+                transition-all
+                duration-300
+                hover:border-[#2e5d91]
+                hover:bg-[#2e5d91]
+                hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
+                focus-visible:outline-none
+                focus-visible:ring-4
+                focus-visible:ring-[#2e5d91]/20
+                sm:w-auto
+                sm:text-[16px]
+              "
+              style={{
+                color:
+                  "#ffffff",
+              }}
+            >
+              <span
+                style={{
+                  color:
+                    "#ffffff",
+                }}
               >
-                <span>
-                  {
-                    dictionary
-                      .mobileCta
-                  }
-                </span>
+                {
+                  dictionary
+                    .mobileCta
+                }
+              </span>
 
-                <span
-                  aria-hidden="true"
-                  className="
-                    text-[18px]
-                    transition-transform
-                    duration-300
-                    group-hover:-translate-y-0.5
-                  "
-                >
-                  ↓
-                </span>
-              </Link>
-            ) : (
-              <a
-                href={
-                  mobileCtaHref
-                }
-                onClick={
-                  closeMenu
-                }
+              <span
+                aria-hidden="true"
                 className="
-                  group
-                  mt-7
-                  inline-flex
-                  min-h-[58px]
-                  w-full
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  border
-                  border-[#183655]
-                  bg-[#183655]
-                  px-8
-                  font-sans
-                  text-[15px]
-                  font-semibold
-                  leading-none
-                  text-white
-                  shadow-[0_14px_30px_rgba(24,54,85,0.18)]
-                  transition-all
+                  text-[18px]
+                  transition-transform
                   duration-300
-                  hover:border-[#2e5d91]
-                  hover:bg-[#2e5d91]
-                  hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
-                  focus-visible:outline-none
-                  focus-visible:ring-4
-                  focus-visible:ring-[#2e5d91]/20
-                  sm:w-auto
-                  sm:text-[16px]
+                  group-hover:translate-x-0.5
+                  group-hover:-translate-y-0.5
                 "
+                style={{
+                  color:
+                    "#ffffff",
+                }}
               >
-                <span>
-                  {
-                    dictionary
-                      .mobileCta
-                  }
-                </span>
-
-                <span
-                  aria-hidden="true"
-                  className="
-                    text-[18px]
-                    transition-transform
-                    duration-300
-                    group-hover:translate-x-0.5
-                    group-hover:-translate-y-0.5
-                  "
-                >
-                  ↗
-                </span>
-              </a>
-            )}
+                ↗
+              </span>
+            </a>
 
             <div
               className="
@@ -1281,47 +1357,31 @@ export default function Header({
                 }
               </span>
 
-              {isPersian ? (
-                <Link
-                  href={
-                    mobileFooterHref
-                  }
-                  onClick={
-                    closeMenu
-                  }
-                  className="
-                    font-semibold
-                    text-[#183655]
-                    transition-colors
-                    duration-300
-                    hover:text-[#2e5d91]
-                  "
-                >
-                  {
-                    mobileFooterLabel
-                  }
-                </Link>
-              ) : (
-                <a
-                  href={
-                    mobileFooterHref
-                  }
-                  onClick={
-                    closeMenu
-                  }
-                  className="
-                    font-semibold
-                    text-[#183655]
-                    transition-colors
-                    duration-300
-                    hover:text-[#2e5d91]
-                  "
-                >
-                  {
-                    mobileFooterLabel
-                  }
-                </a>
-              )}
+              <a
+                href={
+                  mobileFooterHref
+                }
+                onClick={
+                  closeMenu
+                }
+                className="
+                  inline-flex
+                  min-h-11
+                  items-center
+                  font-semibold
+                  text-[#183655]
+                  transition-colors
+                  duration-300
+                  hover:text-[#2e5d91]
+                  focus-visible:outline-none
+                  focus-visible:ring-4
+                  focus-visible:ring-[#2e5d91]/20
+                "
+              >
+                {
+                  mobileFooterLabel
+                }
+              </a>
             </div>
           </div>
         </div>

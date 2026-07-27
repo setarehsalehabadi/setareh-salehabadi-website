@@ -1,16 +1,27 @@
 import type { MetadataRoute } from "next";
 
 import {
-  locales,
-  type Locale,
-} from "@/i18n/config";
+  expertiseSlugs,
+} from "@/content/expertise-pages";
 
-const siteUrl =
+import {
+  getResearchArticles,
+} from "@/lib/research";
+
+const SITE_URL =
   "https://setarehsalehabadi.com";
 
-const localizedRoutes = [
+const locales = [
+  "en",
+  "de",
+  "fa",
+] as const;
+
+const staticRoutes = [
   "",
   "/about",
+  "/expertise",
+  "/growth-system",
   "/case-studies",
   "/research",
   "/courses",
@@ -18,57 +29,144 @@ const localizedRoutes = [
   "/terms",
 ] as const;
 
-type LocalizedRoute =
-  (typeof localizedRoutes)[number];
-
-function createLocalizedUrl(
-  locale: Locale,
-  route: LocalizedRoute
-) {
-  return `${siteUrl}/${locale}${route}`;
-}
-
-function createLanguageAlternates(
-  route: LocalizedRoute
+function createAlternates(
+  route: string,
 ) {
   return {
-    en: createLocalizedUrl(
-      "en",
-      route
-    ),
+    languages: {
+      en:
+        `${SITE_URL}/en${route}`,
 
-    de: createLocalizedUrl(
-      "de",
-      route
-    ),
+      de:
+        `${SITE_URL}/de${route}`,
 
-    fa: createLocalizedUrl(
-      "fa",
-      route
-    ),
+      fa:
+        `${SITE_URL}/fa${route}`,
 
-    "x-default": createLocalizedUrl(
-      "en",
-      route
-    ),
+      "x-default":
+        `${SITE_URL}/en${route}`,
+    },
   };
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return localizedRoutes.flatMap(
-    (route) =>
-      locales.map((locale) => ({
-        url: createLocalizedUrl(
-          locale,
-          route
-        ),
+function getStaticPagePriority(
+  route: string,
+): number {
+  if (route === "") {
+    return 1;
+  }
 
-        alternates: {
-          languages:
-            createLanguageAlternates(
-              route
-            ),
-        },
-      }))
-  );
+  if (route === "/research") {
+    return 0.9;
+  }
+
+  if (
+    route === "/expertise" ||
+    route === "/growth-system" ||
+    route === "/case-studies"
+  ) {
+    return 0.8;
+  }
+
+  return 0.7;
+}
+
+function getStaticPageFrequency(
+  route: string,
+): MetadataRoute.Sitemap[number]["changeFrequency"] {
+  if (route === "") {
+    return "weekly";
+  }
+
+  if (route === "/research") {
+    return "daily";
+  }
+
+  return "monthly";
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const researchArticles =
+    await getResearchArticles();
+
+  const staticPages: MetadataRoute.Sitemap =
+    staticRoutes.flatMap(
+      (route) =>
+        locales.map(
+          (locale) => ({
+            url:
+              `${SITE_URL}/${locale}${route}`,
+
+            lastModified:
+              new Date(),
+
+            changeFrequency:
+              getStaticPageFrequency(
+                route,
+              ),
+
+            priority:
+              getStaticPagePriority(
+                route,
+              ),
+
+            alternates:
+              createAlternates(route),
+          }),
+        ),
+    );
+
+  const expertisePages: MetadataRoute.Sitemap =
+    expertiseSlugs.flatMap(
+      (slug) => {
+        const route =
+          `/expertise/${slug}`;
+
+        return locales.map(
+          (locale) => ({
+            url:
+              `${SITE_URL}/${locale}${route}`,
+
+            lastModified:
+              new Date(),
+
+            changeFrequency:
+              "monthly",
+
+            priority:
+              0.8,
+
+            alternates:
+              createAlternates(route),
+          }),
+        );
+      },
+    );
+
+  const researchPages: MetadataRoute.Sitemap =
+    researchArticles.map(
+      (article) => ({
+        url:
+          `${SITE_URL}/fa/research/${article.slug}`,
+
+        lastModified:
+          article.date
+            ? new Date(
+                article.date,
+              )
+            : new Date(),
+
+        changeFrequency:
+          "monthly",
+
+        priority:
+          0.8,
+      }),
+    );
+
+  return [
+    ...staticPages,
+    ...expertisePages,
+    ...researchPages,
+  ];
 }

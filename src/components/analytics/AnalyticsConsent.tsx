@@ -6,9 +6,12 @@ import { usePathname } from "next/navigation";
 import {
   useEffect,
   useState,
+  useSyncExternalStore,
 } from "react";
 
-import type { Locale } from "@/i18n/config";
+import type {
+  Locale,
+} from "@/i18n/config";
 
 declare global {
   interface Window {
@@ -41,6 +44,12 @@ type ConsentCopy = {
 
 const CONSENT_STORAGE_KEY =
   "setareh-analytics-consent-v1";
+
+const CONSENT_CHANGE_EVENT =
+  "setareh-analytics-consent-change";
+
+let inMemoryConsentChoice:
+  ConsentChoice = null;
 
 const copyByLocale: Record<
   Locale,
@@ -116,6 +125,147 @@ const copyByLocale: Record<
   },
 };
 
+function isValidConsentChoice(
+  value: unknown,
+): value is Exclude<
+  ConsentChoice,
+  null
+> {
+  return (
+    value === "accepted" ||
+    value === "rejected"
+  );
+}
+
+function readConsentChoice():
+  ConsentChoice {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return null;
+  }
+
+  try {
+    const storedChoice =
+      window.localStorage.getItem(
+        CONSENT_STORAGE_KEY,
+      );
+
+    if (
+      isValidConsentChoice(
+        storedChoice,
+      )
+    ) {
+      inMemoryConsentChoice =
+        storedChoice;
+
+      return storedChoice;
+    }
+  } catch {
+    return inMemoryConsentChoice;
+  }
+
+  return inMemoryConsentChoice;
+}
+
+function getServerConsentChoice():
+  ConsentChoice {
+  return null;
+}
+
+function subscribeToConsentChoice(
+  onStoreChange: () => void,
+): () => void {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return () => {};
+  }
+
+  const handleStorageChange = (
+    event: StorageEvent,
+  ) => {
+    if (
+      event.key ===
+      CONSENT_STORAGE_KEY
+    ) {
+      onStoreChange();
+    }
+  };
+
+  const handleLocalChange =
+    () => {
+      onStoreChange();
+    };
+
+  window.addEventListener(
+    "storage",
+    handleStorageChange,
+  );
+
+  window.addEventListener(
+    CONSENT_CHANGE_EVENT,
+    handleLocalChange,
+  );
+
+  return () => {
+    window.removeEventListener(
+      "storage",
+      handleStorageChange,
+    );
+
+    window.removeEventListener(
+      CONSENT_CHANGE_EVENT,
+      handleLocalChange,
+    );
+  };
+}
+
+function subscribeToHydration():
+  () => void {
+  return () => {};
+}
+
+function getClientHydrationSnapshot():
+  boolean {
+  return true;
+}
+
+function getServerHydrationSnapshot():
+  boolean {
+  return false;
+}
+
+function persistConsentChoice(
+  choice: Exclude<
+    ConsentChoice,
+    null
+  >,
+): void {
+  inMemoryConsentChoice =
+    choice;
+
+  try {
+    window.localStorage.setItem(
+      CONSENT_STORAGE_KEY,
+      choice,
+    );
+  } catch {
+    /*
+     * اگر Local Storage مسدود باشد،
+     * انتخاب برای نشست فعلی در حافظه می‌ماند.
+     */
+  }
+
+  window.dispatchEvent(
+    new Event(
+      CONSENT_CHANGE_EVENT,
+    ),
+  );
+}
+
 function deleteAnalyticsCookies() {
   if (
     typeof document ===
@@ -129,18 +279,19 @@ function deleteAnalyticsCookies() {
   const cookieNames =
     document.cookie
       .split(";")
-      .map((cookie) =>
-        cookie
-          .split("=")[0]
-          ?.trim()
+      .map(
+        (cookie) =>
+          cookie
+            .split("=")[0]
+            ?.trim(),
       )
       .filter(
         (cookieName) =>
           cookieName ===
             "_ga" ||
           cookieName?.startsWith(
-            "_ga_"
-          )
+            "_ga_",
+          ),
       );
 
   const hostname =
@@ -164,7 +315,7 @@ function deleteAnalyticsCookies() {
         `.${hostname}`,
         rootDomain,
         `.${rootDomain}`,
-      ])
+      ]),
     );
 
   cookieNames.forEach(
@@ -186,9 +337,9 @@ function deleteAnalyticsCookies() {
             "path=/" +
             domainAttribute +
             "; SameSite=Lax";
-        }
+        },
       );
-    }
+    },
   );
 }
 
@@ -198,22 +349,23 @@ export default function AnalyticsConsent({
   const pathname =
     usePathname();
 
-  const [
-    consentChoice,
-    setConsentChoice,
-  ] =
-    useState<ConsentChoice>(
-      null
+  const consentChoice =
+    useSyncExternalStore(
+      subscribeToConsentChoice,
+      readConsentChoice,
+      getServerConsentChoice,
+    );
+
+  const isHydrated =
+    useSyncExternalStore(
+      subscribeToHydration,
+      getClientHydrationSnapshot,
+      getServerHydrationSnapshot,
     );
 
   const [
     isPreferenceOpen,
     setIsPreferenceOpen,
-  ] = useState(false);
-
-  const [
-    isStorageChecked,
-    setIsStorageChecked,
   ] = useState(false);
 
   const [
@@ -230,8 +382,8 @@ export default function AnalyticsConsent({
     Boolean(
       measurementId &&
         /^G-[A-Z0-9]+$/i.test(
-          measurementId
-        )
+          measurementId,
+        ),
     );
 
   const isProduction =
@@ -239,7 +391,7 @@ export default function AnalyticsConsent({
     "production";
 
   const shouldLoadAnalytics =
-    isStorageChecked &&
+    isHydrated &&
     consentChoice ===
       "accepted" &&
     hasValidMeasurementId &&
@@ -250,32 +402,6 @@ export default function AnalyticsConsent({
 
   const isPersian =
     locale === "fa";
-
-  useEffect(() => {
-    try {
-      const savedChoice =
-        window.localStorage.getItem(
-          CONSENT_STORAGE_KEY
-        );
-
-      if (
-        savedChoice ===
-          "accepted" ||
-        savedChoice ===
-          "rejected"
-      ) {
-        setConsentChoice(
-          savedChoice
-        );
-      }
-    } catch {
-      setConsentChoice(null);
-    } finally {
-      setIsStorageChecked(
-        true
-      );
-    }
-  }, []);
 
   useEffect(() => {
     if (
@@ -299,7 +425,7 @@ export default function AnalyticsConsent({
 
         page_path:
           pathname,
-      }
+      },
     );
   }, [
     isGoogleTagReady,
@@ -312,28 +438,22 @@ export default function AnalyticsConsent({
     choice: Exclude<
       ConsentChoice,
       null
-    >
+    >,
   ) => {
-    try {
-      window.localStorage.setItem(
-        CONSENT_STORAGE_KEY,
-        choice
-      );
-    } catch {
-      // The choice remains active
-      // for the current page session.
-    }
-
-    setConsentChoice(choice);
+    persistConsentChoice(
+      choice,
+    );
 
     setIsPreferenceOpen(
-      false
+      false,
     );
   };
 
   const acceptAnalytics =
     () => {
-      saveChoice("accepted");
+      saveChoice(
+        "accepted",
+      );
     };
 
   const rejectAnalytics =
@@ -358,13 +478,15 @@ export default function AnalyticsConsent({
 
             ad_personalization:
               "denied",
-          }
+          },
         );
       }
 
       deleteAnalyticsCookies();
 
-      saveChoice("rejected");
+      saveChoice(
+        "rejected",
+      );
 
       if (
         wasPreviouslyAccepted
@@ -373,16 +495,18 @@ export default function AnalyticsConsent({
           () => {
             window.location.reload();
           },
-          0
+          0,
         );
       }
     };
 
   const showDialog =
-    isStorageChecked &&
-    (consentChoice ===
-      null ||
-      isPreferenceOpen);
+    isHydrated &&
+    (
+      consentChoice ===
+        null ||
+      isPreferenceOpen
+    );
 
   return (
     <>
@@ -400,7 +524,7 @@ export default function AnalyticsConsent({
             strategy="afterInteractive"
             onReady={() => {
               setIsGoogleTagReady(
-                true
+                true,
               );
             }}
           >
@@ -532,6 +656,9 @@ export default function AnalyticsConsent({
                   underline-offset-4
                   transition-colors
                   hover:text-[#183655]
+                  focus-visible:outline-none
+                  focus-visible:ring-4
+                  focus-visible:ring-[#2e5d91]/15
                 "
               >
                 {
@@ -615,31 +742,31 @@ export default function AnalyticsConsent({
         </div>
       ) : null}
 
-      {isStorageChecked &&
+      {isHydrated &&
       consentChoice !== null &&
       !isPreferenceOpen ? (
         <button
           type="button"
           onClick={() => {
             setIsPreferenceOpen(
-              true
+              true,
             );
           }}
           className={`
             fixed
-            bottom-4
-            z-[90]
-            min-h-10
+            bottom-3
+            z-30
+            min-h-9
             rounded-full
             border
             border-[#302d29]/15
-            bg-[#f7f3ed]/95
-            px-4
+            bg-[#f7f3ed]/92
+            px-3
             font-sans
-            text-[11px]
+            text-[10px]
             font-semibold
             text-[#514b45]
-            shadow-[0_10px_28px_rgba(24,54,85,0.12)]
+            shadow-[0_8px_22px_rgba(24,54,85,0.1)]
             backdrop-blur-md
             transition-all
             duration-300
@@ -648,10 +775,14 @@ export default function AnalyticsConsent({
             focus-visible:outline-none
             focus-visible:ring-4
             focus-visible:ring-[#2e5d91]/15
+            sm:bottom-4
+            sm:min-h-10
+            sm:px-4
+            sm:text-[11px]
             ${
               isPersian
-                ? "right-4"
-                : "left-4"
+                ? "right-3 sm:right-4"
+                : "left-3 sm:left-4"
             }
           `}
         >

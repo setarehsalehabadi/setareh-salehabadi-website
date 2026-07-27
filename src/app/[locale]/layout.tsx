@@ -1,5 +1,15 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import type {
+  ReactNode,
+} from "react";
+
+import type {
+  Metadata,
+} from "next";
+
+import {
+  notFound,
+} from "next/navigation";
+
 import {
   Cormorant_Garamond,
   Manrope,
@@ -7,6 +17,7 @@ import {
 } from "next/font/google";
 
 import Schema from "@/app/schema";
+
 import AnalyticsConsent from "@/components/analytics/AnalyticsConsent";
 
 import {
@@ -20,14 +31,22 @@ import {
 import "../globals.css";
 
 const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
+  subsets: [
+    "latin",
+  ],
+
+  variable:
+    "--font-manrope",
+
+  display:
+    "swap",
 });
 
 const cormorant =
   Cormorant_Garamond({
-    subsets: ["latin"],
+    subsets: [
+      "latin",
+    ],
 
     weight: [
       "400",
@@ -44,24 +63,22 @@ const cormorant =
     variable:
       "--font-cormorant",
 
-    display: "swap",
+    display:
+      "swap",
   });
 
-const vazirmatn = Vazirmatn({
-  subsets: ["arabic"],
+const vazirmatn =
+  Vazirmatn({
+    subsets: [
+      "arabic",
+    ],
 
-  weight: [
-    "400",
-    "500",
-    "600",
-    "700",
-  ],
+    variable:
+      "--font-vazirmatn",
 
-  variable:
-    "--font-vazirmatn",
-
-  display: "swap",
-});
+    display:
+      "swap",
+  });
 
 const siteUrl =
   "https://setarehsalehabadi.com";
@@ -71,9 +88,13 @@ const socialImagePath =
 
 type LocalizedMetadata = {
   title: string;
+
   description: string;
+
   keywords: string[];
+
   openGraphLocale: string;
+
   socialImageAlt: string;
 };
 
@@ -165,7 +186,8 @@ const metadataByLocale: Record<
 };
 
 type LocaleLayoutProps = {
-  children: React.ReactNode;
+  children:
+    ReactNode;
 
   params: Promise<{
     locale: string;
@@ -182,7 +204,7 @@ export function generateStaticParams() {
   return locales.map(
     (locale) => ({
       locale,
-    })
+    }),
   );
 }
 
@@ -193,7 +215,11 @@ export async function generateMetadata({
     locale: localeParam,
   } = await params;
 
-  if (!isLocale(localeParam)) {
+  if (
+    !isLocale(
+      localeParam,
+    )
+  ) {
     notFound();
   }
 
@@ -201,23 +227,30 @@ export async function generateMetadata({
     localeParam;
 
   const localizedMetadata =
-    metadataByLocale[locale];
+    metadataByLocale[
+      locale
+    ];
 
   const canonicalUrl =
     `${siteUrl}/${locale}`;
 
   return {
     metadataBase:
-      new URL(siteUrl),
+      new URL(
+        siteUrl,
+      ),
 
     title:
-      localizedMetadata.title,
+      localizedMetadata
+        .title,
 
     description:
-      localizedMetadata.description,
+      localizedMetadata
+        .description,
 
     keywords:
-      localizedMetadata.keywords,
+      localizedMetadata
+        .keywords,
 
     applicationName:
       "Setareh Salehabadi",
@@ -237,10 +270,12 @@ export async function generateMetadata({
 
     publisher:
       "Setareh Salehabadi",
-verification: {
-  google:
-    "hWQ288DEcelI4z4KirtrBsSLEV_jwVii3lIQLISpx9g",
-},
+
+    verification: {
+      google:
+        "hWQ288DEcelI4z4KirtrBsSLEV_jwVii3lIQLISpx9g",
+    },
+
     alternates: {
       canonical:
         canonicalUrl,
@@ -279,17 +314,21 @@ verification: {
         "de_DE",
         "fa_IR",
       ].filter(
-        (openGraphLocale) =>
+        (
+          openGraphLocale,
+        ) =>
           openGraphLocale !==
           localizedMetadata
-            .openGraphLocale
+            .openGraphLocale,
       ),
 
       title:
-        localizedMetadata.title,
+        localizedMetadata
+          .title,
 
       description:
-        localizedMetadata.description,
+        localizedMetadata
+          .description,
 
       images: [
         {
@@ -308,10 +347,12 @@ verification: {
         "summary_large_image",
 
       title:
-        localizedMetadata.title,
+        localizedMetadata
+          .title,
 
       description:
-        localizedMetadata.description,
+        localizedMetadata
+          .description,
 
       images: [
         socialImagePath,
@@ -319,12 +360,18 @@ verification: {
     },
 
     robots: {
-      index: true,
-      follow: true,
+      index:
+        true,
+
+      follow:
+        true,
 
       googleBot: {
-        index: true,
-        follow: true,
+        index:
+          true,
+
+        follow:
+          true,
 
         "max-image-preview":
           "large",
@@ -350,7 +397,11 @@ export default async function LocaleLayout({
     locale: localeParam,
   } = await params;
 
-  if (!isLocale(localeParam)) {
+  if (
+    !isLocale(
+      localeParam,
+    )
+  ) {
     notFound();
   }
 
@@ -358,15 +409,23 @@ export default async function LocaleLayout({
     localeParam;
 
   const direction =
-    localeDirections[locale];
+    localeDirections[
+      locale
+    ];
 
   const htmlLanguage =
-    localeHtmlLanguages[locale];
+    localeHtmlLanguages[
+      locale
+    ];
 
   return (
     <html
-      lang={htmlLanguage}
-      dir={direction}
+      lang={
+        htmlLanguage
+      }
+      dir={
+        direction
+      }
     >
       <body
         className={`
@@ -380,13 +439,17 @@ export default async function LocaleLayout({
         `}
       >
         <Schema
-          locale={locale}
+          locale={
+            locale
+          }
         />
 
         {children}
 
         <AnalyticsConsent
-          locale={locale}
+          locale={
+            locale
+          }
         />
       </body>
     </html>

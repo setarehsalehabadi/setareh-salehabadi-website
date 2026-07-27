@@ -7,17 +7,29 @@ import Header from "@/components/Header";
 import Footer from "@/components/sections/Footer";
 
 import {
+  expertiseSlugs,
+} from "@/content/expertise-pages";
+
+import {
   isLocale,
   type Locale,
 } from "@/i18n/config";
 
 import {
   getDictionary,
-  type Dictionary,
 } from "@/i18n/get-dictionary";
 
 const siteUrl =
   "https://setarehsalehabadi.com";
+
+const openGraphLocales: Record<
+  Locale,
+  string
+> = {
+  en: "en_US",
+  de: "de_DE",
+  fa: "fa_IR",
+};
 
 type AboutPageProps = {
   params: Promise<{
@@ -359,73 +371,6 @@ const aboutPageContent: Record<
   },
 };
 
-function prefixHomeHash(
-  href: string,
-  locale: Locale
-) {
-  if (!href.startsWith("#")) {
-    return href;
-  }
-
-  return `/${locale}${href}`;
-}
-
-function createInternalPageHeader(
-  dictionary: Dictionary,
-  locale: Locale
-) {
-  return {
-    ...dictionary.header,
-
-    navigation:
-      dictionary.header.navigation.map(
-        (item) => ({
-          ...item,
-          href: prefixHomeHash(
-            item.href,
-            locale
-          ),
-        })
-      ),
-  } as unknown as Dictionary["header"];
-}
-
-function createInternalPageFooter(
-  dictionary: Dictionary,
-  locale: Locale
-) {
-  return {
-    ...dictionary.footer,
-
-    primaryCta: {
-      ...dictionary.footer.primaryCta,
-      href: prefixHomeHash(
-        dictionary.footer.primaryCta.href,
-        locale
-      ),
-    },
-
-    secondaryCta: {
-      ...dictionary.footer.secondaryCta,
-      href: prefixHomeHash(
-        dictionary.footer.secondaryCta.href,
-        locale
-      ),
-    },
-
-    navigation:
-      dictionary.footer.navigation.map(
-        (item) => ({
-          ...item,
-          href: prefixHomeHash(
-            item.href,
-            locale
-          ),
-        })
-      ),
-  } as unknown as Dictionary["footer"];
-}
-
 export async function generateMetadata({
   params,
 }: AboutPageProps): Promise<Metadata> {
@@ -476,6 +421,18 @@ export async function generateMetadata({
       siteName:
         "Setareh Salehabadi",
 
+      locale:
+        openGraphLocales[locale],
+
+      alternateLocale:
+        Object.values(
+          openGraphLocales
+        ).filter(
+          (openGraphLocale) =>
+            openGraphLocale !==
+            openGraphLocales[locale]
+        ),
+
       images: [
         {
           url: "/images/about/about.png",
@@ -525,18 +482,6 @@ export default async function AboutPage({
   const content =
     aboutPageContent[locale];
 
-  const headerDictionary =
-    createInternalPageHeader(
-      dictionary,
-      locale
-    );
-
-  const footerDictionary =
-    createInternalPageFooter(
-      dictionary,
-      locale
-    );
-
   return (
     <div
       id="top"
@@ -548,7 +493,7 @@ export default async function AboutPage({
     >
       <Header
         locale={locale}
-        dictionary={headerDictionary}
+        dictionary={dictionary.header}
         common={dictionary.common}
       />
 
@@ -731,7 +676,7 @@ export default async function AboutPage({
                   "
                 >
                   <Link
-                    href={`/${locale}#research`}
+                    href={`/${locale}/research`}
                     className={`
                       inline-flex
                       min-h-[56px]
@@ -765,7 +710,7 @@ export default async function AboutPage({
                   </Link>
 
                   <Link
-                    href={`/${locale}#case-studies`}
+                    href={`/${locale}/case-studies`}
                     className={`
                       inline-flex
                       min-h-[56px]
@@ -1250,30 +1195,59 @@ export default async function AboutPage({
                   "
                 >
                   {dictionary.about.focusAreas.map(
-                    (area) => (
-                      <span
-                        key={area}
-                        dir="auto"
-                        className={`
-                          rounded-full
-                          border
-                          border-[#302d29]/15
-                          bg-[#ebe4da]/45
-                          px-4
-                          py-2.5
-                          font-sans
-                          font-medium
-                          text-[#625d56]
-                          ${
-                            isPersian
-                              ? "text-[12px] leading-6"
-                              : "text-[12px]"
-                          }
-                        `}
-                      >
-                        {area}
-                      </span>
-                    )
+                    (area, index) => {
+                      const expertiseSlug =
+                        expertiseSlugs[index];
+
+                      const className = `
+                        rounded-full
+                        border
+                        border-[#302d29]/15
+                        bg-[#ebe4da]/45
+                        px-4
+                        py-2.5
+                        font-sans
+                        font-medium
+                        text-[#625d56]
+                        ${
+                          isPersian
+                            ? "text-[12px] leading-6"
+                            : "text-[12px]"
+                        }
+                      `;
+
+                      if (!expertiseSlug) {
+                        return (
+                          <span
+                            key={area}
+                            dir="auto"
+                            className={className}
+                          >
+                            {area}
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={area}
+                          href={`/${locale}/expertise/${expertiseSlug}`}
+                          dir="auto"
+                          className={`
+                            ${className}
+                            transition-colors
+                            duration-300
+                            hover:border-[#2e5d91]/35
+                            hover:text-[#2e5d91]
+                            focus-visible:outline-none
+                            focus-visible:ring-4
+                            focus-visible:ring-[#2e5d91]/10
+                          `}
+                        >
+                          {area}
+                        </Link>
+                      );
+                    }
                   )}
                 </div>
 
@@ -1394,7 +1368,7 @@ export default async function AboutPage({
                   "
                 >
                   <Link
-                    href={`/${locale}#research`}
+                    href={`/${locale}/research`}
                     className={`
                       inline-flex
                       min-h-[56px]
@@ -1423,7 +1397,7 @@ export default async function AboutPage({
                   </Link>
 
                   <Link
-                    href={`/${locale}#case-studies`}
+                    href={`/${locale}/case-studies`}
                     className={`
                       inline-flex
                       min-h-[56px]
@@ -1462,7 +1436,7 @@ export default async function AboutPage({
 
       <Footer
         locale={locale}
-        dictionary={footerDictionary}
+        dictionary={dictionary.footer}
         common={dictionary.common}
       />
     </div>

@@ -5,7 +5,7 @@ const fa = {
   common: {
     brandName: "ستاره صالح‌آبادی",
     role: "استراتژیست رشد دیجیتال",
-    email: "hello@setarehsalehabadi.com",
+    email: "salehabadi.setareh@gmail.com",
     linkedinLabel: "لینکدین",
     emailLabel: "ایمیل",
     backToTop: "بازگشت به بالای صفحه",

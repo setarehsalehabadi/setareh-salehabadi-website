@@ -13,11 +13,19 @@ import {
 
 import {
   getDictionary,
-  type Dictionary,
 } from "@/i18n/get-dictionary";
 
 const siteUrl =
   "https://setarehsalehabadi.com";
+
+const openGraphLocales: Record<
+  Locale,
+  string
+> = {
+  en: "en_US",
+  de: "de_DE",
+  fa: "fa_IR",
+};
 
 type CaseStudiesPageProps = {
   params: Promise<{
@@ -326,57 +334,6 @@ const pageContent: Record<
   },
 };
 
-function prefixHomeHash(
-  href: string,
-  locale: Locale
-) {
-  if (!href.startsWith("#")) {
-    return href;
-  }
-
-  return `/${locale}${href}`;
-}
-
-function createInternalPageHeader(
-  dictionary: Dictionary,
-  locale: Locale
-) {
-  return {
-    ...dictionary.header,
-
-    navigation:
-      dictionary.header.navigation.map(
-        (item) => ({
-          ...item,
-          href: prefixHomeHash(
-            item.href,
-            locale
-          ),
-        })
-      ),
-  } as unknown as Dictionary["header"];
-}
-
-function createInternalPageFooter(
-  dictionary: Dictionary,
-  locale: Locale
-) {
-  return {
-    ...dictionary.footer,
-
-    navigation:
-      dictionary.footer.navigation.map(
-        (item) => ({
-          ...item,
-          href: prefixHomeHash(
-            item.href,
-            locale
-          ),
-        })
-      ),
-  } as unknown as Dictionary["footer"];
-}
-
 function formatNumber(
   value: number,
   locale: Locale
@@ -449,6 +406,18 @@ export async function generateMetadata({
       siteName:
         "Setareh Salehabadi",
 
+      locale:
+        openGraphLocales[locale],
+
+      alternateLocale:
+        Object.values(
+          openGraphLocales
+        ).filter(
+          (openGraphLocale) =>
+            openGraphLocale !==
+            openGraphLocales[locale]
+        ),
+
       images: [
         {
           url:
@@ -501,18 +470,6 @@ export default async function CaseStudiesPage({
   const content =
     pageContent[locale];
 
-  const headerDictionary =
-    createInternalPageHeader(
-      dictionary,
-      locale
-    );
-
-  const footerDictionary =
-    createInternalPageFooter(
-      dictionary,
-      locale
-    );
-
   const projectCount =
     dictionary.caseStudies.projects.length;
 
@@ -527,7 +484,7 @@ export default async function CaseStudiesPage({
     >
       <Header
         locale={locale}
-        dictionary={headerDictionary}
+        dictionary={dictionary.header}
         common={dictionary.common}
       />
 
@@ -1105,7 +1062,7 @@ export default async function CaseStudiesPage({
                   "
                 >
                   <Link
-                    href={`/${locale}#research`}
+                    href={`/${locale}/research`}
                     className={`
                       inline-flex
                       min-h-[56px]
@@ -1175,7 +1132,7 @@ export default async function CaseStudiesPage({
 
       <Footer
         locale={locale}
-        dictionary={footerDictionary}
+        dictionary={dictionary.footer}
         common={dictionary.common}
       />
     </div>

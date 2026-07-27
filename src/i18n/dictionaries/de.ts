@@ -5,7 +5,7 @@ const de = {
   common: {
     brandName: "Setareh Salehabadi",
     role: "Strategin für digitales Wachstum",
-    email: "hello@setarehsalehabadi.com",
+    email: "salehabadi.setareh@gmail.com",
     linkedinLabel: "LinkedIn",
     emailLabel: "E-Mail",
     backToTop: "Nach oben",
@@ -232,7 +232,11 @@ const de = {
         subtitle: "Ein verbundenes Wachstumssystem entwickeln",
         description:
           "Die Strategie in praktische SEO-, Content-, Analytics-, Customer-Experience- und Automatisierungs-Workflows übersetzen.",
-        details: ["SEO-Systeme", "Content-Struktur", "KI-Workflows"],
+        details: [
+          "SEO-Systeme",
+          "Content-Struktur",
+          "KI-Workflows",
+        ],
       },
       {
         number: "04",
@@ -277,7 +281,8 @@ const de = {
         brand: "HighDent",
         description:
           "Ein technisches SEO- und Content-Wachstumssystem zur Verbesserung von Sichtbarkeit, Content-Qualität und langfristiger organischer Akquisition.",
-        outcome: "Mehr organische Sichtbarkeit und nachhaltiges Suchwachstum",
+        outcome:
+          "Mehr organische Sichtbarkeit und nachhaltiges Suchwachstum",
         metric: "+45%",
         metricLabel: "Organischer Traffic",
         chart: "donut",
@@ -288,7 +293,8 @@ const de = {
         brand: "Delta",
         description:
           "Eine verbundene digitale Strategie mit Fokus auf Zielgruppenentwicklung, Kampagnenstruktur, Kanalausrichtung und skalierbare Akquisition.",
-        outcome: "Zielgruppenwachstum und stärkere digitale Akquisition",
+        outcome:
+          "Zielgruppenwachstum und stärkere digitale Akquisition",
         metric: "+30%",
         metricLabel: "Umsatzsteigerung",
         chart: "line",
@@ -299,7 +305,8 @@ const de = {
         brand: "Omran Niroo",
         description:
           "Ein suchorientiertes Wachstumsframework für Industrieprodukte mit technischem SEO, Produktarchitektur und edukativem Content.",
-        outcome: "Bessere Produktauffindbarkeit und größere Suchabdeckung",
+        outcome:
+          "Bessere Produktauffindbarkeit und größere Suchabdeckung",
         metric: "4×",
         metricLabel: "Suchabdeckung",
         chart: "bars",
@@ -310,7 +317,8 @@ const de = {
         brand: "Morshed Gohar",
         description:
           "Ein fokussiertes Akquisitionssystem, das Landingpages, Kampagnenkanäle, Leadgenerierung und messbare Conversion-Pfade verbindet.",
-        outcome: "Effizientere Nachfragegenerierung und Leadakquisition",
+        outcome:
+          "Effizientere Nachfragegenerierung und Leadakquisition",
         metric: "250",
         metricLabel: "Qualifizierte Leads",
         chart: "radial",
@@ -370,28 +378,44 @@ const de = {
         title: "Wie KI die digitale Informationssuche verändert",
         description:
           "Untersuchung, wie generative Suche, große Sprachmodelle und veränderte Nutzererwartungen die Informationsfindung neu gestalten.",
-        tags: ["LLM-Suche", "Suchverhalten", "KI"],
+        tags: [
+          "LLM-Suche",
+          "Suchverhalten",
+          "KI",
+        ],
       },
       {
         category: "Konsumentenpsychologie",
         title: "Warum Vertrauen wichtiger als Aufmerksamkeit ist",
         description:
           "Analyse, wie Glaubwürdigkeit, kognitive Leichtigkeit und wahrgenommenes Risiko Engagement, Bewertung und Entscheidungen beeinflussen.",
-        tags: ["Vertrauen", "Entscheidungen", "Verhalten"],
+        tags: [
+          "Vertrauen",
+          "Entscheidungen",
+          "Verhalten",
+        ],
       },
       {
         category: "Marketingwissenschaft",
         title: "Von Marketingaktivität zu Evidenz",
         description:
           "Untersuchung, wie Messung, Experimente und Forschung strategische Klarheit verbessern und unbelegte Annahmen reduzieren.",
-        tags: ["Evidenz", "Analytics", "Strategie"],
+        tags: [
+          "Evidenz",
+          "Analytics",
+          "Strategie",
+        ],
       },
       {
         category: "Customer Experience",
         title: "Die verborgene Reibung hinter Kundenzufriedenheit",
         description:
           "Untersuchung, wie Verwirrung, Aufwand und Unsicherheit die Customer Experience entlang digitaler Journeys beeinflussen.",
-        tags: ["Customer Experience", "Reibung", "Zufriedenheit"],
+        tags: [
+          "Customer Experience",
+          "Reibung",
+          "Zufriedenheit",
+        ],
       },
     ],
 
@@ -525,7 +549,8 @@ const de = {
 
     title: {
       first: "Klarere Systeme",
-      highlighted: "für nachhaltiges digitales Wachstum.",
+      highlighted:
+        "für nachhaltiges digitales Wachstum.",
     },
 
     description:
@@ -533,7 +558,8 @@ const de = {
 
     primaryCta: {
       label: "Gespräch beginnen",
-      href: "mailto:hello@setarehsalehabadi.com",
+      href:
+        "mailto:salehabadi.setareh@gmail.com",
     },
 
     secondaryCta: {

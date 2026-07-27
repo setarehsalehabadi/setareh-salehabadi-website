@@ -1,15 +1,42 @@
 import Image from "next/image";
+import Link from "next/link";
+
+import {
+  expertiseSlugs,
+  type ExpertiseSlug,
+} from "@/content/expertise-pages";
 
 import {
   defaultLocale,
+  isLocale,
   type Locale,
 } from "@/i18n/config";
+
 import en from "@/i18n/dictionaries/en";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 type ExpertiseProps = {
   locale?: Locale;
   dictionary?: Dictionary["expertise"];
+  headingLevel?: "h1" | "h2";
+};
+
+const confirmedInternalRoutes: Record<string, string> = {
+  "#growth-system": "/growth-system",
+  "/growth-system": "/growth-system",
+
+  "#case-studies": "/case-studies",
+  "#projects": "/case-studies",
+  "/case-studies": "/case-studies",
+  "/projects": "/case-studies",
+
+  "#research": "/research",
+  "#insights": "/research",
+  "/research": "/research",
+  "/insights": "/research",
+
+  "#about": "/about",
+  "/about": "/about",
 };
 
 function containsPersian(text: string) {
@@ -19,20 +46,101 @@ function containsPersian(text: string) {
 function formatItemNumber(
   index: number,
   locale: Locale,
-  isPersian: boolean
+  isPersian: boolean,
 ) {
   return new Intl.NumberFormat(
     isPersian ? "fa-IR" : locale,
     {
       minimumIntegerDigits: 2,
       useGrouping: false,
-    }
+    },
   ).format(index + 1);
+}
+
+function getExpertiseSlug(
+  index: number,
+): ExpertiseSlug {
+  return (
+    expertiseSlugs[index] ??
+    expertiseSlugs[0]
+  );
+}
+
+function getLocalizedHref(
+  href: string,
+  locale: Locale,
+): string {
+  const trimmedHref = href.trim();
+
+  if (!trimmedHref) {
+    return `/${locale}`;
+  }
+
+  if (
+    /^(?:https?:\/\/|mailto:|tel:)/i.test(
+      trimmedHref,
+    )
+  ) {
+    return trimmedHref;
+  }
+
+  const hashIndex =
+    trimmedHref.indexOf("#");
+
+  const pathPart =
+    hashIndex >= 0
+      ? trimmedHref.slice(0, hashIndex)
+      : trimmedHref;
+
+  const hashPart =
+    hashIndex >= 0
+      ? trimmedHref.slice(hashIndex)
+      : "";
+
+  const pathSegments = pathPart
+    .split("/")
+    .filter(Boolean);
+
+  if (
+    pathSegments[0] &&
+    isLocale(pathSegments[0])
+  ) {
+    pathSegments.shift();
+  }
+
+  const normalizedPath =
+    pathSegments.length > 0
+      ? `/${pathSegments.join("/")}`
+      : "";
+
+  const normalizedHref =
+    `${normalizedPath}${hashPart}`.toLowerCase();
+
+  const confirmedRoute =
+    confirmedInternalRoutes[normalizedHref];
+
+  if (confirmedRoute) {
+    return `/${locale}${confirmedRoute}`;
+  }
+
+  if (
+    hashPart &&
+    pathSegments.length === 0
+  ) {
+    return `/${locale}${hashPart}`;
+  }
+
+  if (pathSegments.length > 0) {
+    return `/${locale}/${pathSegments.join("/")}${hashPart}`;
+  }
+
+  return `/${locale}`;
 }
 
 export default function Expertise({
   locale = defaultLocale,
   dictionary = en.expertise,
+  headingLevel = "h2",
 }: ExpertiseProps) {
   const isPersian =
     locale === "fa" ||
@@ -42,14 +150,84 @@ export default function Expertise({
         dictionary.title.first,
         dictionary.title.highlighted,
         dictionary.introduction,
-      ].join(" ")
+      ].join(" "),
     );
+
+  const HeadingTag = headingLevel;
+
+  const ctaHref = getLocalizedHref(
+    dictionary.cta.href,
+    locale,
+  );
+
+  const isInternalCta =
+    ctaHref.startsWith("/");
+
+  const ctaClassName = `
+    group
+    inline-flex
+    min-h-[56px]
+    items-center
+    justify-center
+    gap-3
+    justify-self-start
+    rounded-full
+    border
+    border-[#183655]
+    bg-[#183655]
+    px-8
+    font-sans
+    font-semibold
+    leading-none
+    text-white
+    shadow-[0_14px_30px_rgba(24,54,85,0.18)]
+    transition-all
+    duration-300
+    hover:-translate-y-0.5
+    hover:border-[#2e5d91]
+    hover:bg-[#2e5d91]
+    hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
+    focus-visible:outline-none
+    focus-visible:ring-4
+    focus-visible:ring-[#2e5d91]/20
+    md:justify-self-end
+    ${
+      isPersian
+        ? "text-[14px] sm:text-[15px]"
+        : "text-[15px] sm:text-[16px]"
+    }
+  `;
+
+  const ctaContent = (
+    <>
+      <span>
+        {dictionary.cta.label}
+      </span>
+
+      <span
+        aria-hidden="true"
+        className={`
+          text-[18px]
+          transition-transform
+          duration-300
+          ${
+            isPersian
+              ? "group-hover:translate-y-0.5"
+              : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          }
+        `}
+      >
+        {isPersian ? "↓" : "↗"}
+      </span>
+    </>
+  );
 
   return (
     <section
       id="expertise"
       aria-labelledby="expertise-heading"
       className="
+        scroll-mt-[84px]
         border-b
         border-[#302d29]/15
         bg-[#f4efe8]
@@ -99,7 +277,7 @@ export default function Expertise({
               {dictionary.eyebrow}
             </p>
 
-            <h2
+            <HeadingTag
               id="expertise-heading"
               className={`
                 max-w-[800px]
@@ -126,9 +304,13 @@ export default function Expertise({
                   }
                 `}
               >
-                {dictionary.title.highlighted}
+                {
+                  dictionary
+                    .title
+                    .highlighted
+                }
               </span>
-            </h2>
+            </HeadingTag>
           </div>
 
           <p
@@ -213,140 +395,167 @@ export default function Expertise({
             "
           >
             {dictionary.areas.map(
-              (item, index) => (
-                <article
-                  key={item.title}
-                  className="
-                    group
-                    grid
-                    gap-4
-                    border-b
-                    border-[#302d29]/15
-                    py-7
-                    sm:grid-cols-[48px_minmax(0,1fr)_44px]
-                    sm:gap-6
-                    sm:py-8
-                    lg:py-9
-                  "
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`
-                      pt-1
-                      font-sans
-                      font-semibold
-                      text-[#978f85]
+              (item, index) => {
+                const expertiseSlug =
+                  getExpertiseSlug(index);
+
+                const expertiseHref =
+                  `/${locale}/expertise/${expertiseSlug}`;
+
+                return (
+                  <Link
+                    key={item.title}
+                    href={expertiseHref}
+                    aria-label={`${item.title} — ${item.description}`}
+                    className="
+                      group
+                      block
+                      border-b
+                      border-[#302d29]/15
                       transition-colors
                       duration-300
-                      group-hover:text-[#8a672f]
-                      ${
-                        isPersian
-                          ? "text-[11px] tracking-normal"
-                          : "text-[10px] tracking-[0.19em]"
-                      }
-                    `}
+                      hover:bg-[#ebe4da]/40
+                      focus-visible:outline-none
+                      focus-visible:ring-4
+                      focus-visible:ring-inset
+                      focus-visible:ring-[#2e5d91]/15
+                    "
                   >
-                    {formatItemNumber(
-                      index,
-                      locale,
-                      isPersian
-                    )}
-                  </span>
-
-                  <div className="min-w-0">
-                    <div
+                    <article
                       className="
-                        flex
-                        flex-wrap
-                        items-center
-                        gap-3
+                        grid
+                        gap-4
+                        py-7
+                        sm:grid-cols-[48px_minmax(0,1fr)_44px]
+                        sm:gap-6
+                        sm:py-8
+                        lg:py-9
                       "
                     >
-                      <h3
+                      <span
+                        aria-hidden="true"
                         className={`
-                          text-[#24211e]
+                          pt-1
+                          font-sans
+                          font-semibold
+                          text-[#978f85]
                           transition-colors
                           duration-300
-                          group-hover:text-[#2e5d91]
+                          group-hover:text-[#8a672f]
                           ${
                             isPersian
-                              ? "font-sans text-[clamp(1.45rem,2.25vw,1.9rem)] font-[650] leading-[1.65] tracking-normal"
-                              : "font-serif text-[clamp(1.75rem,2.7vw,2.6rem)] font-medium leading-[1.08] tracking-[-0.034em]"
+                              ? "text-[11px] tracking-normal"
+                              : "text-[10px] tracking-[0.19em]"
                           }
                         `}
                       >
-                        {item.title}
-                      </h3>
+                        {formatItemNumber(
+                          index,
+                          locale,
+                          isPersian,
+                        )}
+                      </span>
+
+                      <div className="min-w-0">
+                        <div
+                          className="
+                            flex
+                            flex-wrap
+                            items-center
+                            gap-3
+                          "
+                        >
+                          <h3
+                            className={`
+                              text-[#24211e]
+                              transition-colors
+                              duration-300
+                              group-hover:text-[#2e5d91]
+                              ${
+                                isPersian
+                                  ? "font-sans text-[clamp(1.45rem,2.25vw,1.9rem)] font-[650] leading-[1.65] tracking-normal"
+                                  : "font-serif text-[clamp(1.75rem,2.7vw,2.6rem)] font-medium leading-[1.08] tracking-[-0.034em]"
+                              }
+                            `}
+                          >
+                            {item.title}
+                          </h3>
+
+                          <span
+                            className={`
+                              rounded-full
+                              border
+                              border-[#302d29]/15
+                              bg-[#ebe4da]/55
+                              px-3
+                              py-1.5
+                              font-sans
+                              font-semibold
+                              text-[#756e65]
+                              transition-colors
+                              duration-300
+                              group-hover:border-[#2e5d91]/25
+                              group-hover:text-[#2e5d91]
+                              ${
+                                isPersian
+                                  ? "text-[11px] leading-5 tracking-normal"
+                                  : "text-[9px] uppercase tracking-[0.16em]"
+                              }
+                            `}
+                          >
+                            {item.label}
+                          </span>
+                        </div>
+
+                        <p
+                          className={`
+                            mt-4
+                            max-w-[760px]
+                            font-sans
+                            text-[#625d56]
+                            sm:mt-5
+                            ${
+                              isPersian
+                                ? "text-[15.5px] leading-[2.05] sm:text-[16.5px]"
+                                : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
+                            }
+                          `}
+                        >
+                          {item.description}
+                        </p>
+                      </div>
 
                       <span
-                        className={`
+                        aria-hidden="true"
+                        className="
+                          hidden
+                          h-11
+                          w-11
+                          items-center
+                          justify-center
+                          self-start
                           rounded-full
                           border
                           border-[#302d29]/15
-                          bg-[#ebe4da]/55
-                          px-3
-                          py-1.5
                           font-sans
-                          font-semibold
-                          text-[#756e65]
-                          ${
-                            isPersian
-                              ? "text-[11px] leading-5 tracking-normal"
-                              : "text-[9px] uppercase tracking-[0.16em]"
-                          }
-                        `}
+                          text-[15px]
+                          text-[#2e5d91]
+                          transition-all
+                          duration-300
+                          group-hover:border-[#2e5d91]
+                          group-hover:bg-[#2e5d91]
+                          group-hover:text-white
+                          sm:flex
+                        "
                       >
-                        {item.label}
+                        {isPersian
+                          ? "←"
+                          : "↗"}
                       </span>
-                    </div>
-
-                    <p
-                      className={`
-                        mt-4
-                        max-w-[760px]
-                        font-sans
-                        text-[#625d56]
-                        sm:mt-5
-                        ${
-                          isPersian
-                            ? "text-[15.5px] leading-[2.05] sm:text-[16.5px]"
-                            : "text-[18px] leading-[2.05rem] lg:text-[19px] lg:leading-[2.15rem]"
-                        }
-                      `}
-                    >
-                      {item.description}
-                    </p>
-                  </div>
-
-                  {!isPersian && (
-                    <span
-                      aria-hidden="true"
-                      className="
-                        hidden
-                        h-11
-                        w-11
-                        items-center
-                        justify-center
-                        self-start
-                        rounded-full
-                        border
-                        border-[#302d29]/15
-                        font-sans
-                        text-[15px]
-                        text-[#2e5d91]
-                        transition-all
-                        duration-300
-                        group-hover:border-[#2e5d91]
-                        group-hover:bg-[#2e5d91]
-                        group-hover:text-white
-                        sm:flex
-                      "
-                    >
-                      ↗
-                    </span>
-                  )}
-                </article>
-              )
+                    </article>
+                  </Link>
+                );
+              },
             )}
           </div>
         </div>
@@ -380,63 +589,21 @@ export default function Expertise({
             {dictionary.closing}
           </p>
 
-          <a
-            href={dictionary.cta.href}
-            className={`
-              group
-              inline-flex
-              min-h-[56px]
-              items-center
-              justify-center
-              gap-3
-              justify-self-start
-              rounded-full
-              border
-              border-[#183655]
-              bg-[#183655]
-              px-8
-              font-sans
-              font-semibold
-              leading-none
-              text-white
-              shadow-[0_14px_30px_rgba(24,54,85,0.18)]
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:border-[#2e5d91]
-              hover:bg-[#2e5d91]
-              hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
-              focus-visible:outline-none
-              focus-visible:ring-4
-              focus-visible:ring-[#2e5d91]/20
-              md:justify-self-end
-              ${
-                isPersian
-                  ? "text-[14px] sm:text-[15px]"
-                  : "text-[15px] sm:text-[16px]"
-              }
-            `}
-          >
-            <span>
-              {dictionary.cta.label}
-            </span>
-
-            <span
-              aria-hidden="true"
-              className={`
-                text-[18px]
-                transition-transform
-                duration-300
-                ${
-                  isPersian
-                    ? "group-hover:translate-y-0.5"
-                    : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                }
-              `}
+          {isInternalCta ? (
+            <Link
+              href={ctaHref}
+              className={ctaClassName}
             >
-              {isPersian ? "↓" : "↗"}
-            </span>
-          </a>
+              {ctaContent}
+            </Link>
+          ) : (
+            <a
+              href={ctaHref}
+              className={ctaClassName}
+            >
+              {ctaContent}
+            </a>
+          )}
         </div>
       </div>
     </section>
