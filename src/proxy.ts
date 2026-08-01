@@ -8,11 +8,68 @@ import {
 
 const PERMANENT_REDIRECT_STATUS = 308;
 
+const LEGACY_RESEARCH_REDIRECTS: Readonly<
+  Record<string, string>
+> = {
+  "/fa/research/ai-disclosure-consumer-engagement":
+    "/fa/research/ai-consumer-trust-marketing",
+};
+
+function removeTrailingSlash(
+  pathname: string,
+): string {
+  if (pathname === "/") {
+    return pathname;
+  }
+
+  return pathname.replace(/\/+$/, "");
+}
+
+function getLegacyResearchDestination(
+  pathname: string,
+): string | null {
+  const normalizedPathname =
+    removeTrailingSlash(pathname);
+
+  return (
+    LEGACY_RESEARCH_REDIRECTS[
+      normalizedPathname
+    ] ?? null
+  );
+}
+
 export function proxy(
-  request: NextRequest
+  request: NextRequest,
 ) {
   const { pathname } =
     request.nextUrl;
+
+  /*
+   * Preserve SEO value from the previous RL-001 URL:
+   *
+   * /fa/research/ai-disclosure-consumer-engagement
+   *
+   * permanently redirects to:
+   *
+   * /fa/research/ai-consumer-trust-marketing
+   */
+  const legacyResearchDestination =
+    getLegacyResearchDestination(
+      pathname,
+    );
+
+  if (legacyResearchDestination) {
+    const redirectUrl =
+      request.nextUrl.clone();
+
+    redirectUrl.pathname =
+      legacyResearchDestination;
+
+    return NextResponse.redirect(
+      redirectUrl,
+      PERMANENT_REDIRECT_STATUS,
+    );
+  }
 
   const pathnameSegments =
     pathname.split("/");
@@ -22,6 +79,7 @@ export function proxy(
 
   /*
    * The requested URL already contains a valid locale:
+   *
    * /en
    * /de
    * /fa
@@ -36,9 +94,10 @@ export function proxy(
 
   /*
    * Normalize uppercase or mixed-case locale paths:
-   * /FA  -> /fa
-   * /De  -> /de
-   * /EN/... -> /en/...
+   *
+   * /FA       -> /fa
+   * /De       -> /de
+   * /EN/about -> /en/about
    */
   const normalizedLocale =
     possibleLocale?.toLowerCase();
@@ -59,12 +118,13 @@ export function proxy(
 
     return NextResponse.redirect(
       normalizedUrl,
-      PERMANENT_REDIRECT_STATUS
+      PERMANENT_REDIRECT_STATUS,
     );
   }
 
   /*
    * Add the default locale to every unlocalized page:
+   *
    * /        -> /en
    * /about   -> /en/about
    * /courses -> /en/courses
@@ -79,7 +139,7 @@ export function proxy(
 
   return NextResponse.redirect(
     localizedUrl,
-    PERMANENT_REDIRECT_STATUS
+    PERMANENT_REDIRECT_STATUS,
   );
 }
 
@@ -87,6 +147,7 @@ export const config = {
   matcher: [
     /*
      * Run Proxy on page routes, but exclude:
+     *
      * - API routes
      * - Next.js internal assets
      * - files with extensions
