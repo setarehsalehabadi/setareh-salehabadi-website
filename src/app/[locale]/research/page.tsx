@@ -1,15 +1,8 @@
-import type {
-  Metadata,
-} from "next";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-
-import {
-  notFound,
-} from "next/navigation";
+import { notFound } from "next/navigation";
 
 import Header from "@/components/Header";
-
 import Footer from "@/components/sections/Footer";
 
 import {
@@ -39,29 +32,21 @@ type ResearchPageProps = {
 
 type ResearchPageContent = {
   metadataTitle: string;
-
   metadataDescription: string;
-
   openGraphLocale: string;
-
   socialImageAlt: string;
 
   homeLabel: string;
-
   pageLabel: string;
 
   eyebrow: string;
-
   title: string;
-
   description: string;
 
   articleCountLabel: string;
-
   readLabel: string;
 
   emptyTitle: string;
-
   emptyDescription: string;
 };
 
@@ -153,31 +138,31 @@ const pageContent: Record<
 
   fa: {
     metadataTitle:
-      "آزمایشگاه پژوهش | ستاره صالح‌آبادی",
+      "جدیدترین پژوهش‌ها | ستاره صالح‌آبادی",
 
     metadataDescription:
-      "پژوهش‌ها و تحلیل‌های مبتنی بر شواهد در حوزه هوش مصنوعی، روان‌شناسی مصرف‌کننده، بازاریابی دیجیتال، سئو و استراتژی رشد کسب‌وکار.",
+      "تحلیل پژوهش‌های علمی در حوزه هوش مصنوعی، روان‌شناسی مصرف‌کننده، بازاریابی دیجیتال و استراتژی رشد کسب‌وکار.",
 
     openGraphLocale:
       "fa_IR",
 
     socialImageAlt:
-      "آزمایشگاه پژوهش ستاره صالح‌آبادی",
+      "جدیدترین پژوهش‌های ستاره صالح‌آبادی",
 
     homeLabel:
       "صفحه اصلی",
 
     pageLabel:
-      "آزمایشگاه پژوهش",
+      "جدیدترین پژوهش‌ها",
 
     eyebrow:
-      "Research Lab",
+      "جدیدترین پژوهش‌ها",
 
     title:
-      "هوش رشد مبتنی بر شواهد",
+      "افزایش رشد کسب‌وکارها با تکیه بر شواهد",
 
     description:
-      "تحلیل پژوهش‌های علمی در حوزه هوش مصنوعی، روان‌شناسی مصرف‌کننده، بازاریابی دیجیتال، رفتار جست‌وجو و استراتژی رشد کسب‌وکار.",
+      "تحلیل پژوهش‌های علمی در حوزه هوش مصنوعی، روان‌شناسی مصرف‌کننده، بازاریابی دیجیتال و استراتژی رشد کسب‌وکار.",
 
     articleCountLabel:
       "پرونده پژوهشی منتشرشده",
@@ -196,7 +181,7 @@ const pageContent: Record<
 function formatNumber(
   value: number,
   locale: Locale,
-) {
+): string {
   return new Intl.NumberFormat(
     locale === "fa"
       ? "fa-IR"
@@ -209,6 +194,122 @@ function formatNumber(
         false,
     },
   ).format(value);
+}
+
+function convertToPersianDigits(
+  value: string,
+): string {
+  const persianDigits =
+    "۰۱۲۳۴۵۶۷۸۹";
+
+  return value.replace(
+    /\d/g,
+    (digit) =>
+      persianDigits[
+        Number(digit)
+      ],
+  );
+}
+
+function formatResearchDate(
+  value: string,
+  locale: Locale,
+): string {
+  const normalizedValue =
+    value.trim();
+
+  if (!normalizedValue) {
+    return value;
+  }
+
+  const date =
+    new Date(
+      `${normalizedValue}T12:00:00Z`,
+    );
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return locale === "fa"
+      ? convertToPersianDigits(
+          normalizedValue,
+        )
+      : normalizedValue;
+  }
+
+  if (locale === "fa") {
+    return new Intl.DateTimeFormat(
+      "fa-IR-u-ca-persian",
+      {
+        day:
+          "numeric",
+
+        month:
+          "long",
+
+        year:
+          "numeric",
+
+        timeZone:
+          "UTC",
+      },
+    ).format(date);
+  }
+
+  return new Intl.DateTimeFormat(
+    locale === "de"
+      ? "de-DE"
+      : "en-US",
+    {
+      day:
+        "numeric",
+
+      month:
+        "long",
+
+      year:
+        "numeric",
+
+      timeZone:
+        "UTC",
+    },
+  ).format(date);
+}
+
+function formatReadingTime(
+  value: string,
+  locale: Locale,
+): string {
+  const normalizedValue =
+    value.trim();
+
+  if (
+    locale !== "fa"
+  ) {
+    return normalizedValue;
+  }
+
+  const minuteMatch =
+    normalizedValue.match(
+      /[0-9۰-۹]+/,
+    );
+
+  if (
+    minuteMatch &&
+    /\b(?:min|mins|minute|minutes)\b/i.test(
+      normalizedValue,
+    )
+  ) {
+    return `${convertToPersianDigits(
+      minuteMatch[0],
+    )} دقیقه`;
+  }
+
+  return convertToPersianDigits(
+    normalizedValue,
+  );
 }
 
 export async function generateMetadata({
@@ -230,7 +331,9 @@ export async function generateMetadata({
     localeParam;
 
   const content =
-    pageContent[locale];
+    pageContent[
+      locale
+    ];
 
   const canonicalUrl =
     `${siteUrl}/${locale}/research`;
@@ -341,20 +444,33 @@ export default async function ResearchPage({
   const isPersian =
     locale === "fa";
 
-  const dictionary =
-    await getDictionary(
+  const [
+    dictionary,
+    articles,
+  ] = await Promise.all([
+    getDictionary(
       locale,
-    );
+    ),
 
-  const articles =
-    await getResearchArticles();
+    getResearchArticles(),
+  ]);
 
   const content =
-    pageContent[locale];
+    pageContent[
+      locale
+    ];
 
   return (
     <div
       id="top"
+      lang={
+        locale
+      }
+      dir={
+        isPersian
+          ? "rtl"
+          : "ltr"
+      }
       className="
         min-h-screen
         bg-[#f7f3ed]
@@ -394,14 +510,14 @@ export default async function ResearchPage({
               mx-auto
               max-w-[1480px]
               px-5
-              pb-14
-              pt-8
+              pb-20
+              pt-10
               sm:px-8
-              sm:pb-16
-              sm:pt-10
+              sm:pb-24
+              sm:pt-12
               lg:px-12
-              lg:pb-20
-              lg:pt-12
+              lg:pb-28
+              lg:pt-16
               xl:px-16
             "
           >
@@ -418,7 +534,7 @@ export default async function ResearchPage({
                 gap-3
                 border-b
                 border-[#302d29]/12
-                pb-5
+                pb-6
               "
             >
               <Link
@@ -430,6 +546,9 @@ export default async function ResearchPage({
                   transition-colors
                   duration-300
                   hover:text-[#2e5d91]
+                  focus-visible:outline-none
+                  focus-visible:ring-4
+                  focus-visible:ring-[#2e5d91]/10
                   ${
                     isPersian
                       ? "text-[12px] leading-6"
@@ -472,13 +591,13 @@ export default async function ResearchPage({
 
             <div
               className="
-                mt-7
+                mt-10
                 grid
-                gap-9
-                lg:mt-9
+                gap-10
+                lg:mt-14
                 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.42fr)]
                 lg:items-end
-                lg:gap-14
+                lg:gap-16
               "
             >
               <header
@@ -506,7 +625,7 @@ export default async function ResearchPage({
                 <h1
                   id="research-page-heading"
                   className={`
-                    mt-4
+                    mt-5
                     max-w-[940px]
                     text-[#171512]
                     ${
@@ -523,7 +642,7 @@ export default async function ResearchPage({
 
                 <p
                   className={`
-                    mt-5
+                    mt-7
                     max-w-[800px]
                     font-sans
                     text-[#625d56]
@@ -547,7 +666,7 @@ export default async function ResearchPage({
                 className="
                   rounded-[26px]
                   border
-                  border-[#302d29]/13
+                  border-[#302d29]/15
                   bg-[#ebe4da]/65
                   p-6
                   sm:p-7
@@ -573,14 +692,13 @@ export default async function ResearchPage({
                   className={`
                     mt-4
                     block
-                    max-w-[220px]
                     font-sans
-                    font-semibold
-                    text-[#4f4942]
+                    font-medium
+                    text-[#625d56]
                     ${
                       isPersian
-                        ? "text-[14px] leading-7 sm:text-[14.5px]"
-                        : "text-[12.5px] uppercase leading-5 tracking-[0.1em]"
+                        ? "text-[13px] leading-7"
+                        : "text-[12px] uppercase tracking-[0.12em]"
                     }
                   `}
                 >
@@ -610,245 +728,337 @@ export default async function ResearchPage({
               mx-auto
               max-w-[1480px]
               px-5
-              py-14
+              py-20
               sm:px-8
-              sm:py-16
+              sm:py-24
               lg:px-12
-              lg:py-20
+              lg:py-28
               xl:px-16
             "
           >
-            {articles.length > 0 ? (
+            {articles.length >
+            0 ? (
               <div
                 className="
                   space-y-8
+                  sm:space-y-10
                 "
               >
                 {articles.map(
                   (
                     article,
-                  ) => (
-                    <article
-                      key={
-                        article.slug
-                      }
-                      className="
-                        group
-                        rounded-[30px]
-                        border
-                        border-[#2d2925]/10
-                        bg-white
-                        p-6
-                        transition-all
-                        duration-300
-                        hover:-translate-y-1
-                        hover:border-[#2e5d91]/20
-                        hover:shadow-[0_20px_60px_rgba(40,35,30,0.08)]
-                        sm:p-8
-                        lg:p-10
-                      "
-                    >
-                      <div
-                        className={`
-                          mb-6
-                          flex
-                          flex-wrap
-                          items-center
-                          gap-x-5
-                          gap-y-3
-                          font-sans
-                          text-[#82796e]
-                          ${
-                            isPersian
-                              ? "text-[11px] leading-6"
-                              : "text-[10px] uppercase tracking-[0.14em]"
-                          }
-                        `}
-                      >
-                        <span>
-                          {
-                            article.research_id
-                          }
-                        </span>
+                    index,
+                  ) => {
+                    const articleDescription =
+                      article.description ||
+                      article.excerpt;
 
-                        <span
-                          aria-hidden="true"
-                          className="
-                            h-px
-                            w-5
-                            bg-[#b48a52]
-                          "
-                        />
-
-                        <span
-                          dir="auto"
-                        >
-                          {
-                            article.category
-                          }
-                        </span>
-
-                        {article.status ? (
-                          <span
-                            dir="auto"
-                            className="
-                              rounded-full
-                              bg-[#f1ebe2]
-                              px-3
-                              py-1
-                              font-medium
-                              text-[#6f665c]
-                            "
-                          >
-                            {
-                              article.status
-                            }
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <h2
-                        dir="auto"
-                        className={`
-                          max-w-[980px]
-                          text-[#171512]
-                          transition-colors
-                          duration-300
-                          group-hover:text-[#183655]
-                          ${
-                            isPersian
-                              ? "font-sans text-[clamp(1.65rem,2.6vw,2.7rem)] font-[650] leading-[1.7] tracking-normal"
-                              : "font-serif text-[clamp(2rem,3vw,3.3rem)] font-medium leading-[1.08] tracking-[-0.035em]"
-                          }
-                        `}
-                      >
-                        {
-                          article.title
+                    return (
+                      <article
+                        key={
+                          article.slug
                         }
-                      </h2>
-
-                      <p
-                        dir="auto"
-                        className={`
-                          mt-5
-                          max-w-[860px]
-                          font-sans
-                          text-[#625d56]
-                          ${
-                            isPersian
-                              ? "text-[15.5px] leading-[2.1] sm:text-[16.5px]"
-                              : "text-[17px] leading-8"
-                          }
-                        `}
-                      >
-                        {
-                          article.description
-                        }
-                      </p>
-
-                      <div
                         className="
-                          mt-8
-                          flex
-                          flex-wrap
-                          items-center
-                          justify-between
-                          gap-6
-                          border-t
-                          border-[#2d2925]/10
-                          pt-6
+                          group
+                          relative
+                          overflow-hidden
+                          rounded-[30px]
+                          border
+                          border-[#302d29]/12
+                          bg-white
+                          shadow-[0_18px_48px_rgba(45,39,33,0.045)]
+                          transition-all
+                          duration-300
+                          hover:-translate-y-1
+                          hover:border-[#2e5d91]/25
+                          hover:shadow-[0_26px_64px_rgba(45,39,33,0.08)]
+                          sm:rounded-[34px]
                         "
                       >
-                        <div
-                          className={`
-                            flex
-                            flex-wrap
-                            gap-5
-                            font-sans
-                            text-[#756d63]
-                            ${
-                              isPersian
-                                ? "text-[12px] leading-6"
-                                : "text-[13px]"
-                            }
-                          `}
-                        >
-                          {article.date ? (
-                            <span
-                              dir="auto"
-                            >
-                              {
-                                article.date
-                              }
-                            </span>
-                          ) : null}
-
-                          {article.readingTime ? (
-                            <span
-                              dir="auto"
-                            >
-                              {
-                                article.readingTime
-                              }
-                            </span>
-                          ) : null}
-                        </div>
-
                         <Link
                           href={`/${locale}/research/${article.slug}`}
                           aria-label={`${content.readLabel}: ${article.title}`}
-                          className={`
-                            inline-flex
-                            min-h-[50px]
-                            items-center
-                            justify-center
-                            gap-2.5
-                            rounded-full
-                            bg-[#183655]
-                            px-7
-                            font-sans
-                            font-semibold
-                            text-white
-                            transition-all
-                            duration-300
-                            hover:-translate-y-0.5
-                            hover:bg-[#2e5d91]
-                            ${
-                              isPersian
-                                ? "text-[13px] sm:text-[14px]"
-                                : "text-[14px]"
-                            }
-                          `}
+                          className="
+                            block
+                            px-6
+                            py-8
+                            focus-visible:outline-none
+                            focus-visible:ring-4
+                            focus-visible:ring-inset
+                            focus-visible:ring-[#2e5d91]/15
+                            sm:px-9
+                            sm:py-10
+                            md:px-12
+                            md:py-12
+                            lg:px-14
+                            lg:py-14
+                          "
                         >
-                          <span>
-                            {
-                              content.readLabel
-                            }
-                          </span>
-
-                          <span
-                            aria-hidden="true"
+                          <div
+                            className="
+                              flex
+                              flex-col
+                              gap-8
+                              lg:grid
+                              lg:grid-cols-[minmax(0,1fr)_200px]
+                              lg:items-start
+                              lg:gap-14
+                            "
                           >
-                            {isPersian
-                              ? "←"
-                              : "→"}
-                          </span>
+                            <div
+                              className="
+                                min-w-0
+                              "
+                            >
+                              <div
+                                className="
+                                  flex
+                                  flex-wrap
+                                  items-center
+                                  gap-3
+                                  font-sans
+                                  text-[11px]
+                                  leading-6
+                                  text-[#756d63]
+                                "
+                              >
+                                {article.research_id && (
+                                  <span
+                                    dir="ltr"
+                                    className="
+                                      inline-flex
+                                      items-center
+                                      gap-3
+                                      font-semibold
+                                      text-[#8a672f]
+                                    "
+                                  >
+                                    <span
+                                      aria-hidden="true"
+                                      className="
+                                        h-px
+                                        w-5
+                                        bg-[#b4853b]
+                                      "
+                                    />
+
+                                    {
+                                      article.research_id
+                                    }
+                                  </span>
+                                )}
+
+                                {article.category && (
+                                  <span
+                                    dir={
+                                      isPersian
+                                        ? "rtl"
+                                        : "auto"
+                                    }
+                                  >
+                                    {
+                                      article.category
+                                    }
+                                  </span>
+                                )}
+
+                                {article.status && (
+                                  <span
+                                    dir={
+                                      isPersian
+                                        ? "rtl"
+                                        : "auto"
+                                    }
+                                    className="
+                                      rounded-full
+                                      bg-[#ebe4da]/75
+                                      px-3
+                                      py-1.5
+                                    "
+                                  >
+                                    {
+                                      article.status
+                                    }
+                                  </span>
+                                )}
+                              </div>
+
+                              <h2
+                                dir={
+                                  isPersian
+                                    ? "rtl"
+                                    : "auto"
+                                }
+                                className={`
+                                  mt-7
+                                  max-w-[980px]
+                                  text-[#171512]
+                                  transition-colors
+                                  duration-300
+                                  group-hover:text-[#183655]
+                                  ${
+                                    isPersian
+                                      ? "font-sans text-[clamp(1.75rem,3.2vw,3rem)] font-[650] leading-[1.65] tracking-normal"
+                                      : "font-serif text-[clamp(2.2rem,4vw,4rem)] font-medium leading-[1.06] tracking-[-0.04em]"
+                                  }
+                                `}
+                              >
+                                {
+                                  article.title
+                                }
+                              </h2>
+
+                              {articleDescription && (
+                                <p
+                                  dir={
+                                    isPersian
+                                      ? "rtl"
+                                      : "auto"
+                                  }
+                                  className={`
+                                    mt-6
+                                    max-w-[900px]
+                                    font-sans
+                                    text-[#625d56]
+                                    ${
+                                      isPersian
+                                        ? "text-[15.5px] leading-[2.1] sm:text-[16.5px]"
+                                        : "text-[17px] leading-[2rem]"
+                                    }
+                                  `}
+                                >
+                                  {
+                                    articleDescription
+                                  }
+                                </p>
+                              )}
+                            </div>
+
+                            <div
+                              className="
+                                flex
+                                min-w-0
+                                flex-col
+                                border-t
+                                border-[#302d29]/10
+                                pt-6
+                                lg:min-h-full
+                                lg:border-s
+                                lg:border-t-0
+                                lg:ps-8
+                                lg:pt-0
+                              "
+                            >
+                              <span
+                                className="
+                                  font-sans
+                                  text-[11px]
+                                  font-semibold
+                                  text-[#9a8170]
+                                "
+                              >
+                                {formatNumber(
+                                  index + 1,
+                                  locale,
+                                )}
+                              </span>
+
+                              <div
+                                className="
+                                  mt-5
+                                  space-y-2
+                                  font-sans
+                                  text-[12px]
+                                  leading-6
+                                  text-[#756d63]
+                                "
+                              >
+                                {article.date && (
+                                  <time
+                                    dateTime={
+                                      article.date
+                                    }
+                                    className="
+                                      block
+                                    "
+                                  >
+                                    {formatResearchDate(
+                                      article.date,
+                                      locale,
+                                    )}
+                                  </time>
+                                )}
+
+                                {article.readingTime && (
+                                  <span
+                                    className="
+                                      block
+                                    "
+                                  >
+                                    {formatReadingTime(
+                                      article.readingTime,
+                                      locale,
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+
+                              <span
+                                className="
+                                  mt-7
+                                  inline-flex
+                                  w-fit
+                                  items-center
+                                  gap-3
+                                  font-sans
+                                  text-[13px]
+                                  font-semibold
+                                  text-[#183655]
+                                  lg:mt-auto
+                                  lg:pt-10
+                                "
+                              >
+                                <span>
+                                  {
+                                    content.readLabel
+                                  }
+                                </span>
+
+                                <span
+                                  aria-hidden="true"
+                                  className="
+                                    text-[17px]
+                                    transition-transform
+                                    duration-300
+                                    group-hover:translate-x-0.5
+                                    group-hover:-translate-y-0.5
+                                  "
+                                >
+                                  {isPersian
+                                    ? "↖"
+                                    : "↗"}
+                                </span>
+                              </span>
+                            </div>
+                          </div>
                         </Link>
-                      </div>
-                    </article>
-                  ),
+                      </article>
+                    );
+                  },
                 )}
               </div>
             ) : (
               <div
+                role="status"
                 className="
                   rounded-[30px]
                   border
                   border-[#302d29]/12
-                  bg-[#ebe4da]/55
+                  bg-white
                   px-6
                   py-16
                   text-center
+                  shadow-[0_18px_48px_rgba(45,39,33,0.04)]
                   sm:px-10
                   sm:py-20
                 "
@@ -858,8 +1068,8 @@ export default async function ResearchPage({
                     text-[#211f1c]
                     ${
                       isPersian
-                        ? "font-sans text-[1.75rem] font-[650] leading-[1.7]"
-                        : "font-serif text-[2.5rem] font-medium leading-tight"
+                        ? "font-sans text-[1.55rem] font-[650] leading-[1.8]"
+                        : "font-serif text-[2.2rem] font-semibold leading-tight"
                     }
                   `}
                 >
@@ -877,8 +1087,8 @@ export default async function ResearchPage({
                     text-[#625d56]
                     ${
                       isPersian
-                        ? "text-[15.5px] leading-[2.1]"
-                        : "text-[17px] leading-8"
+                        ? "text-[15px] leading-[2.1]"
+                        : "text-[16px] leading-8"
                     }
                   `}
                 >

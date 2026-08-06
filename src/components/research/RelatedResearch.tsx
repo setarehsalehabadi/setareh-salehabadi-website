@@ -1,7 +1,12 @@
 import Link from "next/link";
 
-import type { Locale } from "@/i18n/config";
-import type { ResearchArticle } from "@/types/research";
+import type {
+  Locale,
+} from "@/i18n/config";
+
+import type {
+  ResearchArticle,
+} from "@/types/research";
 
 type RelatedResearchProps = {
   articles: ResearchArticle[];
@@ -16,6 +21,8 @@ type LocalizedContent = {
   readLabel: string;
   emptyTitle: string;
   emptyDescription: string;
+  publicationDateLabel: string;
+  readingTimeLabel: string;
 };
 
 const localizedContent: Record<
@@ -40,6 +47,12 @@ const localizedContent: Record<
 
     emptyDescription:
       "Additional evidence-based research records will appear here after publication.",
+
+    publicationDateLabel:
+      "Published",
+
+    readingTimeLabel:
+      "Reading time",
   },
 
   de: {
@@ -60,6 +73,12 @@ const localizedContent: Record<
 
     emptyDescription:
       "Weitere evidenzbasierte Forschungsberichte erscheinen hier nach ihrer Veröffentlichung.",
+
+    publicationDateLabel:
+      "Veröffentlicht",
+
+    readingTimeLabel:
+      "Lesezeit",
   },
 
   fa: {
@@ -80,8 +99,121 @@ const localizedContent: Record<
 
     emptyDescription:
       "پس از انتشار پرونده‌های پژوهشی جدید، تحلیل‌های مرتبط در این بخش نمایش داده می‌شوند.",
+
+    publicationDateLabel:
+      "تاریخ انتشار",
+
+    readingTimeLabel:
+      "زمان مطالعه",
   },
 };
+
+function convertToPersianDigits(
+  value: string,
+): string {
+  const persianDigits =
+    "۰۱۲۳۴۵۶۷۸۹";
+
+  return value.replace(
+    /\d/g,
+    (digit) =>
+      persianDigits[
+        Number(digit)
+      ],
+  );
+}
+
+function formatResearchDate(
+  value: string,
+  locale: Locale,
+): string {
+  if (
+    locale !== "fa"
+  ) {
+    return value;
+  }
+
+  const normalizedValue =
+    value.trim();
+
+  if (
+    !normalizedValue
+  ) {
+    return value;
+  }
+
+  const date =
+    new Date(
+      `${normalizedValue}T12:00:00Z`,
+    );
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return convertToPersianDigits(
+      normalizedValue,
+    );
+  }
+
+  return new Intl.DateTimeFormat(
+    "fa-IR-u-ca-persian",
+    {
+      day:
+        "numeric",
+
+      month:
+        "long",
+
+      year:
+        "numeric",
+
+      timeZone:
+        "UTC",
+    },
+  ).format(date);
+}
+
+function formatReadingTime(
+  value: string,
+  locale: Locale,
+): string {
+  if (
+    locale !== "fa"
+  ) {
+    return value;
+  }
+
+  const normalizedValue =
+    value.trim();
+
+  if (
+    !normalizedValue
+  ) {
+    return value;
+  }
+
+  const minuteMatch =
+    normalizedValue.match(
+      /[0-9۰-۹]+/,
+    );
+
+  if (
+    minuteMatch &&
+    /\b(?:min|mins|minute|minutes)\b/i.test(
+      normalizedValue,
+    )
+  ) {
+    return `${convertToPersianDigits(
+      minuteMatch[0],
+    )} دقیقه`;
+  }
+
+  return convertToPersianDigits(
+    normalizedValue,
+  );
+}
 
 function getUniqueArticles(
   articles: ResearchArticle[],
@@ -97,13 +229,18 @@ function getUniqueArticles(
 
       if (
         !normalizedSlug ||
-        normalizedSlug === currentSlug ||
-        seenSlugs.has(normalizedSlug)
+        normalizedSlug ===
+          currentSlug ||
+        seenSlugs.has(
+          normalizedSlug,
+        )
       ) {
         return false;
       }
 
-      seenSlugs.add(normalizedSlug);
+      seenSlugs.add(
+        normalizedSlug,
+      );
 
       return true;
     },
@@ -119,16 +256,20 @@ export default function RelatedResearch({
     locale === "fa";
 
   const content =
-    localizedContent[locale];
+    localizedContent[
+      locale
+    ];
 
   const currentArticle =
     articles.find(
       (article) =>
-        article.slug === currentSlug,
+        article.slug ===
+        currentSlug,
     );
 
   const currentCategory =
-    currentArticle?.category
+    currentArticle
+      ?.category
       ?.trim()
       .toLocaleLowerCase();
 
@@ -138,7 +279,10 @@ export default function RelatedResearch({
       currentSlug,
     )
       .map(
-        (article, index) => ({
+        (
+          article,
+          index,
+        ) => ({
           article,
           index,
 
@@ -153,7 +297,10 @@ export default function RelatedResearch({
         }),
       )
       .sort(
-        (first, second) => {
+        (
+          first,
+          second,
+        ) => {
           if (
             first.categoryMatches !==
             second.categoryMatches
@@ -169,14 +316,22 @@ export default function RelatedResearch({
           );
         },
       )
-      .slice(0, 3)
+      .slice(
+        0,
+        3,
+      )
       .map(
-        ({ article }) =>
+        ({
+          article,
+        }) =>
           article,
       );
 
   return (
     <section
+      lang={
+        locale
+      }
       dir={
         isPersian
           ? "rtl"
@@ -224,7 +379,9 @@ export default function RelatedResearch({
               }
             `}
           >
-            {content.eyebrow}
+            {
+              content.eyebrow
+            }
           </p>
 
           <h2
@@ -239,7 +396,9 @@ export default function RelatedResearch({
               }
             `}
           >
-            {content.title}
+            {
+              content.title
+            }
           </h2>
         </div>
 
@@ -267,10 +426,14 @@ export default function RelatedResearch({
           `}
         >
           <span>
-            {content.libraryLabel}
+            {
+              content.libraryLabel
+            }
           </span>
 
-          <span aria-hidden="true">
+          <span
+            aria-hidden="true"
+          >
             {isPersian
               ? "←"
               : "→"}
@@ -278,7 +441,8 @@ export default function RelatedResearch({
         </Link>
       </div>
 
-      {relatedArticles.length > 0 ? (
+      {relatedArticles.length >
+      0 ? (
         <div
           className="
             mt-8
@@ -288,9 +452,13 @@ export default function RelatedResearch({
           "
         >
           {relatedArticles.map(
-            (article) => (
+            (
+              article,
+            ) => (
               <article
-                key={article.slug}
+                key={
+                  article.slug
+                }
                 className="
                   group
                   flex
@@ -325,6 +493,7 @@ export default function RelatedResearch({
                 >
                   {article.research_id && (
                     <span
+                      dir="ltr"
                       className="
                         rounded-full
                         bg-[#183655]
@@ -342,7 +511,11 @@ export default function RelatedResearch({
 
                   {article.category && (
                     <span
-                      dir="auto"
+                      dir={
+                        isPersian
+                          ? "rtl"
+                          : "auto"
+                      }
                       className="
                         rounded-full
                         bg-[#f1ebe2]
@@ -358,7 +531,11 @@ export default function RelatedResearch({
                 </div>
 
                 <h3
-                  dir="auto"
+                  dir={
+                    isPersian
+                      ? "rtl"
+                      : "auto"
+                  }
                   className={`
                     mt-6
                     text-[#171512]
@@ -372,13 +549,19 @@ export default function RelatedResearch({
                     }
                   `}
                 >
-                  {article.title}
+                  {
+                    article.title
+                  }
                 </h3>
 
                 {(article.description ||
                   article.excerpt) && (
                   <p
-                    dir="auto"
+                    dir={
+                      isPersian
+                        ? "rtl"
+                        : "auto"
+                    }
                     className={`
                       mt-4
                       line-clamp-3
@@ -400,9 +583,8 @@ export default function RelatedResearch({
                   className={`
                     mt-auto
                     flex
-                    flex-wrap
-                    gap-x-4
-                    gap-y-2
+                    flex-col
+                    gap-2
                     border-t
                     border-[#2d2925]/10
                     pt-5
@@ -416,16 +598,44 @@ export default function RelatedResearch({
                   `}
                 >
                   {article.date && (
-                    <span dir="auto">
-                      {article.date}
+                    <span>
+                      {isPersian ? (
+                        <>
+                          {
+                            content.publicationDateLabel
+                          }
+                          :{" "}
+                        </>
+                      ) : null}
+
+                      <time
+                        dateTime={
+                          article.date
+                        }
+                      >
+                        {formatResearchDate(
+                          article.date,
+                          locale,
+                        )}
+                      </time>
                     </span>
                   )}
 
                   {article.readingTime && (
-                    <span dir="auto">
-                      {
-                        article.readingTime
-                      }
+                    <span>
+                      {isPersian ? (
+                        <>
+                          {
+                            content.readingTimeLabel
+                          }
+                          :{" "}
+                        </>
+                      ) : null}
+
+                      {formatReadingTime(
+                        article.readingTime,
+                        locale,
+                      )}
                     </span>
                   )}
                 </div>
@@ -456,10 +666,14 @@ export default function RelatedResearch({
                   `}
                 >
                   <span>
-                    {content.readLabel}
+                    {
+                      content.readLabel
+                    }
                   </span>
 
-                  <span aria-hidden="true">
+                  <span
+                    aria-hidden="true"
+                  >
                     {isPersian
                       ? "←"
                       : "→"}
@@ -494,7 +708,9 @@ export default function RelatedResearch({
               }
             `}
           >
-            {content.emptyTitle}
+            {
+              content.emptyTitle
+            }
           </h3>
 
           <p
@@ -511,7 +727,9 @@ export default function RelatedResearch({
               }
             `}
           >
-            {content.emptyDescription}
+            {
+              content.emptyDescription
+            }
           </p>
         </div>
       )}

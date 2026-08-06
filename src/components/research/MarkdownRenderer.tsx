@@ -1,7 +1,9 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import type { Locale } from "@/i18n/config";
+import type {
+  Locale,
+} from "@/i18n/config";
 
 type MarkdownRendererProps = {
   content: string;
@@ -16,9 +18,51 @@ function isExternalLink(
   }
 
   return (
-    href.startsWith("https://") ||
-    href.startsWith("http://") ||
-    href.startsWith("//")
+    href.startsWith(
+      "https://",
+    ) ||
+    href.startsWith(
+      "http://",
+    ) ||
+    href.startsWith(
+      "//",
+    )
+  );
+}
+
+function isEmailLink(
+  href?: string,
+): boolean {
+  return Boolean(
+    href?.startsWith(
+      "mailto:",
+    ),
+  );
+}
+
+function isTelephoneLink(
+  href?: string,
+): boolean {
+  return Boolean(
+    href?.startsWith(
+      "tel:",
+    ),
+  );
+}
+
+function isTechnicalLink(
+  href?: string,
+): boolean {
+  return (
+    isExternalLink(
+      href,
+    ) ||
+    isEmailLink(
+      href,
+    ) ||
+    isTelephoneLink(
+      href,
+    )
   );
 }
 
@@ -36,14 +80,23 @@ export default function MarkdownRenderer({
 
   return (
     <div
-      lang={locale}
-      dir={direction}
-      className="
+      lang={
+        locale
+      }
+      dir={
+        direction
+      }
+      className={`
         max-w-none
         font-sans
         text-[#625d56]
         [overflow-wrap:anywhere]
-      "
+        ${
+          isPersian
+            ? "text-right"
+            : "text-left"
+        }
+      `}
     >
       <ReactMarkdown
         remarkPlugins={[
@@ -55,6 +108,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <h1
+              dir={
+                direction
+              }
               className={`
                 mb-8
                 mt-14
@@ -67,7 +123,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </h1>
           ),
 
@@ -75,6 +133,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <h2
+              dir={
+                direction
+              }
               className={`
                 mb-7
                 mt-14
@@ -90,7 +151,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </h2>
           ),
 
@@ -98,6 +161,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <h3
+              dir={
+                direction
+              }
               className={`
                 mb-5
                 mt-10
@@ -110,7 +176,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </h3>
           ),
 
@@ -118,6 +186,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <h4
+              dir={
+                direction
+              }
               className={`
                 mb-4
                 mt-8
@@ -129,7 +200,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </h4>
           ),
 
@@ -137,6 +210,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <p
+              dir={
+                direction
+              }
               className={`
                 mb-7
                 text-[#625d56]
@@ -148,7 +224,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </p>
           ),
 
@@ -156,12 +234,17 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <ul
+              dir={
+                direction
+              }
               className={`
                 mb-8
                 list-disc
                 space-y-3
                 ps-7
                 marker:text-[#b4853b]
+                [&.contains-task-list]:list-none
+                [&.contains-task-list]:ps-0
                 ${
                   isPersian
                     ? "text-[15.5px] leading-[2.1] sm:text-[16.5px]"
@@ -169,7 +252,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </ul>
           ),
 
@@ -177,6 +262,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <ol
+              dir={
+                direction
+              }
               className={`
                 mb-8
                 list-decimal
@@ -191,22 +279,81 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </ol>
           ),
 
           li: ({
             children,
+            className,
           }) => (
             <li
-              className="
+              dir={
+                direction
+              }
+              className={`
                 ps-1
                 text-[#625d56]
-              "
+                ${
+                  className ||
+                  ""
+                }
+              `}
             >
-              {children}
+              {
+                children
+              }
             </li>
           ),
+
+          input: ({
+            type,
+            checked,
+            disabled,
+            ...props
+          }) => {
+            if (
+              type !==
+              "checkbox"
+            ) {
+              return (
+                <input
+                  type={
+                    type
+                  }
+                  checked={
+                    checked
+                  }
+                  disabled={
+                    disabled
+                  }
+                  {...props}
+                />
+              );
+            }
+
+            return (
+              <input
+                type="checkbox"
+                checked={
+                  checked
+                }
+                disabled
+                aria-hidden="true"
+                tabIndex={-1}
+                className="
+                  me-2
+                  h-4
+                  w-4
+                  shrink-0
+                  accent-[#183655]
+                  align-middle
+                "
+              />
+            );
+          },
 
           strong: ({
             children,
@@ -217,7 +364,9 @@ export default function MarkdownRenderer({
                 text-[#211f1c]
               "
             >
-              {children}
+              {
+                children
+              }
             </strong>
           ),
 
@@ -225,12 +374,17 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <em
+              dir="auto"
               className="
+                inline
                 italic
                 text-[#514b44]
+                [unicode-bidi:isolate]
               "
             >
-              {children}
+              {
+                children
+              }
             </em>
           ),
 
@@ -238,6 +392,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <blockquote
+              dir={
+                direction
+              }
               className={`
                 my-10
                 rounded-e-[20px]
@@ -255,7 +412,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </blockquote>
           ),
 
@@ -264,11 +423,20 @@ export default function MarkdownRenderer({
             children,
           }) => {
             const external =
-              isExternalLink(href);
+              isExternalLink(
+                href,
+              );
+
+            const technical =
+              isTechnicalLink(
+                href,
+              );
 
             return (
               <a
-                href={href}
+                href={
+                  href
+                }
                 target={
                   external
                     ? "_blank"
@@ -279,7 +447,12 @@ export default function MarkdownRenderer({
                     ? "noopener noreferrer"
                     : undefined
                 }
-                className="
+                dir={
+                  technical
+                    ? "ltr"
+                    : undefined
+                }
+                className={`
                   font-semibold
                   text-[#2e5d91]
                   underline
@@ -294,9 +467,16 @@ export default function MarkdownRenderer({
                   focus-visible:outline-none
                   focus-visible:ring-4
                   focus-visible:ring-[#2e5d91]/15
-                "
+                  ${
+                    technical
+                      ? "inline-block max-w-full break-all text-left [unicode-bidi:isolate]"
+                      : ""
+                  }
+                `}
               >
-                {children}
+                {
+                  children
+                }
               </a>
             );
           },
@@ -316,8 +496,12 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <div
+              dir={
+                direction
+              }
               className="
                 my-10
+                max-w-full
                 overflow-x-auto
                 rounded-[20px]
                 border
@@ -326,6 +510,9 @@ export default function MarkdownRenderer({
               "
             >
               <table
+                dir={
+                  direction
+                }
                 className="
                   w-full
                   min-w-[680px]
@@ -334,7 +521,9 @@ export default function MarkdownRenderer({
                   font-sans
                 "
               >
-                {children}
+                {
+                  children
+                }
               </table>
             </div>
           ),
@@ -348,7 +537,9 @@ export default function MarkdownRenderer({
                 text-white
               "
             >
-              {children}
+              {
+                children
+              }
             </thead>
           ),
 
@@ -361,7 +552,9 @@ export default function MarkdownRenderer({
                 divide-[#2d2925]/10
               "
             >
-              {children}
+              {
+                children
+              }
             </tbody>
           ),
 
@@ -376,7 +569,9 @@ export default function MarkdownRenderer({
                 hover:bg-[#ebe4da]/50
               "
             >
-              {children}
+              {
+                children
+              }
             </tr>
           ),
 
@@ -384,6 +579,9 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <th
+              dir={
+                direction
+              }
               className={`
                 border-e
                 border-white/15
@@ -399,7 +597,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </th>
           ),
 
@@ -407,12 +607,16 @@ export default function MarkdownRenderer({
             children,
           }) => (
             <td
+              dir={
+                direction
+              }
               className={`
                 border-e
                 border-[#2d2925]/10
                 px-5
                 py-4
                 align-top
+                text-start
                 text-[#625d56]
                 last:border-e-0
                 ${
@@ -422,7 +626,9 @@ export default function MarkdownRenderer({
                 }
               `}
             >
-              {children}
+              {
+                children
+              }
             </td>
           ),
 
@@ -433,6 +639,7 @@ export default function MarkdownRenderer({
               dir="ltr"
               className="
                 my-9
+                max-w-full
                 overflow-x-auto
                 rounded-[20px]
                 border
@@ -450,7 +657,9 @@ export default function MarkdownRenderer({
                 sm:py-6
               "
             >
-              {children}
+              {
+                children
+              }
             </pre>
           ),
 
@@ -465,12 +674,19 @@ export default function MarkdownRenderer({
                 ),
               );
 
-            if (isCodeBlock) {
+            if (
+              isCodeBlock
+            ) {
               return (
                 <code
-                  className={className}
+                  dir="ltr"
+                  className={
+                    className
+                  }
                 >
-                  {children}
+                  {
+                    children
+                  }
                 </code>
               );
             }
@@ -479,16 +695,23 @@ export default function MarkdownRenderer({
               <code
                 dir="ltr"
                 className="
+                  inline-block
+                  max-w-full
+                  break-all
                   rounded-md
                   bg-[#ebe4da]
                   px-1.5
                   py-0.5
+                  text-left
                   font-mono
                   text-[0.88em]
                   text-[#183655]
+                  [unicode-bidi:isolate]
                 "
               >
-                {children}
+                {
+                  children
+                }
               </code>
             );
           },
@@ -502,12 +725,16 @@ export default function MarkdownRenderer({
                 decoration-[#9a8170]
               "
             >
-              {children}
+              {
+                children
+              }
             </del>
           ),
         }}
       >
-        {content}
+        {
+          content
+        }
       </ReactMarkdown>
     </div>
   );

@@ -20,6 +20,7 @@ type VariantStyle = {
   container: string;
   label: string;
   line: string;
+  rule: string;
 };
 
 const variantStyles: Record<
@@ -28,57 +29,72 @@ const variantStyles: Record<
 > = {
   summary: {
     container:
-      "border-[#b4853b]/25 bg-[#fbf7ef]",
+      "border-[#b4853b]/22 bg-[#fbf7ef]",
 
     label:
-      "border-[#b4853b]/15 bg-[#b4853b]/10 text-[#8a672f]",
+      "border-[#b4853b]/18 bg-[#b4853b]/10 text-[#8a672f]",
 
     line:
       "bg-[#b4853b]",
+
+    rule:
+      "bg-[#b4853b]/55",
   },
 
   findings: {
     container:
-      "border-[#183655]/15 bg-[#f4f7fa]",
+      "border-[#526653]/18 bg-[#f3f6f1]",
 
     label:
-      "border-[#183655]/15 bg-[#183655]/10 text-[#183655]",
+      "border-[#526653]/16 bg-[#526653]/10 text-[#526653]",
 
     line:
-      "bg-[#183655]",
+      "bg-[#526653]",
+
+    rule:
+      "bg-[#526653]/50",
   },
 
   business: {
     container:
-      "border-[#526653]/20 bg-[#f4f6f1]",
+      "border-[#8a672f]/16 bg-[#f7f3ed]",
 
     label:
-      "border-[#526653]/15 bg-[#526653]/10 text-[#526653]",
+      "border-[#8a672f]/16 bg-[#8a672f]/9 text-[#7b5d2d]",
 
     line:
-      "bg-[#526653]",
+      "bg-[#8a672f]",
+
+    rule:
+      "bg-[#8a672f]/45",
   },
 
   framework: {
     container:
-      "border-[#2e5d91]/20 bg-[#f3f6fa]",
+      "border-[#2e5d91]/20 bg-[#f1f5f9]",
 
     label:
-      "border-[#2e5d91]/15 bg-[#2e5d91]/10 text-[#2e5d91]",
+      "border-[#2e5d91]/16 bg-[#2e5d91]/10 text-[#2e5d91]",
 
     line:
       "bg-[#2e5d91]",
+
+    rule:
+      "bg-[#2e5d91]/50",
   },
 
   action: {
     container:
-      "border-[#6d645a]/15 bg-[#f8f6f2]",
+      "border-[#6d645a]/16 bg-[#f8f6f2]",
 
     label:
-      "border-[#6d645a]/15 bg-[#6d645a]/10 text-[#5f574f]",
+      "border-[#6d645a]/16 bg-[#6d645a]/9 text-[#5f574f]",
 
     line:
       "bg-[#6d645a]",
+
+    rule:
+      "bg-[#6d645a]/42",
   },
 };
 
@@ -89,26 +105,32 @@ export default function InsightCard({
   label,
 }: InsightCardProps) {
   const styles =
-    variantStyles[variant];
+    variantStyles[
+      variant
+    ];
 
   return (
     <section
-      aria-label={title}
+      aria-label={
+        title
+      }
       className={`
         relative
-        m-0
+        mx-auto
+        w-full
+        max-w-[940px]
         min-w-0
         overflow-hidden
         rounded-[28px]
         border
         px-6
         py-8
-        shadow-[0_16px_45px_rgba(40,35,30,0.05)]
+        shadow-[0_20px_55px_rgba(40,35,30,0.055)]
         sm:rounded-[30px]
         sm:px-8
         sm:py-9
         md:px-10
-        md:py-10
+        md:py-11
         ${styles.container}
       `}
     >
@@ -118,13 +140,29 @@ export default function InsightCard({
           absolute
           inset-y-0
           start-0
-          w-1
+          w-[5px]
           ${styles.line}
         `}
       />
 
       <div
+        aria-hidden="true"
         className="
+          pointer-events-none
+          absolute
+          -end-20
+          -top-24
+          h-56
+          w-56
+          rounded-full
+          bg-white/55
+          blur-3xl
+        "
+      />
+
+      <div
+        className="
+          relative
           min-w-0
           ps-1
           sm:ps-2
@@ -149,7 +187,9 @@ export default function InsightCard({
               ${styles.label}
             `}
           >
-            {label}
+            {
+              label
+            }
           </span>
         )}
 
@@ -158,26 +198,43 @@ export default function InsightCard({
           className="
             mb-0
             mt-5
+            max-w-[760px]
             font-sans
-            text-[clamp(1.45rem,2.5vw,2.15rem)]
+            text-[clamp(1.45rem,2.35vw,2.05rem)]
             font-[650]
             leading-[1.75]
             tracking-normal
             text-[#171512]
           "
         >
-          {title}
+          {
+            title
+          }
         </h2>
+
+        <span
+          aria-hidden="true"
+          className={`
+            mt-5
+            block
+            h-px
+            w-16
+            ${styles.rule}
+          `}
+        />
 
         <div
           className="
-            mt-6
+            mt-7
             min-w-0
+            max-w-[840px]
             [&>*:first-child]:mt-0
             [&>*:last-child]:mb-0
           "
         >
-          {children}
+          {
+            children
+          }
         </div>
       </div>
     </section>

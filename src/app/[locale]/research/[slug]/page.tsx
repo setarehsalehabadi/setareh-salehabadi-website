@@ -1,21 +1,32 @@
-import type { Metadata } from "next";
+import type {
+  Metadata,
+} from "next";
+
 import Link from "next/link";
+
 import {
   notFound,
   redirect,
 } from "next/navigation";
 
 import Header from "@/components/Header";
+
 import ResearchContent from "@/components/research/ResearchContent";
+
 import RelatedResearch from "@/components/research/RelatedResearch";
+
 import ResearchSchema from "@/components/research/ResearchSchema";
+
 import Footer from "@/components/sections/Footer";
 
 import {
   isLocale,
   type Locale,
 } from "@/i18n/config";
-import { getDictionary } from "@/i18n/get-dictionary";
+
+import {
+  getDictionary,
+} from "@/i18n/get-dictionary";
 
 import {
   getResearchArticle,
@@ -53,14 +64,119 @@ function getArticleDescription(
   );
 }
 
+function convertToPersianDigits(
+  value: string,
+): string {
+  const persianDigits =
+    "۰۱۲۳۴۵۶۷۸۹";
+
+  return value.replace(
+    /\d/g,
+    (digit) =>
+      persianDigits[
+        Number(digit)
+      ],
+  );
+}
+
+function formatResearchDate(
+  value: string,
+): string {
+  const normalizedValue =
+    value.trim();
+
+  if (!normalizedValue) {
+    return value;
+  }
+
+  const date =
+    new Date(
+      `${normalizedValue}T12:00:00Z`,
+    );
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return convertToPersianDigits(
+      normalizedValue,
+    );
+  }
+
+  return new Intl.DateTimeFormat(
+    "fa-IR-u-ca-persian",
+    {
+      day:
+        "numeric",
+
+      month:
+        "long",
+
+      year:
+        "numeric",
+
+      timeZone:
+        "UTC",
+    },
+  ).format(date);
+}
+
+function formatReadingTime(
+  value: string,
+): string {
+  const normalizedValue =
+    value.trim();
+
+  if (!normalizedValue) {
+    return value;
+  }
+
+  const minuteMatch =
+    normalizedValue.match(
+      /[0-9۰-۹]+/,
+    );
+
+  if (
+    minuteMatch &&
+    /\b(?:min|mins|minute|minutes)\b/i.test(
+      normalizedValue,
+    )
+  ) {
+    return `${convertToPersianDigits(
+      minuteMatch[0],
+    )} دقیقه`;
+  }
+
+  return convertToPersianDigits(
+    normalizedValue,
+  );
+}
+
+function isExternalUrl(
+  value: string,
+): boolean {
+  return (
+    value.startsWith(
+      "https://",
+    ) ||
+    value.startsWith(
+      "http://",
+    )
+  );
+}
+
 export async function generateStaticParams() {
   const articles =
     await getResearchArticles();
 
   return articles.map(
     (article) => ({
-      locale: "fa",
-      slug: article.slug,
+      locale:
+        "fa",
+
+      slug:
+        article.slug,
     }),
   );
 }
@@ -73,19 +189,27 @@ export async function generateMetadata({
     slug,
   } = await params;
 
-  if (!isLocale(localeParam)) {
+  if (
+    !isLocale(
+      localeParam,
+    )
+  ) {
     notFound();
   }
 
   const article =
-    await getResearchArticle(slug);
+    await getResearchArticle(
+      slug,
+    );
 
   if (!article) {
     notFound();
   }
 
   const description =
-    getArticleDescription(article);
+    getArticleDescription(
+      article,
+    );
 
   const canonicalUrl =
     `${siteUrl}/fa/research/${article.slug}`;
@@ -99,7 +223,7 @@ export async function generateMetadata({
     authors: [
       {
         name:
-          "Setareh Salehabadi",
+          "ستاره صالح‌آبادی",
 
         url:
           `${siteUrl}/fa/about`,
@@ -107,10 +231,10 @@ export async function generateMetadata({
     ],
 
     creator:
-      "Setareh Salehabadi",
+      "ستاره صالح‌آبادی",
 
     publisher:
-      "Setareh Salehabadi",
+      "ستاره صالح‌آبادی",
 
     alternates: {
       canonical:
@@ -133,7 +257,7 @@ export async function generateMetadata({
         canonicalUrl,
 
       siteName:
-        "Setareh Salehabadi",
+        "ستاره صالح‌آبادی",
 
       locale:
         "fa_IR",
@@ -144,12 +268,12 @@ export async function generateMetadata({
       description,
 
       authors: [
-        "Setareh Salehabadi",
+        "ستاره صالح‌آبادی",
       ],
 
       section:
         article.category ||
-        "Research Lab",
+        "آزمایشگاه پژوهش",
 
       images: [
         {
@@ -177,13 +301,18 @@ export async function generateMetadata({
     },
   };
 
-  if (localeParam !== "fa") {
+  if (
+    localeParam !== "fa"
+  ) {
     return {
       ...metadata,
 
       robots: {
-        index: false,
-        follow: true,
+        index:
+          false,
+
+        follow:
+          true,
       },
     };
   }
@@ -192,12 +321,18 @@ export async function generateMetadata({
     ...metadata,
 
     robots: {
-      index: true,
-      follow: true,
+      index:
+        true,
+
+      follow:
+        true,
 
       googleBot: {
-        index: true,
-        follow: true,
+        index:
+          true,
+
+        follow:
+          true,
 
         "max-image-preview":
           "large",
@@ -220,14 +355,20 @@ export default async function ResearchArticlePage({
     slug,
   } = await params;
 
-  if (!isLocale(localeParam)) {
+  if (
+    !isLocale(
+      localeParam,
+    )
+  ) {
     notFound();
   }
 
   const locale: Locale =
     localeParam;
 
-  if (locale !== "fa") {
+  if (
+    locale !== "fa"
+  ) {
     redirect(
       `/fa/research/${slug}`,
     );
@@ -238,9 +379,15 @@ export default async function ResearchArticlePage({
     allArticles,
     dictionary,
   ] = await Promise.all([
-    getResearchArticle(slug),
+    getResearchArticle(
+      slug,
+    ),
+
     getResearchArticles(),
-    getDictionary(locale),
+
+    getDictionary(
+      locale,
+    ),
   ]);
 
   if (!article) {
@@ -248,11 +395,14 @@ export default async function ResearchArticlePage({
   }
 
   const description =
-    getArticleDescription(article);
+    getArticleDescription(
+      article,
+    );
 
   return (
     <div
       id="top"
+      lang="fa"
       dir="rtl"
       className="
         min-h-screen
@@ -261,9 +411,15 @@ export default async function ResearchArticlePage({
       "
     >
       <Header
-        locale={locale}
-        dictionary={dictionary.header}
-        common={dictionary.common}
+        locale={
+          locale
+        }
+        dictionary={
+          dictionary.header
+        }
+        common={
+          dictionary.common
+        }
       />
 
       <main
@@ -276,9 +432,15 @@ export default async function ResearchArticlePage({
       >
         <ResearchSchema
           locale="fa"
-          slug={article.slug}
-          title={article.title}
-          description={description}
+          slug={
+            article.slug
+          }
+          title={
+            article.title
+          }
+          description={
+            description
+          }
           researchId={
             article.research_id
           }
@@ -408,14 +570,15 @@ export default async function ResearchArticlePage({
                 border-[#2d2925]/10
                 bg-[#fbf9f5]
                 px-6
-                py-10
+                py-9
                 shadow-[0_22px_60px_rgba(40,35,30,0.07)]
                 sm:rounded-[34px]
                 sm:px-9
-                sm:py-12
+                sm:py-11
                 md:px-12
-                md:py-14
+                md:py-12
                 lg:px-16
+                lg:py-14
               "
             >
               <div
@@ -430,10 +593,14 @@ export default async function ResearchArticlePage({
                 "
               />
 
-              <div className="relative">
+              <div
+                className="
+                  relative
+                "
+              >
                 <div
                   className="
-                    mb-8
+                    mb-7
                     flex
                     flex-wrap
                     items-center
@@ -442,10 +609,12 @@ export default async function ResearchArticlePage({
                     text-[11px]
                     leading-6
                     text-[#756d63]
+                    sm:mb-8
                   "
                 >
                   {article.research_id && (
                     <span
+                      dir="ltr"
                       className="
                         rounded-full
                         bg-[#183655]
@@ -463,7 +632,7 @@ export default async function ResearchArticlePage({
 
                   {article.category && (
                     <span
-                      dir="auto"
+                      dir="rtl"
                       className="
                         rounded-full
                         border
@@ -473,13 +642,15 @@ export default async function ResearchArticlePage({
                         py-2
                       "
                     >
-                      {article.category}
+                      {
+                        article.category
+                      }
                     </span>
                   )}
 
                   {article.status && (
                     <span
-                      dir="auto"
+                      dir="rtl"
                       className="
                         rounded-full
                         border
@@ -490,35 +661,43 @@ export default async function ResearchArticlePage({
                         text-[#8a672f]
                       "
                     >
-                      {article.status}
+                      {
+                        article.status
+                      }
                     </span>
                   )}
                 </div>
 
                 <h1
                   className="
-                    max-w-5xl
+                    max-w-[940px]
+                    text-wrap-balance
                     font-sans
-                    text-[clamp(2rem,4.5vw,4.15rem)]
+                    text-[clamp(1.85rem,3.5vw,3.45rem)]
                     font-[650]
                     leading-[1.55]
                     tracking-normal
                     text-[#171512]
+                    [text-wrap:balance]
                   "
                 >
-                  {article.title}
+                  {
+                    article.title
+                  }
                 </h1>
 
                 {article.description && (
                   <p
                     className="
-                      mt-7
-                      max-w-4xl
+                      mt-5
+                      max-w-[800px]
                       font-sans
-                      text-[16px]
-                      leading-[2.1]
+                      text-[15.5px]
+                      leading-[2.05]
                       text-[#625d56]
-                      sm:text-[17px]
+                      sm:mt-6
+                      sm:text-[16.5px]
+                      lg:text-[17px]
                     "
                   >
                     {
@@ -529,40 +708,96 @@ export default async function ResearchArticlePage({
 
                 <div
                   className="
-                    mt-9
+                    mt-7
                     flex
                     flex-wrap
+                    items-start
                     gap-x-6
                     gap-y-3
                     border-t
                     border-[#2d2925]/10
-                    pt-6
+                    pt-5
                     font-sans
                     text-[12px]
                     leading-6
                     text-[#756d63]
+                    sm:mt-8
+                    sm:pt-6
                   "
                 >
                   {article.date && (
-                    <span dir="auto">
+                    <span>
                       تاریخ انتشار:{" "}
-                      {article.date}
+
+                      <time
+                        dateTime={
+                          article.date
+                        }
+                      >
+                        {formatResearchDate(
+                          article.date,
+                        )}
+                      </time>
                     </span>
                   )}
 
                   {article.readingTime && (
-                    <span dir="auto">
+                    <span>
                       زمان مطالعه:{" "}
-                      {
-                        article.readingTime
-                      }
+
+                      {formatReadingTime(
+                        article.readingTime,
+                      )}
                     </span>
                   )}
 
                   {article.source && (
-                    <span dir="auto">
+                    <span
+                      className="
+                        min-w-0
+                        max-w-full
+                      "
+                    >
                       منبع:{" "}
-                      {article.source}
+
+                      {isExternalUrl(
+                        article.source,
+                      ) ? (
+                        <a
+                          href={
+                            article.source
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          dir="ltr"
+                          aria-label="بازکردن منبع پژوهش در پنجره جدید"
+                          className="
+                            inline-block
+                            max-w-full
+                            break-all
+                            text-left
+                            font-medium
+                            text-[#2e5d91]
+                            underline
+                            decoration-[#2e5d91]/30
+                            underline-offset-4
+                            transition-colors
+                            duration-300
+                            hover:text-[#183655]
+                            hover:decoration-[#183655]
+                          "
+                        >
+                          {
+                            article.source
+                          }
+                        </a>
+                      ) : (
+                        <span>
+                          {
+                            article.source
+                          }
+                        </span>
+                      )}
                     </span>
                   )}
                 </div>
@@ -630,7 +865,7 @@ export default async function ResearchArticlePage({
                   text-white/65
                 "
               >
-                Research Lab
+                آزمایشگاه پژوهش
               </p>
 
               <h2
@@ -728,9 +963,15 @@ export default async function ResearchArticlePage({
       </main>
 
       <Footer
-        locale={locale}
-        dictionary={dictionary.footer}
-        common={dictionary.common}
+        locale={
+          locale
+        }
+        dictionary={
+          dictionary.footer
+        }
+        common={
+          dictionary.common
+        }
       />
     </div>
   );

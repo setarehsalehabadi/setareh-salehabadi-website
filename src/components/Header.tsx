@@ -23,31 +23,19 @@ import type {
 
 type HeaderProps = {
   locale?: Locale;
-
-  dictionary?:
-    Dictionary["header"];
-
-  common?:
-    Dictionary["common"];
+  dictionary?: Dictionary["header"];
+  common?: Dictionary["common"];
 };
 
 type AccessibilityLabels = {
-  primaryNavigation:
-    string;
-
-  mobileNavigation:
-    string;
-
-  languageSwitcher:
-    string;
-
-  disabledNavigation:
-    string;
+  primaryNavigation: string;
+  mobileNavigation: string;
+  languageSwitcher: string;
+  disabledNavigation: string;
 };
 
 type SelfPacedLearningLabel = {
   title: string;
-
   status: string;
 };
 
@@ -127,8 +115,10 @@ const selfPacedLearningLabels: Record<
   },
 };
 
-const confirmedNavigationRoutes:
-  Record<string, string> = {
+const confirmedNavigationRoutes: Record<
+  string,
+  string
+> = {
   "#about":
     "/about",
 
@@ -229,7 +219,9 @@ function getNavigationHref(
   const trimmedHref =
     href.trim();
 
-  if (!trimmedHref) {
+  if (
+    !trimmedHref
+  ) {
     return `/${locale}`;
   }
 
@@ -283,14 +275,17 @@ function getNavigationHref(
       : "";
 
   const normalizedHref =
-    `${normalizedPath}${hashPart}`.toLowerCase();
+    `${normalizedPath}${hashPart}`
+      .toLowerCase();
 
   const confirmedRoute =
     confirmedNavigationRoutes[
       normalizedHref
     ];
 
-  if (confirmedRoute) {
+  if (
+    confirmedRoute
+  ) {
     return `/${locale}${confirmedRoute}`;
   }
 
@@ -333,14 +328,9 @@ function formatNavigationIndex(
 }
 
 export default function Header({
-  locale =
-    defaultLocale,
-
-  dictionary =
-    en.header,
-
-  common =
-    en.common,
+  locale = defaultLocale,
+  dictionary = en.header,
+  common = en.common,
 }: HeaderProps) {
   const pathname =
     usePathname();
@@ -365,18 +355,27 @@ export default function Header({
       locale
     ];
 
+  const isPersian =
+    locale === "fa";
+
+  const researchHref =
+    `/${locale}/research`;
+
+  const researchLabel =
+    "مطالعه پژوهش‌ها";
+
   const workInquiryHref =
     `mailto:${common.email}?subject=${encodeURIComponent(
       "Work inquiry — Setareh Salehabadi",
     )}`;
 
   const mobileFooterHref =
-    locale === "fa"
+    isPersian
       ? `/${locale}#newsletter`
       : `mailto:${common.email}`;
 
   const mobileFooterLabel =
-    locale === "fa"
+    isPersian
       ? "خبرنامه"
       : common.emailLabel;
 
@@ -435,17 +434,18 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    document.body.style
-      .overflow =
+    document.body.style.overflow =
       isMenuOpen
         ? "hidden"
         : "";
 
     return () => {
-      document.body.style
-        .overflow = "";
+      document.body.style.overflow =
+        "";
     };
-  }, [isMenuOpen]);
+  }, [
+    isMenuOpen,
+  ]);
 
   const closeMenu =
     () => {
@@ -453,6 +453,68 @@ export default function Header({
         false,
       );
     };
+
+  const desktopActionClassName = `
+    group
+    hidden
+    h-12
+    w-[192px]
+    shrink-0
+    items-center
+    justify-center
+    gap-3
+    rounded-full
+    border
+    border-[#183655]
+    bg-[#183655]
+    px-6
+    font-sans
+    text-[13px]
+    font-semibold
+    leading-none
+    shadow-[0_12px_28px_rgba(24,54,85,0.15)]
+    transition-all
+    duration-300
+    hover:-translate-y-0.5
+    hover:border-[#2e5d91]
+    hover:bg-[#2e5d91]
+    hover:shadow-[0_17px_34px_rgba(46,93,145,0.22)]
+    focus-visible:outline-none
+    focus-visible:ring-4
+    focus-visible:ring-[#2e5d91]/20
+    lg:inline-flex
+  `;
+
+  const mobileActionClassName = `
+    group
+    mt-7
+    inline-flex
+    min-h-[58px]
+    w-full
+    items-center
+    justify-center
+    gap-3
+    rounded-full
+    border
+    border-[#183655]
+    bg-[#183655]
+    px-8
+    font-sans
+    text-[15px]
+    font-semibold
+    leading-none
+    shadow-[0_14px_30px_rgba(24,54,85,0.18)]
+    transition-all
+    duration-300
+    hover:border-[#2e5d91]
+    hover:bg-[#2e5d91]
+    hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
+    focus-visible:outline-none
+    focus-visible:ring-4
+    focus-visible:ring-[#2e5d91]/20
+    sm:w-auto
+    sm:text-[16px]
+  `;
 
   return (
     <>
@@ -504,12 +566,7 @@ export default function Header({
               shrink-0
               items-center
               gap-3
-              rounded-[18px]
-              py-1
-              pe-2
-              transition-all
-              duration-300
-              hover:-translate-y-px
+              rounded-xl
               focus-visible:outline-none
               focus-visible:ring-4
               focus-visible:ring-[#2e5d91]/15
@@ -519,10 +576,9 @@ export default function Header({
             <span
               aria-hidden="true"
               className="
-                relative
                 flex
-                h-10
-                w-10
+                h-11
+                w-11
                 shrink-0
                 items-center
                 justify-center
@@ -531,20 +587,18 @@ export default function Header({
                 border-[#183655]/28
                 bg-[#f7f3ed]
                 font-serif
-                text-[15px]
+                text-[13px]
                 font-semibold
                 italic
-                tracking-[-0.06em]
+                tracking-[-0.03em]
                 text-[#183655]
-                shadow-[0_8px_22px_rgba(24,54,85,0.07)]
                 transition-all
                 duration-300
-                group-hover:border-[#2e5d91]/55
-                group-hover:bg-[#ebe4da]
+                group-hover:border-[#2e5d91]
                 group-hover:text-[#2e5d91]
-                sm:h-11
-                sm:w-11
-                sm:text-[16px]
+                sm:h-12
+                sm:w-12
+                sm:text-[14px]
               "
             >
               SS
@@ -563,16 +617,16 @@ export default function Header({
                 className="
                   whitespace-nowrap
                   font-serif
-                  text-[15px]
+                  text-[14px]
                   font-semibold
                   uppercase
                   leading-none
-                  tracking-[0.13em]
+                  tracking-[0.22em]
                   text-[#183655]
                   transition-colors
                   duration-300
                   group-hover:text-[#2e5d91]
-                  lg:text-[16px]
+                  lg:text-[15px]
                 "
               >
                 Setareh Salehabadi
@@ -580,20 +634,19 @@ export default function Header({
 
               <span
                 className="
-                  mt-1.5
+                  mt-2
                   whitespace-nowrap
                   font-sans
                   text-[7px]
                   font-semibold
                   uppercase
                   leading-none
-                  tracking-[0.29em]
-                  text-[#9a723c]
-                  sm:text-[7.5px]
+                  tracking-[0.27em]
+                  text-[#b4853b]
+                  lg:text-[8px]
                 "
               >
-                Digital Growth
-                Strategist
+                Digital Growth Strategist
               </span>
             </span>
           </Link>
@@ -611,7 +664,9 @@ export default function Header({
             "
           >
             {dictionary.navigation.map(
-              (item) => (
+              (
+                item,
+              ) => (
                 <Link
                   key={
                     item.label
@@ -770,78 +825,100 @@ export default function Header({
               )}
             </div>
 
-            <a
-              href={
-                workInquiryHref
-              }
-              aria-label={`${dictionary.workWithMe} — ${common.email}`}
-              className="
-                group
-                hidden
-                h-12
-                w-[192px]
-                shrink-0
-                items-center
-                justify-center
-                gap-3
-                rounded-full
-                border
-                border-[#183655]
-                bg-[#183655]
-                px-6
-                font-sans
-                text-[13px]
-                font-semibold
-                leading-none
-                shadow-[0_12px_28px_rgba(24,54,85,0.15)]
-                transition-all
-                duration-300
-                hover:-translate-y-0.5
-                hover:border-[#2e5d91]
-                hover:bg-[#2e5d91]
-                hover:shadow-[0_17px_34px_rgba(46,93,145,0.22)]
-                focus-visible:outline-none
-                focus-visible:ring-4
-                focus-visible:ring-[#2e5d91]/20
-                lg:inline-flex
-              "
-              style={{
-                color:
-                  "#ffffff",
-              }}
-            >
-              <span
-                className="
-                  whitespace-nowrap
-                "
-                style={{
-                  color:
-                    "#ffffff",
-                }}
-              >
-                {
-                  dictionary
-                    .workWithMe
+            {isPersian ? (
+              <Link
+                href={
+                  researchHref
                 }
-              </span>
-
-              <span
-                aria-hidden="true"
-                className="
-                  text-[16px]
-                  transition-transform
-                  duration-300
-                  group-hover:translate-x-0.5
-                  group-hover:-translate-y-0.5
-                "
+                aria-label={
+                  researchLabel
+                }
+                className={
+                  desktopActionClassName
+                }
                 style={{
                   color:
                     "#ffffff",
                 }}
               >
-                ↗
-              </span>
-            </a>
+                <span
+                  className="
+                    whitespace-nowrap
+                  "
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  {
+                    researchLabel
+                  }
+                </span>
+
+                <span
+                  aria-hidden="true"
+                  className="
+                    text-[16px]
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
+                  "
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  ↗
+                </span>
+              </Link>
+            ) : (
+              <a
+                href={
+                  workInquiryHref
+                }
+                aria-label={`${dictionary.workWithMe} — ${common.email}`}
+                className={
+                  desktopActionClassName
+                }
+                style={{
+                  color:
+                    "#ffffff",
+                }}
+              >
+                <span
+                  className="
+                    whitespace-nowrap
+                  "
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  {
+                    dictionary
+                      .workWithMe
+                  }
+                </span>
+
+                <span
+                  aria-hidden="true"
+                  className="
+                    text-[16px]
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
+                  "
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  ↗
+                </span>
+              </a>
+            )}
 
             <button
               type="button"
@@ -1261,78 +1338,100 @@ export default function Header({
               )}
             </div>
 
-            <a
-              href={
-                workInquiryHref
-              }
-              aria-label={`${dictionary.mobileCta} — ${common.email}`}
-              onClick={
-                closeMenu
-              }
-              className="
-                group
-                mt-7
-                inline-flex
-                min-h-[58px]
-                w-full
-                items-center
-                justify-center
-                gap-3
-                rounded-full
-                border
-                border-[#183655]
-                bg-[#183655]
-                px-8
-                font-sans
-                text-[15px]
-                font-semibold
-                leading-none
-                shadow-[0_14px_30px_rgba(24,54,85,0.18)]
-                transition-all
-                duration-300
-                hover:border-[#2e5d91]
-                hover:bg-[#2e5d91]
-                hover:shadow-[0_18px_38px_rgba(46,93,145,0.24)]
-                focus-visible:outline-none
-                focus-visible:ring-4
-                focus-visible:ring-[#2e5d91]/20
-                sm:w-auto
-                sm:text-[16px]
-              "
-              style={{
-                color:
-                  "#ffffff",
-              }}
-            >
-              <span
-                style={{
-                  color:
-                    "#ffffff",
-                }}
-              >
-                {
-                  dictionary
-                    .mobileCta
+            {isPersian ? (
+              <Link
+                href={
+                  researchHref
                 }
-              </span>
-
-              <span
-                aria-hidden="true"
-                className="
-                  text-[18px]
-                  transition-transform
-                  duration-300
-                  group-hover:translate-x-0.5
-                  group-hover:-translate-y-0.5
-                "
+                aria-label={
+                  researchLabel
+                }
+                onClick={
+                  closeMenu
+                }
+                className={
+                  mobileActionClassName
+                }
                 style={{
                   color:
                     "#ffffff",
                 }}
               >
-                ↗
-              </span>
-            </a>
+                <span
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  {
+                    researchLabel
+                  }
+                </span>
+
+                <span
+                  aria-hidden="true"
+                  className="
+                    text-[18px]
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
+                  "
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  ↗
+                </span>
+              </Link>
+            ) : (
+              <a
+                href={
+                  workInquiryHref
+                }
+                aria-label={`${dictionary.mobileCta} — ${common.email}`}
+                onClick={
+                  closeMenu
+                }
+                className={
+                  mobileActionClassName
+                }
+                style={{
+                  color:
+                    "#ffffff",
+                }}
+              >
+                <span
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  {
+                    dictionary
+                      .mobileCta
+                  }
+                </span>
+
+                <span
+                  aria-hidden="true"
+                  className="
+                    text-[18px]
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
+                  "
+                  style={{
+                    color:
+                      "#ffffff",
+                  }}
+                >
+                  ↗
+                </span>
+              </a>
+            )}
 
             <div
               className="

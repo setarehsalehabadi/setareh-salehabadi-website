@@ -1,12 +1,20 @@
 import "server-only";
 
-import { promises as fs } from "fs";
+import {
+  promises as fs,
+} from "fs";
+
 import path from "path";
 
 import matter from "gray-matter";
 
-import type { ResearchDocument } from "@/ai/research-writer";
-import type { ResearchArticle } from "@/types/research";
+import type {
+  ResearchDocument,
+} from "@/ai/research-writer";
+
+import type {
+  ResearchArticle,
+} from "@/types/research";
 
 const researchDirectory =
   path.join(
@@ -16,6 +24,77 @@ const researchDirectory =
 
 const markdownExtension =
   ".md";
+
+const persianCategoryMap: Readonly<
+  Record<string, string>
+> = {
+  "ai & consumer psychology":
+    "هوش مصنوعی و روان‌شناسی مصرف‌کننده",
+
+  "ai and consumer psychology":
+    "هوش مصنوعی و روان‌شناسی مصرف‌کننده",
+
+  "consumer psychology":
+    "روان‌شناسی مصرف‌کننده",
+
+  "consumer behavior":
+    "رفتار مصرف‌کننده",
+
+  "consumer behaviour":
+    "رفتار مصرف‌کننده",
+
+  "digital marketing":
+    "بازاریابی دیجیتال",
+
+  "digital growth":
+    "رشد دیجیتال",
+
+  "business growth":
+    "رشد کسب‌وکار",
+
+  "customer experience":
+    "تجربه مشتری",
+
+  "artificial intelligence":
+    "هوش مصنوعی",
+
+  "ai":
+    "هوش مصنوعی",
+
+  "seo":
+    "سئو",
+
+  "seo & organic growth":
+    "سئو و رشد ارگانیک",
+
+  "seo and organic growth":
+    "سئو و رشد ارگانیک",
+};
+
+const persianStatusMap: Readonly<
+  Record<string, string>
+> = {
+  "approved for research library":
+    "تأییدشده برای کتابخانه پژوهش",
+
+  approved:
+    "تأییدشده",
+
+  published:
+    "منتشرشده",
+
+  draft:
+    "پیش‌نویس",
+
+  "under review":
+    "در حال بررسی",
+
+  reviewing:
+    "در حال بررسی",
+
+  archived:
+    "بایگانی‌شده",
+};
 
 function getFileSlug(
   fileName: string,
@@ -30,7 +109,8 @@ function getOptionalString(
   value: unknown,
 ): string | undefined {
   if (
-    typeof value !== "string"
+    typeof value !==
+    "string"
   ) {
     return undefined;
   }
@@ -38,8 +118,10 @@ function getOptionalString(
   const normalizedValue =
     value.trim();
 
-  return normalizedValue ||
-    undefined;
+  return (
+    normalizedValue ||
+    undefined
+  );
 }
 
 function getOptionalDate(
@@ -58,20 +140,88 @@ function getOptionalDate(
 
     return value
       .toISOString()
-      .slice(0, 10);
+      .slice(
+        0,
+        10,
+      );
   }
 
   if (
-    typeof value === "string"
+    typeof value ===
+    "string"
   ) {
     const normalizedValue =
       value.trim();
 
-    return normalizedValue ||
-      undefined;
+    return (
+      normalizedValue ||
+      undefined
+    );
   }
 
   return undefined;
+}
+
+function getPersianCategory(
+  value: unknown,
+): string | undefined {
+  const category =
+    getOptionalString(
+      value,
+    );
+
+  if (
+    !category
+  ) {
+    return undefined;
+  }
+
+  const categoryKey =
+    category
+      .toLocaleLowerCase()
+      .replace(
+        /\s+/g,
+        " ",
+      )
+      .trim();
+
+  return (
+    persianCategoryMap[
+      categoryKey
+    ] ||
+    category
+  );
+}
+
+function getPersianStatus(
+  value: unknown,
+): string | undefined {
+  const status =
+    getOptionalString(
+      value,
+    );
+
+  if (
+    !status
+  ) {
+    return undefined;
+  }
+
+  const statusKey =
+    status
+      .toLocaleLowerCase()
+      .replace(
+        /\s+/g,
+        " ",
+      )
+      .trim();
+
+  return (
+    persianStatusMap[
+      statusKey
+    ] ||
+    status
+  );
 }
 
 function normalizeSlug(
@@ -95,8 +245,10 @@ function normalizeSlug(
       )
       .toLocaleLowerCase();
 
-  return normalizedValue ||
-    fallback;
+  return (
+    normalizedValue ||
+    fallback
+  );
 }
 
 function decodeSlug(
@@ -114,14 +266,20 @@ function decodeSlug(
 function getDateTimestamp(
   date?: string,
 ): number {
-  if (!date) {
+  if (
+    !date
+  ) {
     return 0;
   }
 
   const timestamp =
-    new Date(date).getTime();
+    new Date(
+      date,
+    ).getTime();
 
-  return Number.isNaN(timestamp)
+  return Number.isNaN(
+    timestamp,
+  )
     ? 0
     : timestamp;
 }
@@ -130,25 +288,31 @@ async function ensureResearchDirectory(): Promise<void> {
   await fs.mkdir(
     researchDirectory,
     {
-      recursive: true,
+      recursive:
+        true,
     },
   );
 }
 
-async function getMarkdownFiles(): Promise<string[]> {
+async function getMarkdownFiles(): Promise<
+  string[]
+> {
   await ensureResearchDirectory();
 
   const directoryEntries =
     await fs.readdir(
       researchDirectory,
       {
-        withFileTypes: true,
+        withFileTypes:
+          true,
       },
     );
 
   return directoryEntries
     .filter(
-      (entry) =>
+      (
+        entry,
+      ) =>
         entry.isFile() &&
         entry.name
           .toLocaleLowerCase()
@@ -157,17 +321,25 @@ async function getMarkdownFiles(): Promise<string[]> {
           ),
     )
     .map(
-      (entry) =>
+      (
+        entry,
+      ) =>
         entry.name,
     )
     .sort(
-      (firstFile, secondFile) =>
+      (
+        firstFile,
+        secondFile,
+      ) =>
         firstFile.localeCompare(
           secondFile,
           "en",
           {
-            numeric: true,
-            sensitivity: "base",
+            numeric:
+              true,
+
+            sensitivity:
+              "base",
           },
         ),
     );
@@ -194,12 +366,17 @@ async function readResearchFile(
 
   try {
     parsedFile =
-      matter(fileContent);
-  } catch (error) {
+      matter(
+        fileContent,
+      );
+  } catch (
+    error
+  ) {
     throw new Error(
       `Invalid frontmatter in research file: ${fileName}`,
       {
-        cause: error,
+        cause:
+          error,
       },
     );
   }
@@ -207,17 +384,22 @@ async function readResearchFile(
   const {
     data,
     content,
-  } = parsedFile;
+  } =
+    parsedFile;
 
   const fileSlug =
-    getFileSlug(fileName);
+    getFileSlug(
+      fileName,
+    );
 
   const title =
     getOptionalString(
       data.title,
     );
 
-  if (!title) {
+  if (
+    !title
+  ) {
     throw new Error(
       `Missing required "title" in research file: ${fileName}`,
     );
@@ -265,7 +447,7 @@ async function readResearchFile(
       ),
 
     category:
-      getOptionalString(
+      getPersianCategory(
         data.category,
       ),
 
@@ -275,7 +457,7 @@ async function readResearchFile(
       ),
 
     status:
-      getOptionalString(
+      getPersianStatus(
         data.status,
       ),
 
@@ -303,14 +485,17 @@ function ensureUniqueSlugs(
     >();
 
   for (
-    const article of articles
+    const article of
+      articles
   ) {
     const existingId =
       seenSlugs.get(
         article.slug,
       );
 
-    if (existingId) {
+    if (
+      existingId
+    ) {
       throw new Error(
         `Duplicate research slug "${article.slug}" found in "${existingId}.md" and "${article.id}.md".`,
       );
@@ -323,14 +508,64 @@ function ensureUniqueSlugs(
   }
 }
 
+function getResearchSequence(
+  researchId?: string,
+): number {
+  if (
+    !researchId
+  ) {
+    return -1;
+  }
+
+  const match =
+    researchId.match(
+      /(\d+)\s*$/,
+    );
+
+  if (
+    !match
+  ) {
+    return -1;
+  }
+
+  const sequence =
+    Number.parseInt(
+      match[1],
+      10,
+    );
+
+  return Number.isNaN(
+    sequence,
+  )
+    ? -1
+    : sequence;
+}
+
 function sortResearchArticles(
   articles: ResearchArticle[],
 ): ResearchArticle[] {
-  return [...articles].sort(
+  return [
+    ...articles,
+  ].sort(
     (
       firstArticle,
       secondArticle,
     ) => {
+      const sequenceDifference =
+        getResearchSequence(
+          secondArticle.research_id,
+        ) -
+        getResearchSequence(
+          firstArticle.research_id,
+        );
+
+      if (
+        sequenceDifference !==
+        0
+      ) {
+        return sequenceDifference;
+      }
+
       const dateDifference =
         getDateTimestamp(
           secondArticle.date,
@@ -340,40 +575,19 @@ function sortResearchArticles(
         );
 
       if (
-        dateDifference !== 0
-      ) {
-        return dateDifference;
-      }
-
-      const researchIdDifference =
-        (
-          secondArticle
-            .research_id ||
-          ""
-        ).localeCompare(
-          firstArticle
-            .research_id ||
-            "",
-          "en",
-          {
-            numeric: true,
-            sensitivity:
-              "base",
-          },
-        );
-
-      if (
-        researchIdDifference !==
+        dateDifference !==
         0
       ) {
-        return researchIdDifference;
+        return dateDifference;
       }
 
       return firstArticle.slug.localeCompare(
         secondArticle.slug,
         "en",
         {
-          numeric: true,
+          numeric:
+            true,
+
           sensitivity:
             "base",
         },
@@ -391,7 +605,9 @@ export async function getResearchArticles(): Promise<
   const articles =
     await Promise.all(
       files.map(
-        (fileName) =>
+        (
+          fileName,
+        ) =>
           readResearchFile(
             fileName,
           ),
@@ -411,7 +627,9 @@ export async function getResearchArticle(
   slug: string,
 ): Promise<ResearchArticle | null> {
   const decodedSlug =
-    decodeSlug(slug);
+    decodeSlug(
+      slug,
+    );
 
   const normalizedSlug =
     normalizeSlug(
@@ -424,13 +642,17 @@ export async function getResearchArticle(
 
   const article =
     articles.find(
-      (item) =>
+      (
+        item,
+      ) =>
         item.slug ===
         normalizedSlug,
     );
 
-  return article ||
-    null;
+  return (
+    article ||
+    null
+  );
 }
 
 export async function getResearchById(
@@ -441,7 +663,9 @@ export async function getResearchById(
       .trim()
       .toLocaleLowerCase();
 
-  if (!normalizedResearchId) {
+  if (
+    !normalizedResearchId
+  ) {
     return null;
   }
 
@@ -450,7 +674,9 @@ export async function getResearchById(
 
   const article =
     articles.find(
-      (item) =>
+      (
+        item,
+      ) =>
         item.id
           .toLocaleLowerCase() ===
           normalizedResearchId ||
@@ -459,8 +685,10 @@ export async function getResearchById(
           normalizedResearchId,
     );
 
-  return article ||
-    null;
+  return (
+    article ||
+    null
+  );
 }
 
 function normalizeSectionBody(
@@ -483,7 +711,9 @@ function createMarkdownSection(
   title: string,
   value?: string,
 ): string {
-  if (!value?.trim()) {
+  if (
+    !value?.trim()
+  ) {
     return "";
   }
 
@@ -492,7 +722,9 @@ function createMarkdownSection(
       value,
     );
 
-  if (!normalizedBody) {
+  if (
+    !normalizedBody
+  ) {
     return "";
   }
 
@@ -500,7 +732,9 @@ function createMarkdownSection(
     `## ${title}`,
     "",
     normalizedBody,
-  ].join("\n");
+  ].join(
+    "\n",
+  );
 }
 
 function createChecklistSection(
@@ -509,10 +743,14 @@ function createChecklistSection(
   const normalizedItems =
     items
       .map(
-        (item) =>
+        (
+          item,
+        ) =>
           item.trim(),
       )
-      .filter(Boolean);
+      .filter(
+        Boolean,
+      );
 
   if (
     normalizedItems.length ===
@@ -522,13 +760,17 @@ function createChecklistSection(
   }
 
   return [
-    "## چک‌لیست اقدام",
+    "## چک‌لیست اجرایی",
     "",
     ...normalizedItems.map(
-      (item) =>
-        `- ${item}`,
+      (
+        item,
+      ) =>
+        `- [ ] ${item}`,
     ),
-  ].join("\n");
+  ].join(
+    "\n",
+  );
 }
 
 function createAnalysisMarkdown(
@@ -536,7 +778,7 @@ function createAnalysisMarkdown(
 ): string {
   const markdownSections = [
     createMarkdownSection(
-      "خلاصه علمی پژوهش",
+      "خلاصه علمی",
       analysis
         .خلاصه_علمی_پژوهش,
     ),
@@ -554,7 +796,7 @@ function createAnalysisMarkdown(
     ),
 
     createMarkdownSection(
-      "چارچوب استراتژیک",
+      "چارچوب پیشنهادی",
       analysis
         .چارچوب_استراتژیک,
     ),
@@ -576,16 +818,22 @@ function createAnalysisMarkdown(
     ),
 
     createMarkdownSection(
-      "دیدگاه من",
+      "برداشت من",
       analysis
         .دیدگاه_من,
     ),
   ]
-    .filter(Boolean)
-    .join("\n\n")
+    .filter(
+      Boolean,
+    )
+    .join(
+      "\n\n",
+    )
     .trim();
 
-  if (!markdownSections) {
+  if (
+    !markdownSections
+  ) {
     throw new Error(
       "The generated research analysis is empty.",
     );
@@ -606,7 +854,9 @@ export async function updateResearchFile(
   const normalizedResearchId =
     researchId.trim();
 
-  if (!normalizedResearchId) {
+  if (
+    !normalizedResearchId
+  ) {
     throw new Error(
       "Research ID is required.",
     );
@@ -620,7 +870,8 @@ export async function updateResearchFile(
     | undefined;
 
   for (
-    const fileName of files
+    const fileName of
+      files
   ) {
     const article =
       await readResearchFile(
@@ -640,7 +891,9 @@ export async function updateResearchFile(
     }
   }
 
-  if (!matchedFile) {
+  if (
+    !matchedFile
+  ) {
     throw new Error(
       `Research file not found: ${normalizedResearchId}`,
     );
@@ -659,7 +912,9 @@ export async function updateResearchFile(
     );
 
   const parsedFile =
-    matter(fileContent);
+    matter(
+      fileContent,
+    );
 
   const updatedContent =
     createAnalysisMarkdown(
@@ -672,11 +927,18 @@ export async function updateResearchFile(
       {
         ...parsedFile.data,
 
+        category:
+          getPersianCategory(
+            parsedFile.data
+              .category,
+          ),
+
         status:
-          "Approved for Research Library",
+          "تأییدشده برای کتابخانه پژوهش",
 
         updatedAt:
-          new Date().toISOString(),
+          new Date()
+            .toISOString(),
       },
     );
 
@@ -687,7 +949,9 @@ export async function updateResearchFile(
   );
 
   return {
-    success: true,
+    success:
+      true,
+
     filePath,
   };
 }
