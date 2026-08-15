@@ -5,6 +5,7 @@ import {
   defaultLocale,
   isLocale,
 } from "@/i18n/config";
+import { updateSession } from "@/lib/supabase/proxy";
 
 const PERMANENT_REDIRECT_STATUS = 308;
 
@@ -89,7 +90,7 @@ export function proxy(
     possibleLocale &&
     isLocale(possibleLocale)
   ) {
-    return NextResponse.next();
+    return updateSession(request);
   }
 
   /*
