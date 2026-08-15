@@ -180,6 +180,13 @@ const de = {
     },
   },
 
+  growthAI: {
+    eyebrow: "Growth AI",
+    title: "Ein fokussierter Arbeitsbereich für KI-gestütztes Wachstum.",
+    description:
+      "Dieser private Beta-Arbeitsbereich wird schrittweise vorbereitet. KI-Verarbeitung und Datenspeicherung sind noch nicht aktiv.",
+    status: "Private Beta - Phase 1",
+  },
   growthSystem: {
     eyebrow: "Wachstumssystem",
 

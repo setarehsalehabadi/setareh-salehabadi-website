@@ -180,6 +180,13 @@ const en = {
     },
   },
 
+  growthAI: {
+    eyebrow: "Growth AI",
+    title: "A focused workspace for AI-supported growth.",
+    description:
+      "This private beta workspace is being prepared step by step. No AI processing or data storage is active yet.",
+    status: "Private beta - Phase 1",
+  },
   growthSystem: {
     eyebrow: "Growth System",
 
