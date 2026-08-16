@@ -180,12 +180,24 @@ const en = {
     },
   },
 
-  growthAI: {
+   growthAI: {
     eyebrow: "Growth AI",
     title: "A focused workspace for AI-supported growth.",
     description:
-      "This private beta workspace is being prepared step by step. No AI processing or data storage is active yet.",
-    status: "Private beta - Phase 1",
+      "Secure account access is now available for the private beta. AI analysis and business-data processing are not active yet.",
+    status: "Private beta - Phase 2",
+    auth: {
+      signInWithGoogle: "Continue with Google",
+      signingIn: "Connecting...",
+      signInError:
+        "Google sign-in could not be started. Please try again.",
+      connectedStatus: "Secure account connected",
+      signedInAs: "Signed in as",
+      signOut: "Sign out",
+      signingOut: "Signing out...",
+      signOutError:
+        "Sign-out could not be completed. Please try again.",
+    },
   },
   growthSystem: {
     eyebrow: "Growth System",

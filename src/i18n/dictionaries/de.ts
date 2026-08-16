@@ -180,12 +180,25 @@ const de = {
     },
   },
 
-  growthAI: {
+   growthAI: {
     eyebrow: "Growth AI",
-    title: "Ein fokussierter Arbeitsbereich für KI-gestütztes Wachstum.",
+    title:
+      "Ein fokussierter Arbeitsbereich für KI-gestütztes Wachstum.",
     description:
-      "Dieser private Beta-Arbeitsbereich wird schrittweise vorbereitet. KI-Verarbeitung und Datenspeicherung sind noch nicht aktiv.",
-    status: "Private Beta - Phase 1",
+      "Der sichere Kontozugang für die private Beta ist jetzt verfügbar. KI-Analysen und die Verarbeitung von Unternehmensdaten sind noch nicht aktiv.",
+    status: "Private Beta - Phase 2",
+    auth: {
+      signInWithGoogle: "Mit Google fortfahren",
+      signingIn: "Verbindung wird hergestellt...",
+      signInError:
+        "Die Google-Anmeldung konnte nicht gestartet werden. Bitte erneut versuchen.",
+      connectedStatus: "Sicheres Konto verbunden",
+      signedInAs: "Angemeldet als",
+      signOut: "Abmelden",
+      signingOut: "Abmeldung läuft...",
+      signOutError:
+        "Die Abmeldung konnte nicht abgeschlossen werden. Bitte erneut versuchen.",
+    },
   },
   growthSystem: {
     eyebrow: "Wachstumssystem",
