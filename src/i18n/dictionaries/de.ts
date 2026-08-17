@@ -181,25 +181,63 @@ const de = {
   },
 
    growthAI: {
-    eyebrow: "Growth AI",
+  eyebrow: "Growth AI",
+  title:
+    "Ein fokussierter Arbeitsbereich für KI-gestütztes Wachstum.",
+  description:
+    "Der sichere Kontozugang und die Einrichtung des Unternehmensbereichs sind jetzt für die private Beta verfügbar. KI-Analysen und erweiterte Datenverarbeitung werden in späteren Phasen aktiviert.",
+  status: "Private Beta - Phase 3",
+
+  auth: {
+    signInWithGoogle: "Mit Google fortfahren",
+    signingIn: "Verbindung wird hergestellt...",
+    signInError:
+      "Die Google-Anmeldung konnte nicht gestartet werden. Bitte erneut versuchen.",
+    connectedStatus: "Sicheres Konto verbunden",
+    signedInAs: "Angemeldet als",
+    signOut: "Abmelden",
+    signingOut: "Abmeldung läuft...",
+    signOutError:
+      "Die Abmeldung konnte nicht abgeschlossen werden. Bitte erneut versuchen.",
+  },
+
+  onboarding: {
+    eyebrow: "Growth Workspace einrichten",
     title:
-      "Ein fokussierter Arbeitsbereich für KI-gestütztes Wachstum.",
+      "Beginnen Sie mit einigen Angaben zu Ihrem Unternehmen.",
     description:
-      "Der sichere Kontozugang für die private Beta ist jetzt verfügbar. KI-Analysen und die Verarbeitung von Unternehmensdaten sind noch nicht aktiv.",
-    status: "Private Beta - Phase 2",
-    auth: {
-      signInWithGoogle: "Mit Google fortfahren",
-      signingIn: "Verbindung wird hergestellt...",
-      signInError:
-        "Die Google-Anmeldung konnte nicht gestartet werden. Bitte erneut versuchen.",
-      connectedStatus: "Sicheres Konto verbunden",
-      signedInAs: "Angemeldet als",
-      signOut: "Abmelden",
-      signingOut: "Abmeldung läuft...",
-      signOutError:
-        "Die Abmeldung konnte nicht abgeschlossen werden. Bitte erneut versuchen.",
+      "Diese Informationen bilden den ersten Unternehmenskontext, den Growth AI später für Analysen und Empfehlungen verwendet.",
+
+    organizationName:
+      "Name der Organisation oder des Unternehmens",
+    organizationNamePlaceholder:
+      "z. B. Alpha GmbH",
+
+    businessName:
+      "Name des Unternehmens oder der Marke",
+    businessNamePlaceholder:
+      "z. B. Alpha",
+
+    websiteUrl: "Website-URL",
+    websiteUrlPlaceholder: "example.com",
+
+    websiteHint:
+      "Sie können die Adresse mit oder ohne https eingeben.",
+
+    submit: "Growth Workspace erstellen",
+
+    errors: {
+      invalidOrganizationName:
+        "Bitte geben Sie einen gültigen Organisationsnamen ein.",
+      invalidBusinessName:
+        "Bitte geben Sie einen gültigen Unternehmensnamen ein.",
+      invalidWebsiteUrl:
+        "Bitte geben Sie eine gültige Website-Adresse ein.",
+      creationFailed:
+        "Der Growth Workspace konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     },
   },
+},
   growthSystem: {
     eyebrow: "Wachstumssystem",
 

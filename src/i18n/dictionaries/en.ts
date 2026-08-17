@@ -181,24 +181,57 @@ const en = {
   },
 
    growthAI: {
-    eyebrow: "Growth AI",
-    title: "A focused workspace for AI-supported growth.",
+  eyebrow: "Growth AI",
+  title: "A focused workspace for AI-supported growth.",
+  description:
+    "Secure account access and business workspace setup are now available for the private beta. AI analysis and advanced data processing will be activated in later phases.",
+  status: "Private beta - Phase 3",
+
+  auth: {
+    signInWithGoogle: "Continue with Google",
+    signingIn: "Connecting...",
+    signInError:
+      "Google sign-in could not be started. Please try again.",
+    connectedStatus: "Secure account connected",
+    signedInAs: "Signed in as",
+    signOut: "Sign out",
+    signingOut: "Signing out...",
+    signOutError:
+      "Sign-out could not be completed. Please try again.",
+  },
+
+  onboarding: {
+    eyebrow: "Set up your growth workspace",
+    title: "Start by telling us about your business.",
     description:
-      "Secure account access is now available for the private beta. AI analysis and business-data processing are not active yet.",
-    status: "Private beta - Phase 2",
-    auth: {
-      signInWithGoogle: "Continue with Google",
-      signingIn: "Connecting...",
-      signInError:
-        "Google sign-in could not be started. Please try again.",
-      connectedStatus: "Secure account connected",
-      signedInAs: "Signed in as",
-      signOut: "Sign out",
-      signingOut: "Signing out...",
-      signOutError:
-        "Sign-out could not be completed. Please try again.",
+      "This information creates the initial business context that Growth AI will use for future analysis and recommendations.",
+
+    organizationName: "Organization or company name",
+    organizationNamePlaceholder: "e.g. Alpha Company",
+
+    businessName: "Business or brand name",
+    businessNamePlaceholder: "e.g. Alpha",
+
+    websiteUrl: "Website URL",
+    websiteUrlPlaceholder: "example.com",
+
+    websiteHint:
+      "You can enter the address with or without https.",
+
+    submit: "Create growth workspace",
+
+    errors: {
+      invalidOrganizationName:
+        "Enter a valid organization name.",
+      invalidBusinessName:
+        "Enter a valid business name.",
+      invalidWebsiteUrl:
+        "Enter a valid website address.",
+      creationFailed:
+        "The growth workspace could not be created. Please try again.",
     },
   },
+},
   growthSystem: {
     eyebrow: "Growth System",
 
